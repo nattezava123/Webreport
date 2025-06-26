@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แดชบอร์ดหัวหน้างาน (เชื่อมข้อมูล)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS เหมือนเดิมเพื่อความสวยงาม */
+        body { font-family: 'Kanit', sans-serif; background-color: #f8f9fa; color: #343a40; margin: 0; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px; }
+        .header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        h1 { margin: 0; font-size: 28px; }
+        .main-content { background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        h2 { margin-top: 0; margin-bottom: 20px; font-size: 22px; }
+        .request-table { width: 100%; border-collapse: collapse; }
+        .request-table th, .request-table td { padding: 15px; text-align: left; border-bottom: 1px solid #dee2e6; }
+        .request-table th { font-weight: 500; color: #495057; }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; color: white; margin-right: 5px; }
+        .btn-approve { background-color: #28a745; }
+        .btn-reject { background-color: #dc3545; }
+        .btn-reset { background-color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>แดชบอร์ดหัวหน้างาน</h1>
+            <button class="btn btn-reset" onclick="resetData()">ล้างข้อมูลทดสอบทั้งหมด</button>
+        </div>
+        <div class="main-content">
+            <h2><span id="pending-count">0</span> รายการรออนุมัติ</h2>
+            <table class="request-table">
+                <thead>
+                    <tr>
+                        <th>รหัสพนักงาน</th>
+                        <th>วันที่ขอ OT</th>
+                        <th>จำนวนชั่วโมง</th>
+                        <th>ประเภท</th>
+                        <th>จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="request-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // --- Function to load and display data ---
+        function loadPendingRequests() {
+            const tableBody = document.getElementById('request-table-body');
+            const pendingCountEl = document.getElementById('pending-count');
+
+            // 1. ดึงข้อมูลทั้งหมดจาก localStorage
+            const allRequests = JSON.parse(localStorage.getItem('otRequests')) || [];
+
+            // 2. กรองเฉพาะรายการที่มีสถานะ 'pending'
+            const pendingRequests = allRequests.filter(req => req.status === 'pending');
+            
+            // 3. อัปเดตจำนวนรายการที่รออนุมัติ
+            pendingCountEl.textContent = pendingRequests.length;
+
+            // 4. ล้างตารางเก่าก่อนแสดงผลใหม่
+            tableBody.innerHTML = '';
+
+            // 5. ถ้าไม่มีรายการรออนุมัติ ให้แสดงข้อความ
+            if (pendingRequests.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">ไม่มีรายการรออนุมัติ</td></tr>';
+                return;
+            }
+
+            // 6. วนลูปเพื่อสร้างแถวในตารางสำหรับแต่ละรายการ
+            pendingRequests.forEach(req => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${req.employeeId}</td>
+                    <td>${req.otDate}</td>
+                    <td>${req.totalHours}</td>
+                    <td>${req.otType}</td>
+                    <td>
+                        <button class="btn btn-approve" data-id="${req.id}">อนุมัติ</button>
+                        <button class="btn btn-reject" data-id="${req.id}">ปฏิเสธ</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // --- Function to update request status ---
+        function updateRequestStatus(requestId, newStatus) {
+            // ดึงข้อมูลทั้งหมดมา
+            let allRequests = JSON.parse(localStorage.getItem('otRequests')) || [];
+            
+            // หา index ของรายการที่ต้องการอัปเดต
+            const requestIndex = allRequests.findIndex(req => req.id == requestId);
+
+            if (requestIndex !== -1) {
+                // อัปเดตสถานะ
+                allRequests[requestIndex].status = newStatus;
+                // บันทึกข้อมูลที่อัปเดตแล้วกลับไป
+                localStorage.setItem('otRequests', JSON.stringify(allRequests));
+                // โหลดตารางใหม่
+                loadPendingRequests();
+            }
+        }
+
+        // --- Event Listener for Approve/Reject buttons ---
+        document.getElementById('request-table-body').addEventListener('click', function(event) {
+            const target = event.target;
+            const requestId = target.getAttribute('data-id');
+
+            if (!requestId) return; // ไม่ใช่ปุ่มที่เราสนใจ
+
+            if (target.classList.contains('btn-approve')) {
+                if(confirm(`คุณต้องการอนุมัติคำขอ #${requestId} หรือไม่?`)) {
+                    updateRequestStatus(requestId, 'approved');
+                }
+            } else if (target.classList.contains('btn-reject')) {
+                if(confirm(`คุณต้องการปฏิเสธคำขอ #${requestId} หรือไม่?`)) {
+                    updateRequestStatus(requestId, 'rejected');
+                }
+            }
+        });
+
+        // --- Function to reset all data for testing ---
+        function resetData() {
+            if (confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลคำขอ OT ทั้งหมด? (สำหรับการทดสอบ)')) {
+                localStorage.removeItem('otRequests');
+                loadPendingRequests();
+            }
+        }
+
+        // --- Load data when the page loads ---
+        // ใช้ DOMContentLoaded เพื่อให้แน่ใจว่า HTML โหลดเสร็จก่อน JS ทำงาน
+        window.addEventListener('DOMContentLoaded', loadPendingRequests);
+
+    </script>
+</body>
+</html>

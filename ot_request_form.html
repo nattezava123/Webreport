@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สร้างคำขอ OT (เชื่อมข้อมูล)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS เหมือนเดิมเพื่อความสวยงาม */
+        body { font-family: 'Kanit', sans-serif; background-color: #f4f7f9; margin: 0; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; }
+        .form-container { background-color: #ffffff; padding: 30px 40px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
+        .form-header h1 { color: #333; margin-top: 0; margin-bottom: 20px; font-size: 24px; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #dcdcdc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        .time-group { display: flex; gap: 20px; }
+        .time-group .form-group { flex: 1; }
+        .calculated-hours { background-color: #e9f5ff; border: 1px solid #b3d9ff; color: #005a9e; padding: 15px; border-radius: 8px; text-align: center; font-weight: 500; font-size: 18px; min-height: 27px; }
+        .button-group { display: flex; gap: 15px; margin-top: 30px; }
+        .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background-color 0.3s; text-decoration: none; text-align: center; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .link-to-dashboard { margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <div class="form-header">
+            <h1>แบบฟอร์มสร้างคำขอ OT</h1>
+        </div>
+        <form id="ot-form">
+            <div class="form-group">
+                <label for="employee-id">รหัสพนักงาน</label>
+                <input type="text" id="employee-id" placeholder="กรอกรหัสพนักงานของคุณ" required>
+            </div>
+            <div class="form-group">
+                <label for="ot-date">วันที่ทำ OT</label>
+                <input type="date" id="ot-date" onchange="calculateHours()" required>
+            </div>
+            <div class="time-group">
+                <div class="form-group">
+                    <label for="start-time">เวลาเริ่มต้น</label>
+                    <input type="time" id="start-time" onchange="calculateHours()" required>
+                </div>
+                <div class="form-group">
+                    <label for="end-time">เวลาสิ้นสุด</label>
+                    <input type="time" id="end-time" onchange="calculateHours()" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div id="calculated-hours-display" class="calculated-hours">กรุณาเลือกเวลา</div>
+            </div>
+            <div class="form-group">
+                <label for="ot-type">ประเภท OT</label>
+                <select id="ot-type" required>
+                    <option value="">-- กรุณาเลือก --</option>
+                    <option value="OT วันธรรมดา">OT วันธรรมดา</option>
+                    <option value="OT วันหยุด">OT วันหยุด</option>
+                    <option value="OT วันหยุดนักขัตฤกษ์">OT วันหยุดนักขัตฤกษ์</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="reason">เหตุผล / รายละเอียดงาน</label>
+                <textarea id="reason" placeholder="ระบุเหตุผลที่ต้องทำงานล่วงเวลาให้ชัดเจน..." required></textarea>
+            </div>
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">ยื่นคำขอ</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="link-to-dashboard">
+        <a href="manager_dashboard.html" class="btn btn-secondary" target="_blank">ไปที่หน้าแดชบอร์ดหัวหน้างาน</a>
+    </div>
+
+    <script>
+        let totalHours = 0;
+
+        function calculateHours() {
+            const dateInput = document.getElementById('ot-date').value;
+            const startTimeInput = document.getElementById('start-time').value;
+            const endTimeInput = document.getElementById('end-time').value;
+            const displayElement = document.getElementById('calculated-hours-display');
+            
+            if (dateInput && startTimeInput && endTimeInput) {
+                let startDate = new Date(`${dateInput}T${startTimeInput}`);
+                let endDate = new Date(`${dateInput}T${endTimeInput}`);
+                
+                if (endDate <= startDate) {
+                    endDate.setDate(endDate.getDate() + 1);
+                }
+                
+                let diff = endDate - startDate;
+                let hours = diff / 1000 / 60 / 60;
+                
+                if (hours > 0) {
+                    totalHours = parseFloat(hours.toFixed(1)); // Store hours in global variable
+                    displayElement.innerHTML = `<strong>จำนวนชั่วโมงรวม:</strong> ${totalHours} ชั่วโมง`;
+                } else {
+                    totalHours = 0;
+                    displayElement.textContent = 'เวลาไม่ถูกต้อง';
+                }
+            } else {
+                totalHours = 0;
+                displayElement.textContent = 'กรุณาเลือกเวลา';
+            }
+        }
+
+        // --- Logic to save data to localStorage ---
+        document.getElementById('ot-form').addEventListener('submit', function(event) {
+            // 1. ป้องกันไม่ให้ฟอร์มรีเฟรชหน้า
+            event.preventDefault();
+
+            // 2. รวบรวมข้อมูลจากฟอร์ม
+            const requestData = {
+                id: Date.now(), // สร้าง ID ที่ไม่ซ้ำกันด้วยเวลาปัจจุบัน
+                employeeId: document.getElementById('employee-id').value,
+                otDate: document.getElementById('ot-date').value,
+                startTime: document.getElementById('start-time').value,
+                endTime: document.getElementById('end-time').value,
+                totalHours: totalHours,
+                otType: document.getElementById('ot-type').value,
+                reason: document.getElementById('reason').value,
+                status: 'pending' // สถานะเริ่มต้นคือ 'รออนุมัติ'
+            };
+
+            // 3. ตรวจสอบว่าข้อมูลครบถ้วน
+            if (!requestData.employeeId || !requestData.otDate || totalHours <= 0) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
+                return;
+            }
+
+            // 4. ดึงข้อมูลเก่าจาก localStorage (ถ้ามี)
+            // ใช้ JSON.parse เพื่อแปลง string กลับเป็น array, หากไม่มีให้ใช้ array ว่าง
+            const existingRequests = JSON.parse(localStorage.getItem('otRequests')) || [];
+
+            // 5. เพิ่มข้อมูลใหม่เข้าไปใน array
+            existingRequests.push(requestData);
+
+            // 6. บันทึก array ที่อัปเดตแล้วกลับไปยัง localStorage
+            // ใช้ JSON.stringify เพื่อแปลง array เป็น string ก่อนบันทึก
+            localStorage.setItem('otRequests', JSON.stringify(existingRequests));
+
+            // 7. แจ้งเตือนผู้ใช้และล้างฟอร์ม
+            alert('ยื่นคำขอ OT สำเร็จแล้ว!');
+            document.getElementById('ot-form').reset();
+            document.getElementById('calculated-hours-display').textContent = 'กรุณาเลือกเวลา';
+        });
+    </script>
+</body>
+</html>
