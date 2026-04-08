@@ -3,758 +3,695 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OT Summary Dashboard - Ultimate</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+    <title>ระบบจัดการรถยนต์ - แบบครบวงจร</title>
     <style>
-        /* --- ตัวแปรโทนสี (Light Mode) --- */
-        :root {
-            --primary-blue: #4a6ee0;
-            --light-blue: #eef4ff;
-            --border-blue: #3b82f6;
-            --primary-orange: #f39c12;
-            --light-yellow: #fffdf0;
-            --border-yellow: #f59e0b;
-            --text-yellow: #b45309;
-            --text-dark: #333333;
-            --text-gray: #666666;
-            --text-light-gray: #a0aabf;
-            --bg-page: #eef2f6;
-            --bg-card: #ffffff;
-            --bg-table-header: #f8f9fa;
-            --border-line: #e2e8f0;
-            --danger-red: #e11d48;
-            --input-bg: #fafafa;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        /* Views */
+        .view { display: none; }
+        .view.active { display: block; }
+        .section { display: none; padding: 20px; }
+        .section.active { display: block; }
+
+        /* ================= LOGIN PAGE ================= */
+        #login-view {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('https://images.unsplash.com/photo-1486495146582-96652c234e6c?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 400px;
+            text-align: center;
+        }
+        .login-box h2 {
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+        .form-group label {
+            width: 100px;
+            font-weight: bold;
+        }
+        .form-group input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #e9ecef;
+        }
+        .btn-blue { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .btn-blue:hover { background: #2980b9; }
+
+        /* ================= USER NAV ================= */
+        .user-nav {
+            background: #9ab4c8;
+            padding: 15px 30px;
+            display: flex;
+            gap: 20px;
+            color: #333;
+        }
+        .user-nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+        .user-nav a:hover, .user-nav a.active {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+        .logout-nav { margin-left: auto; display: flex; align-items: center; gap: 5px;}
+
+        /* ================= ADMIN LAYOUT ================= */
+        #admin-view { height: 100vh; flex-direction: column; background: #fff; }
+        #admin-view.active { display: flex; }
+        .admin-header {
+            background: #9ab4c8;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 24px;
+        }
+        .admin-header span { cursor: pointer; }
+        .admin-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .admin-sidebar {
+            width: 250px;
+            background: #f4f4f4;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+        }
+        .admin-sidebar button {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            text-align: left;
+            border: none;
+            background: #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        .admin-sidebar button.active {
+            background: #a2e0a2; /* สีเขียวตามหน้าจอ */
+        }
+        .admin-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: #fafafa;
         }
 
-        /* --- ตัวแปรโทนสี (Dark Mode) --- */
-        body.dark-mode {
-            --primary-blue: #5b7deb;
-            --light-blue: #1e293b;
-            --border-blue: #3b82f6;
-            --light-yellow: #422006;
-            --border-yellow: #d97706;
-            --text-yellow: #fbbf24;
-            --text-dark: #f8fafc;
-            --text-gray: #94a3b8;
-            --text-light-gray: #64748b;
-            --bg-page: #0f172a;
-            --bg-card: #1e293b;
-            --bg-table-header: #334155;
-            --border-line: #334155;
-            --input-bg: #0f172a;
+        /* ================= SHARED CARDS & TABLES ================= */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 1000px;
+            margin: 0 auto;
         }
+        .admin-table-container {
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: #fff;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th { background: #e0e0e0; font-weight: bold; }
+        .action-edit { color: #555; cursor: pointer; text-decoration: none; margin-right: 15px; }
+        .action-delete { color: #d32f2f; cursor: pointer; text-decoration: none; }
+        .status-pass { color: green; }
+        .status-fail { color: red; }
 
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: var(--bg-page); color: var(--text-dark); 
-            margin: 0; padding: 20px; min-height: 100vh; line-height: 1.6;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        /* ปุ่มสลับโหมดกลางคืน */
-        .theme-switch {
-            position: fixed; top: 20px; right: 20px; background: var(--bg-card);
-            border: 2px solid var(--border-line); color: var(--text-dark);
-            padding: 10px 15px; border-radius: 30px; cursor: pointer;
-            font-weight: bold; display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 1000; transition: 0.3s;
-        }
-        .theme-switch:hover { transform: scale(1.05); }
-
-        .container { 
-            display: flex; gap: 30px; flex-wrap: wrap; 
-            max-width: 1400px; margin: 40px auto 0; padding: 20px 0; align-items: flex-start;
-        }
-
-        /* ---------------- ฝั่งฟอร์ม ---------------- */
-        .form-section { 
-            flex: 1; min-width: 450px; background: var(--bg-card); 
-            padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            transition: 0.3s;
-        }
+        /* ================= FORM LAYOUTS ================= */
+        .check-layout { display: flex; gap: 40px; }
+        .left-col { flex: 1; }
+        .right-col { flex: 2; }
+        .check-item { display: flex; align-items: center; margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 4px; }
+        .check-item > span { flex: 1; font-weight: bold;}
+        .radio-group { display: flex; gap: 20px; align-items: center; }
         
-        .form-section h3 { 
-            color: var(--primary-blue); font-size: 1.3rem; 
-            border-bottom: 2px solid var(--primary-blue); display: inline-block; 
-            margin-top: 0; padding-bottom: 8px; margin-bottom: 25px; 
-        }
-
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; color: var(--text-gray); }
+        .repair-layout { display: flex; gap: 20px; }
+        .img-upload { width: 200px; height: 200px; background: #e0e0e0; display: flex; justify-content: center; align-items: center; color: #666; border: 1px dashed #999; }
         
-        input, select { 
-            width: 100%; padding: 10px 12px; border: 1px solid var(--border-line); 
-            background: var(--input-bg); border-radius: 6px; box-sizing: border-box;
-            font-size: 14px; color: var(--text-dark); transition: 0.2s; font-family: inherit;
+        /* ================= ADMIN APPROVAL CARD ================= */
+        .approval-card {
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            position: relative;
         }
-        input:focus, select:focus { outline: none; border-color: var(--primary-blue); background: var(--bg-card); box-shadow: 0 0 0 2px rgba(74, 110, 224, 0.2);}
-        
-        .building-row-card {
-            background: var(--bg-card); border: 1px solid var(--border-line);
-            border-radius: 10px; padding: 20px; margin-bottom: 15px;
-            position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: 0.3s;
+        .approval-info { flex: 1; }
+        .approval-info div { padding: 10px 0; border-bottom: 1px solid #ddd; display: flex; }
+        .approval-info div span:first-child { width: 150px; font-weight: bold; }
+        .approval-status {
+            width: 250px;
+            text-align: center;
         }
-        .building-grid-top { display: grid; grid-template-columns: 2.5fr 1.5fr 3.5fr; gap: 12px; margin-bottom: 12px; }
-        .building-grid-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: center; }
+        .btn-approve {
+            background: #a2e0a2;
+            color: #333;
+            border: none;
+            padding: 10px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+        }
+        .btn-approve:disabled { background: #ccc; cursor: not-allowed; }
 
-        .btn-remove-row {
-            position: absolute; top: -10px; right: -10px; background: var(--bg-card);
-            color: var(--danger-red); border: 1px solid var(--danger-red); border-radius: 50%; 
-            width: 26px; height: 26px; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; font-size: 14px; font-weight: bold;
-            box-shadow: 0 2px 4px rgba(225, 29, 72, 0.2); transition: 0.2s; z-index: 2;
-        }
-        .btn-remove-row:hover { background: var(--danger-red); color: white; transform: scale(1.1); }
-
-        .btn-copy-staff {
-            background: var(--light-blue); color: var(--primary-blue); border: 1px solid var(--border-blue);
-            border-radius: 6px; padding: 4px 8px; font-size: 0.8rem; cursor: pointer;
-            font-weight: bold; margin-left: auto; display: inline-flex; align-items: center; gap: 4px;
-            transition: 0.2s;
-        }
-        .btn-copy-staff:hover { background: var(--primary-blue); color: white; }
-
-        .btn-add {
-            background: transparent; color: var(--primary-blue); border: 2px dashed var(--primary-blue); 
-            width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold;
-            margin-bottom: 20px; transition: 0.2s;
-        }
-        .btn-add:hover { background: var(--light-blue); }
-
-        .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 25px; border-top: 1px solid var(--border-line); padding-top: 20px;}
-        .action-btn {
-            flex: 1; min-width: 100px; padding: 14px 12px; color: white; border: none; 
-            border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: transform 0.2s;
-        }
-        .action-btn:hover { transform: translateY(-2px); }
-        .btn-print { background: var(--primary-blue); }
-        .btn-line { background: #00B900; }
-        .btn-image { background: #8e44ad; } 
-        .btn-clear { background: #64748b; } 
-        .btn-clear:hover { background: #475569; }
-
-        /* --- Custom Multi-Select --- */
-        .custom-multiselect { position: relative; width: 100%; }
-        .multiselect-header {
-            padding: 10px 12px; border: 1px solid var(--border-line); background: var(--input-bg);
-            border-radius: 6px; font-size: 14px; cursor: pointer; min-height: 20px;
-            color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            display: flex; justify-content: space-between; align-items: center; transition: 0.3s;
-        }
-        .multiselect-header:after { content: '▼'; font-size: 0.7rem; color: var(--text-gray); }
-        .multiselect-header.active { border-color: var(--primary-blue); background: var(--bg-card); color: var(--text-dark); }
-        
-        .multiselect-list {
-            display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
-            background: var(--bg-card); border: 1px solid var(--border-line); border-radius: 6px;
-            margin-top: 4px; max-height: 220px; overflow-y: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .multiselect-list label {
-            display: flex; align-items: center; padding: 8px 12px; margin: 0;
-            font-weight: normal; font-size: 14px; cursor: pointer; border-bottom: 1px solid var(--border-line); color: var(--text-dark);
-        }
-        .multiselect-list label:hover { background: var(--light-blue); }
-        .multiselect-list input[type="checkbox"] { width: auto; margin-right: 10px; cursor: pointer; }
-
-        /* ---------------- ฝั่งแสดงผล (ขวา) ---------------- */
-        .preview-section { flex: 1.2; min-width: 450px; position: sticky; top: 20px; }
-        .report-card { 
-            background: var(--bg-card); border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.06); 
-            overflow: hidden; border-top: 12px solid var(--primary-blue); padding-bottom: 20px; transition: 0.3s;
-            margin: 0 auto; /* สำหรับเวลาขยายแคปภาพจะได้อยู่ตรงกลาง */
-        }
-        .card-header { padding: 25px; text-align: center; border-bottom: 1px solid var(--border-line); }
-        .card-header h2 { 
-            margin: 0; font-weight: 800; color: var(--primary-orange); font-size: 1.4rem;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .card-content { padding: 25px; }
-        
-        #outRemarks {
-            background-color: var(--light-yellow); color: var(--text-yellow); padding: 12px 18px;
-            border-radius: 8px; font-size: 0.95rem; font-weight: 600;
-            margin-bottom: 20px; border-left: 4px solid var(--border-yellow);
-            display: none; transition: 0.3s;
-        }
-
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th { background: var(--bg-table-header); color: var(--text-light-gray); font-weight: 600; padding: 12px 16px; text-align: left; font-size: 0.8rem; text-transform: uppercase; transition: 0.3s;}
-        th:first-child { border-radius: 8px 0 0 8px; }
-        th:last-child { border-radius: 0 8px 8px 0; }
-        td { padding: 16px; border-bottom: 1px solid var(--border-line); vertical-align: top; transition: 0.3s;}
-        tr:last-child td { border-bottom: none; }
-        
-        .td-bname { font-weight: 700; color: var(--text-dark); font-size: 1.05rem; }
-        .td-hc { color: var(--border-blue); font-weight: 800; text-align: left; font-size: 1.15rem; }
-        .td-client { color: var(--text-gray); font-size: 0.9rem; }
-        .td-staff { font-size: 0.85rem; line-height: 1.5; }
-        
-        .tag-day { color: var(--text-yellow); background: var(--light-yellow); padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 6px; font-weight: 600; border: 1px solid rgba(245, 158, 11, 0.2);}
-        .tag-night { color: var(--primary-blue); background: var(--light-blue); padding: 3px 8px; border-radius: 6px; display: inline-block; font-weight: 600; border: 1px solid rgba(59, 130, 246, 0.2);}
-
-        /* กราฟ Container */
-        .chart-container {
-            width: 100%; max-width: 350px; margin: 0 auto 25px auto;
+        /* ================= MODALS ================= */
+        .modal-overlay {
             display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
-
-        .total-box { 
-            background: var(--primary-blue); color: white; padding: 18px 24px; display: flex; 
-            justify-content: space-between; align-items: center; border-radius: 10px; 
-            font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(74, 110, 224, 0.3); margin-bottom: 30px;
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-width: 300px;
         }
-        #outTotal { font-size: 1.8rem; font-weight: 800; }
-
-        .assigned-title { color: var(--primary-blue); font-weight: 800; font-size: 1rem; margin-bottom: 12px; display: block; }
-        
-        .grouped-staff-box {
-            background: var(--bg-card); border: 1px solid var(--border-line); border-radius: 8px; padding: 15px; margin-bottom: 12px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: 0.3s;
-        }
-        .grouped-day-box { border-left: 4px solid var(--border-yellow); }
-        .grouped-night-box { border-left: 4px solid var(--border-blue); }
-
-        .grouped-staff-title { font-size: 0.8rem; font-weight: 800; margin-bottom: 10px; text-transform: uppercase;}
-        .grouped-day-title { color: var(--text-yellow); }
-        .grouped-night-title { color: var(--primary-blue); }
-        
-        .staff-group-item { font-size: 0.9rem; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-line); display: flex; justify-content: space-between; transition: 0.3s;}
-        .staff-group-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .staff-name-bold { font-weight: 700; color: var(--text-dark); }
-        .staff-bldg-list { color: var(--text-gray); font-size: 0.85rem; }
-
-        .date-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .report-footer { text-align: right; font-size: 0.75rem; color: var(--text-light-gray); margin-top: 20px; border-top: 1px dashed var(--border-line); padding-top: 10px; transition: 0.3s;}
-
-        @media print { 
-            body { background: white; padding: 0; }
-            .form-section, .theme-switch { display: none; }
-            .report-card { box-shadow: none; border: 1px solid #ddd; border-top: 8px solid var(--primary-blue); }
-        }
+        .icon-success { color: #2ecc71; font-size: 50px; margin-bottom: 10px; font-weight: bold; }
+        .btn-green { background: #2ecc71; color: white; border: none; padding: 8px 20px; cursor: pointer; font-size: 16px; margin: 5px; border-radius: 4px;}
+        .btn-red { background: #e74c3c; color: white; border: none; padding: 8px 20px; cursor: pointer; font-size: 16px; margin: 5px; border-radius: 4px;}
+        .header-title { font-size: 20px; font-weight: bold; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px;}
     </style>
 </head>
 <body>
 
-<button class="theme-switch" onclick="toggleDarkMode()">
-    <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
-</button>
-
-<div class="container">
-    <div class="form-section">
-        <h3>📝 ฟอร์มสรุป OT (แยก Support ตามตึก)</h3>
-        
-        <div class="input-group">
-            <label>ประเภท OT และ ช่วงวันที่ทำงาน</label>
-            <div class="date-grid">
-                <select id="inOtType" onchange="updateReport()">
-                    <option value="☀️ OT Sunday">☀️ OT Sunday</option>
-                    <option value="☀️ OT Saturday">☀️ OT Saturday</option>
-                    <option value="🎉 Public Holiday OT">🎉 Public Holiday OT</option>
-                    <option value="🌙 Night Shift OT">🌙 Night Shift OT</option>
-                    <option value="🏢 Normal Workday OT">🏢 Normal Workday OT</option>
-                </select>
-                <input type="date" id="inDate" title="วันที่เริ่มต้น" onchange="updateReport()">
-                <input type="date" id="inEndDate" title="ถึงวันที่ (เว้นว่างไว้ถ้าทำวันเดียว)" onchange="updateReport()">
-            </div>
-            <p style="margin-top: -5px; margin-bottom: 12px; font-size: 0.75rem; color: var(--text-gray);">* หากทำ OT แค่วันเดียว ให้เว้นช่องขวาสุด (ถึงวันที่) ไว้ครับ</p>
-            
-            <input type="text" id="inHolidayName" placeholder="ชื่อเทศกาล/เหตุผล (เช่น สงกรานต์ 3 วัน)" oninput="updateReport()" style="margin-bottom: 10px;">
-            <input type="text" id="inRemarks" placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)" oninput="updateReport()">
-        </div>
-
-        <div class="input-group">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <label style="margin: 0;">ข้อมูลอาคารและการจัดกะ</label>
-            </div>
-            <div id="building-container"></div>
-            <button type="button" class="btn-add" onclick="addNewRow()">+ เพิ่มอาคารใหม่</button>
-        </div>
-
-        <div class="btn-group">
-            <button class="action-btn btn-print" onclick="window.print()">🖨️ พิมพ์</button>
-            <button class="action-btn btn-line" onclick="copyToLine()">📋 Copy (Text)</button>
-            <button class="action-btn btn-image" id="btnCopyImg" onclick="copyCardAsImage()">📸 Copy รูปภาพ (HD)</button>
-            <button class="action-btn btn-clear" onclick="clearAllData()">🧹 ล้างข้อมูล</button>
+    <div id="login-view" class="view active">
+        <div class="login-box">
+            <h2>เข้าสู่ระบบ</h2>
+            <p style="color: #666; font-size: 12px; margin-bottom: 15px;">(พิมพ์ชื่อผู้ใช้ 'admin' เพื่อเข้าระบบผู้ดูแล / พิมพ์ชื่ออื่นเพื่อเข้าระบบพนักงาน)</p>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>ชื่อผู้ใช้</label>
+                    <input type="text" id="username" placeholder="********" required>
+                </div>
+                <div class="form-group">
+                    <label>รหัสผ่าน</label>
+                    <input type="password" id="password" placeholder="********" required>
+                </div>
+                <button type="submit" class="btn-blue">เข้าสู่ระบบ</button>
+            </form>
         </div>
     </div>
 
-    <div class="preview-section">
-        <div class="report-card" id="capture-area">
-            <div class="card-header">
-                <h2 id="outTitle">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#f39c12" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L14.39 5.82L18.81 5.27L19.53 9.61L23.11 11.97L20.8 15.86L21.43 20.26L17.06 20.89L14.61 24.5L10.74 22.28L6.37 22.95L5.55 18.63L1.93 16.36L4.15 12.42L3.43 8.07L7.75 7.35L10.11 3.65L12 2Z"/>
-                    </svg>
-                    <span></span>
-                </h2>
-            </div>
-            <div class="card-content">
-                <div id="outRemarks"></div>
+    <div id="user-view" class="view">
+        <nav class="user-nav">
+            <a onclick="showUserSection('home-sec')" class="nav-link" id="nav-home">🏠 หน้าหลัก</a>
+            <a onclick="showUserSection('check-sec')" class="nav-link" id="nav-check">ตรวจเช็ค</a>
+            <a onclick="showUserSection('report-sec')" class="nav-link" id="nav-report">รายงานข้อมูล</a>
+            <a onclick="showUserSection('repair-sec')" class="nav-link" id="nav-repair">แจ้งซ่อม</a>
+            <a onclick="showLogoutModal()" class="nav-link logout-nav">ออกจากระบบ 🚪</a>
+        </nav>
 
+        <div id="home-sec" class="section user-section">
+            <div class="card" style="min-height: 500px; background-image: url('https://images.unsplash.com/photo-1486495146582-96652c234e6c?q=80&w=1000&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                <h1 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); padding: 20px;">ยินดีต้อนรับสู่ระบบตรวจเช็คสภาพรถยนต์</h1>
+            </div>
+        </div>
+
+        <div id="check-sec" class="section user-section">
+            <div class="card">
+                <form id="check-form">
+                    <div class="check-layout">
+                        <div class="left-col">
+                            <div class="form-group" style="flex-direction: column; align-items: flex-start;">
+                                <label style="width: auto;">หมายเลขทะเบียนรถยนต์</label>
+                                <input type="text" id="c_license" required style="width: 100%; background: #fff;">
+                            </div>
+                            <div class="form-group" style="flex-direction: column; align-items: flex-start;">
+                                <label style="width: auto;">รหัสรถยนต์</label>
+                                <input type="text" id="c_carid" required style="width: 100%; background: #fff;">
+                            </div>
+                            <div class="form-group" style="flex-direction: column; align-items: flex-start;">
+                                <label style="width: auto;">สี</label>
+                                <input type="text" id="c_color" required style="width: 100%; background: #fff;">
+                            </div>
+                        </div>
+                        <div class="right-col">
+                            <div style="display: flex; justify-content: flex-end; gap: 30px; margin-bottom: 10px; font-weight: bold; padding-right: 20px;">
+                                <span>ปกติ</span>
+                                <span>ไม่ปกติ</span>
+                            </div>
+                            <div class="check-item">
+                                <span>ตรวจเช็คยางรถยนต์</span>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="chk_tire" value="pass" required> ✅</label>
+                                    <label><input type="radio" name="chk_tire" value="fail"> ❌</label>
+                                </div>
+                            </div>
+                            <div class="check-item">
+                                <span>ตรวจเช็คผ้าเบรค</span>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="chk_brake" value="pass" required> ✅</label>
+                                    <label><input type="radio" name="chk_brake" value="fail"> ❌</label>
+                                </div>
+                            </div>
+                            <div class="check-item">
+                                <span>ตรวจเช็คระบบไฟ</span>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="chk_elec" value="pass" required> ✅</label>
+                                    <label><input type="radio" name="chk_elec" value="fail"> ❌</label>
+                                </div>
+                            </div>
+                            <div class="check-item">
+                                <span>ตรวจเช็คหม้อน้ำ</span>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="chk_water" value="pass" required> ✅</label>
+                                    <label><input type="radio" name="chk_water" value="fail"> ❌</label>
+                                </div>
+                            </div>
+                            <div class="check-item">
+                                <span>ตรวจเช็คน้ำมันเครื่อง</span>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="chk_oil" value="pass" required> ✅</label>
+                                    <label><input type="radio" name="chk_oil" value="fail"> ❌</label>
+                                </div>
+                            </div>
+                            <div style="text-align: right; margin-top: 20px;">
+                                <button type="submit" class="btn-blue">ส่ง</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="report-sec" class="section user-section">
+            <div class="card">
+                <div class="header-title">รายงานข้อมูล</div>
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 20%;">LOCATION</th>
-                            <th style="width: 15%;">HC</th>
-                            <th style="width: 25%;">CUSTOMER</th>
-                            <th style="width: 40%;">SUPPORT (DAY/NIGHT)</th>
+                            <th>ลำดับ</th>
+                            <th>รหัสรถยนต์</th>
+                            <th>หมายเลขทะเบียนรถยนต์</th>
+                            <th>สี</th>
+                            <th>สถานะ</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody"></tbody>
+                    <tbody id="report-tbody"></tbody>
                 </table>
+            </div>
+        </div>
 
-                <div class="chart-container" id="chartWrapper">
-                    <canvas id="hcChart"></canvas>
-                </div>
-
-                <div class="total-box">
-                    <span>Total Production-HC for OT</span>
-                    <span id="outTotal">0</span>
-                </div>
-
-                <div>
-                    <span class="assigned-title">👨‍💼 Support Team Summary</span>
-                    <div class="grouped-staff-box grouped-day-box">
-                        <div class="grouped-staff-title grouped-day-title">☀️ DAY SHIFT</div>
-                        <div id="outDayStaffGroup"></div>
+        <div id="repair-sec" class="section user-section">
+            <div class="card">
+                <form id="repair-form">
+                    <div class="repair-layout">
+                        <div class="img-upload"><span>รูปภาพ</span></div>
+                        <div style="flex: 1;">
+                            <div class="form-group">
+                                <label>หมายเลขทะเบียนรถยนต์</label>
+                                <input type="text" id="r_license" required style="background:#fff;">
+                            </div>
+                            <div class="form-group">
+                                <label>ชื่อผู้ขอ</label>
+                                <input type="text" id="r_name" required style="background:#fff;">
+                            </div>
+                            <div class="form-group">
+                                <label>แผนก</label>
+                                <input type="text" id="r_dept" required style="background:#fff;">
+                            </div>
+                            <div class="form-group">
+                                <label>รายการแจ้งซ่อม</label>
+                                <input type="text" id="r_detail" required style="background:#fff;">
+                            </div>
+                            <div style="text-align: right;">
+                                <button type="submit" class="btn-blue">ส่ง</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="grouped-staff-box grouped-night-box">
-                        <div class="grouped-staff-title grouped-night-title">🌙 NIGHT SHIFT</div>
-                        <div id="outNightStaffGroup"></div>
-                    </div>
-                </div>
-
-                <div class="report-footer" id="outTimestamp">Report generated on: -</div>
+                </form>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    let textForChat = ""; 
-    let hcChartInstance = null; 
-
-    const buildingOptions = ["Building 1", "Building 2", "Building 3", "Building 4", "Building 5","Building 6","Building 7","Building 8","Building 9","Building A", "Other"];
-    const clientOptions = ["GOOGLE", "CIENA", "PU8", "KAPOK", "META", "IBM", "Other"];
-    const staffOptions = ["Surasri Kul-On", "Adoon Chueachai", "kchaiwat Kwanta", "Natthi Homnual", "Pichet Jaengkrajang", "Siwakorn Saekow", "Todsapon Treemek"];
-
-    // 1. ระบบ Theme (Dark/Light Mode)
-    function toggleDarkMode() {
-        const body = document.body;
-        const themeIcon = document.getElementById('themeIcon');
-        const themeText = document.getElementById('themeText');
-        
-        body.classList.toggle('dark-mode');
-        
-        if (body.classList.contains('dark-mode')) {
-            themeIcon.innerText = '☀️'; themeText.innerText = 'Light Mode';
-            localStorage.setItem('themePref', 'dark');
-        } else {
-            themeIcon.innerText = '🌙'; themeText.innerText = 'Dark Mode';
-            localStorage.setItem('themePref', 'light');
-        }
-        updateChartConfig(); 
-    }
-
-    function initTheme() {
-        if (localStorage.getItem('themePref') === 'dark') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('themeIcon').innerText = '☀️';
-            document.getElementById('themeText').innerText = 'Light Mode';
-        }
-    }
-
-    // 2. ระบบ Multi-select
-    function toggleMultiSelect(headerEl) {
-        document.querySelectorAll('.multiselect-list').forEach(list => {
-            if (list !== headerEl.nextElementSibling) list.style.display = 'none';
-        });
-        const list = headerEl.nextElementSibling;
-        list.style.display = (list.style.display === 'block') ? 'none' : 'block';
-    }
-
-    function handleCheckboxChange(checkboxEl) {
-        const wrapper = checkboxEl.closest('.custom-multiselect');
-        const header = wrapper.querySelector('.multiselect-header');
-        const checkboxes = wrapper.querySelectorAll('input[type="checkbox"]:checked');
-        
-        const placeholder = wrapper.dataset.placeholder;
-        const separator = wrapper.dataset.separator;
-        const selectedValues = Array.from(checkboxes).map(cb => cb.value);
-        
-        if (selectedValues.length > 0) {
-            header.innerText = selectedValues.join(separator);
-            header.classList.add('active');
-            wrapper.dataset.value = selectedValues.join(separator);
-        } else {
-            header.innerText = placeholder;
-            header.classList.remove('active');
-            wrapper.dataset.value = '';
-        }
-        updateReport();
-    }
-
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.custom-multiselect')) {
-            document.querySelectorAll('.multiselect-list').forEach(list => list.style.display = 'none');
-        }
-    });
-
-    function createMultiSelectHTML(options, preSelected, className, placeholder, separator = ', ') {
-        let selectedText = preSelected.length > 0 ? preSelected.join(separator) : placeholder;
-        let datasetValue = preSelected.length > 0 ? preSelected.join(separator) : '';
-        let headerClass = preSelected.length > 0 ? 'multiselect-header active' : 'multiselect-header';
-
-        let html = `
-            <div class="custom-multiselect ${className}" data-value="${datasetValue}" data-placeholder="${placeholder}" data-separator="${separator}">
-                <div class="${headerClass}" onclick="toggleMultiSelect(this)">${selectedText}</div>
-                <div class="multiselect-list">
-        `;
-        options.forEach(opt => {
-            let isChecked = preSelected.includes(opt) ? 'checked' : '';
-            html += `<label><input type="checkbox" value="${opt}" ${isChecked} onchange="handleCheckboxChange(this)"> ${opt}</label>`;
-        });
-        html += `</div></div>`;
-        return html;
-    }
-
-    // 3. ระบบจัดการตึก
-    function createRowElement(bName = '', bHC = '', clients = [], dayStaff = [], nightStaff = [], isFirstRow = false) {
-        const row = document.createElement('div');
-        row.className = 'building-row-card';
-
-        let bNameSelectHTML = `<select class="bName" onchange="updateReport()"><option value="" disabled ${!bName ? 'selected' : ''}>-- เลือกอาคาร --</option>`;
-        buildingOptions.forEach(opt => { bNameSelectHTML += `<option value="${opt}" ${bName === opt ? 'selected' : ''}>${opt}</option>`; });
-        bNameSelectHTML += `</select>`;
-
-        const clientsHTML = createMultiSelectHTML(clientOptions, clients, 'client-multiselect', '-- เลือกลูกค้า --', ' + ');
-        const dayStaffHTML = createMultiSelectHTML(staffOptions, dayStaff, 'day-staff-multiselect', '-- เลือก Day Staff --', ', ');
-        const nightStaffHTML = createMultiSelectHTML(staffOptions, nightStaff, 'night-staff-multiselect', '-- เลือก Night Staff --', ', ');
-
-        let copyBtnHTML = '';
-        if(isFirstRow) copyBtnHTML = `<button type="button" class="btn-copy-staff" onclick="copyStaffToAll()" title="คัดลอกรายชื่อพนักงานตึกนี้ ไปใส่ให้ทุกตึกด้านล่าง">⏬ คัดลอกพนักงานไปทุกตึก</button>`;
-
-        row.innerHTML = `
-            ${!isFirstRow ? `<button type="button" class="btn-remove-row" onclick="removeRow(this)" title="ลบตึกนี้">✖</button>` : ''}
-            <div class="building-grid-top">
-                ${bNameSelectHTML}
-                <input type="number" placeholder="ยอด HC" class="bHC" value="${bHC}" oninput="updateReport()">
-                ${clientsHTML}
+    <div id="admin-view" class="view">
+        <div class="admin-header">
+            <span onclick="showAdminSection('emp')">🏠</span>
+            <span onclick="showLogoutModal()">👤 <small style="font-size: 14px;">ออกจากระบบ</small></span>
+        </div>
+        <div class="admin-body">
+            <div class="admin-sidebar">
+                <button id="menu-emp" class="admin-menu-btn active" onclick="showAdminSection('emp')">จัดการข้อมูลพนักงาน</button>
+                <button id="menu-car" class="admin-menu-btn" onclick="showAdminSection('car')">จัดการข้อมูลรถยนต์</button>
+                <button id="menu-approve" class="admin-menu-btn" onclick="showAdminSection('approve')">คำขออนุมัติ</button>
             </div>
-            <div class="building-grid-bottom" style="display:flex; flex-wrap:wrap;">
-                <div style="flex:1; min-width:150px;">${dayStaffHTML}</div>
-                <div style="flex:1; min-width:150px;">${nightStaffHTML}</div>
-                ${copyBtnHTML}
-            </div>
-        `;
-        return row;
-    }
-
-    function copyStaffToAll() {
-        const cards = document.getElementsByClassName('building-row-card');
-        if(cards.length <= 1) return; 
-        const firstCard = cards[0];
-        const sourceDayChecked = Array.from(firstCard.querySelectorAll('.day-staff-multiselect input[type="checkbox"]:checked')).map(cb => cb.value);
-        const sourceNightChecked = Array.from(firstCard.querySelectorAll('.night-staff-multiselect input[type="checkbox"]:checked')).map(cb => cb.value);
-
-        for(let i = 1; i < cards.length; i++) {
-            const dayCheckboxes = cards[i].querySelectorAll('.day-staff-multiselect input[type="checkbox"]');
-            dayCheckboxes.forEach(cb => cb.checked = sourceDayChecked.includes(cb.value));
-            handleCheckboxChange(dayCheckboxes[0]); 
-
-            const nightCheckboxes = cards[i].querySelectorAll('.night-staff-multiselect input[type="checkbox"]');
-            nightCheckboxes.forEach(cb => cb.checked = sourceNightChecked.includes(cb.value));
-            handleCheckboxChange(nightCheckboxes[0]); 
-        }
-    }
-
-    function addNewRow() {
-        document.getElementById('building-container').appendChild(createRowElement());
-        updateReport();
-    }
-
-    function removeRow(btnElement) {
-        btnElement.parentElement.remove();
-        updateReport();
-    }
-
-    // 4. ระบบวันที่
-    function formatDateString(dateStr) {
-        if (!dateStr) return "";
-        const dateObj = new Date(dateStr);
-        return dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-    }
-
-    function updateTimestamp() {
-        const now = new Date();
-        const timeStr = now.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
-        document.getElementById('outTimestamp').innerText = `Report generated on: ${timeStr}`;
-    }
-
-    // 5. ระบบ Auto-Save / Clear
-    function saveToLocalStorage() {
-        const data = {
-            otType: document.getElementById('inOtType').value,
-            date: document.getElementById('inDate').value,
-            endDate: document.getElementById('inEndDate').value,
-            holidayName: document.getElementById('inHolidayName').value,
-            remarks: document.getElementById('inRemarks').value,
-            buildings: []
-        };
-        const cards = document.getElementsByClassName('building-row-card');
-        for (let i = 0; i < cards.length; i++) {
-            data.buildings.push({
-                name: cards[i].querySelector('.bName').value,
-                hc: cards[i].querySelector('.bHC').value,
-                clients: cards[i].querySelector('.client-multiselect').dataset.value,
-                day: cards[i].querySelector('.day-staff-multiselect').dataset.value,
-                night: cards[i].querySelector('.night-staff-multiselect').dataset.value
-            });
-        }
-        localStorage.setItem('otReportDataDB', JSON.stringify(data));
-    }
-
-    function loadFromLocalStorage() {
-        const savedData = localStorage.getItem('otReportDataDB');
-        const container = document.getElementById('building-container');
-        container.innerHTML = ''; 
-
-        if (savedData) {
-            const data = JSON.parse(savedData);
-            document.getElementById('inOtType').value = data.otType || "☀️ OT Sunday";
-            document.getElementById('inDate').value = data.date || "";
-            document.getElementById('inEndDate').value = data.endDate || "";
-            document.getElementById('inHolidayName').value = data.holidayName || "";
-            document.getElementById('inRemarks').value = data.remarks || "";
-
-            if(data.buildings && data.buildings.length > 0) {
-                data.buildings.forEach((b, idx) => {
-                    const cArr = b.clients ? b.clients.split(' + ') : [];
-                    const dArr = b.day ? b.day.split(', ') : [];
-                    const nArr = b.night ? b.night.split(', ') : [];
-                    container.appendChild(createRowElement(b.name, b.hc, cArr, dArr, nArr, idx === 0));
-                });
-            } else {
-                container.appendChild(createRowElement('', '', [], [], [], true));
-            }
-        } else {
-            // โหลด Default
-            document.getElementById('inDate').valueAsDate = new Date();
-            container.appendChild(createRowElement('Building A', '900', ['KAPOK'], ['Natthi Homnual'], ['kchaiwat Kwanta'], true));
-            container.appendChild(createRowElement('Building 9', '800', ['KAPOK', 'META'], ['Pichet Jaengkrajang'], ['Todsapon Treemek']));
-        }
-        updateReport(false); 
-    }
-
-    function clearAllData() {
-        if(!confirm("ต้องการล้างข้อมูลทั้งหมดบนหน้าจอใช่หรือไม่?\n(ข้อมูลเก่าจะถูกลบทั้งหมด)")) return;
-        localStorage.removeItem('otReportDataDB');
-        document.getElementById('inOtType').value = "☀️ OT Sunday";
-        document.getElementById('inDate').valueAsDate = new Date();
-        document.getElementById('inEndDate').value = "";
-        document.getElementById('inHolidayName').value = "";
-        document.getElementById('inRemarks').value = "";
-        
-        const container = document.getElementById('building-container');
-        container.innerHTML = '';
-        container.appendChild(createRowElement('', '', [], [], [], true));
-        updateReport();
-    }
-
-    // 6. ระบบกราฟ (Chart.js)
-    function initChart() {
-        const ctx = document.getElementById('hcChart').getContext('2d');
-        hcChartInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: { labels: [], datasets: [{ data: [], backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#8b5cf6', '#ef4444', '#ec4899', '#64748b'] }] },
-            options: {
-                responsive: true, maintainAspectRatio: false, animation: false, 
-                plugins: { legend: { position: 'right', labels: { font: {family: 'Segoe UI', size: 12} } } }
-            }
-        });
-    }
-
-    function updateChartConfig() {
-        if(hcChartInstance) {
-            const isDark = document.body.classList.contains('dark-mode');
-            hcChartInstance.options.plugins.legend.labels.color = isDark ? '#e2e8f0' : '#333';
-            hcChartInstance.update();
-        }
-    }
-
-    // 7. Core Function: ประมวลผลตารางและสรุป
-    function updateReport(shouldSave = true) {
-        const otType = document.getElementById('inOtType').value;
-        const rawDate = document.getElementById('inDate').value;
-        const rawEndDate = document.getElementById('inEndDate').value; 
-        const holidayName = document.getElementById('inHolidayName').value;
-        const remarks = document.getElementById('inRemarks').value;
-
-        let formattedDate = "[ระบุวันที่]";
-        if (rawDate) {
-            formattedDate = formatDateString(rawDate);
-            if (rawEndDate && rawEndDate !== rawDate) formattedDate += ` - ${formatDateString(rawEndDate)}`;
-        }
-
-        let finalTitle = `${otType} @ ${formattedDate}`;
-        if (holidayName.trim() !== '') finalTitle += ` (${holidayName})`;
-
-        const titleSpan = document.querySelector('#outTitle span');
-        if(titleSpan) titleSpan.innerText = finalTitle;
-
-        const outRemarks = document.getElementById('outRemarks');
-        if (remarks.trim() !== '') {
-            outRemarks.style.display = 'block'; outRemarks.innerText = `📌 Note: ${remarks}`;
-        } else {
-            outRemarks.style.display = 'none';
-        }
-
-        const cards = document.getElementsByClassName('building-row-card');
-        
-        let html = ''; let totalHC = 0;
-        let daySupportMap = {}; let nightSupportMap = {};
-        let validBuildingCount = 0; 
-        let chartLabels = []; let chartData = [];
-        
-        textForChat = `*${finalTitle}*\n`;
-        if (remarks.trim() !== '') textForChat += `📌 Note: ${remarks}\n`;
-        textForChat += `\n`;
-
-        for (let i = 0; i < cards.length; i++) {
-            const bNameValue = cards[i].querySelector('.bName').value;
-            const hcValueStr = cards[i].querySelector('.bHC').value;
-            const bClientValue = cards[i].querySelector('.client-multiselect').dataset.value; 
-            const dayStaffValue = cards[i].querySelector('.day-staff-multiselect').dataset.value; 
-            const nightStaffValue = cards[i].querySelector('.night-staff-multiselect').dataset.value; 
-
-            if (bNameValue !== '' || hcValueStr.trim() !== '') {
-                validBuildingCount++;
-                const hcValue = parseInt(hcValueStr) || 0;
-                totalHC += hcValue;
-                const bNameText = bNameValue || 'N/A';
-                const bClientText = bClientValue || '-';
-                const dayText = dayStaffValue || '-';
-                const nightText = nightStaffValue || '-';
-
-                if (hcValue > 0) { chartLabels.push(bNameText); chartData.push(hcValue); }
-
-                if(dayStaffValue) dayStaffValue.split(', ').forEach(name => { if(!daySupportMap[name]) daySupportMap[name] = []; daySupportMap[name].push(bNameText); });
-                if(nightStaffValue) nightStaffValue.split(', ').forEach(name => { if(!nightSupportMap[name]) nightSupportMap[name] = []; nightSupportMap[name].push(bNameText); });
-
-                html += `<tr>
-                    <td class="td-bname">${bNameText}</td>
-                    <td class="td-hc">${hcValue.toLocaleString()}</td>
-                    <td class="td-client">${bClientText}</td>
-                    <td class="td-staff"><span class="tag-day">☀️ ${dayText}</span><br><span class="tag-night">🌙 ${nightText}</span></td>
-                </tr>`;
+            <div class="admin-content">
                 
-                textForChat += `• ${bNameText} = ${hcValue.toLocaleString()} HC ${bClientValue ? '(' + bClientValue + ')' : ''}\n  └ 👨‍💼 Support: ☀️ ${dayText} | 🌙 ${nightText}\n`;
+                <div id="admin-emp-sec" class="section admin-section active" style="padding:0;">
+                    <div class="admin-table-container">
+                        <div style="font-weight: bold; margin-bottom: 10px;">พนักงาน</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>รหัส</th><th>ชื่อ</th><th>นามสกุล</th><th>ชื่อผู้ใช้</th><th>รหัสผ่าน</th><th>แก้ไข</th><th>ลบ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-emp-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="admin-car-sec" class="section admin-section" style="padding:0;">
+                    <div class="admin-table-container">
+                        <div style="font-weight: bold; margin-bottom: 10px;">รถยนต์</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>รหัสรถยนต์</th><th>หมายเลขทะเบียนรถยนต์</th><th>สี</th><th>แก้ไข</th><th>ลบ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-car-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="admin-approve-sec" class="section admin-section" style="padding:0;">
+                    <h3 style="margin-bottom: 15px;">คำขออนุมัติทั้งหมด</h3>
+                    <div id="approval-list">
+                        </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="success-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="icon-success">✔</div>
+            <h3 id="success-msg">อัปเดตสถานะเรียบร้อยแล้ว!</h3>
+            <button onclick="closeModals()" class="btn-blue" style="margin-top: 20px;">ปิด</button>
+        </div>
+    </div>
+
+    <div id="logout-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>คุณต้องการออกจากระบบ?</h3>
+            <div style="margin-top: 20px;">
+                <button onclick="logout()" class="btn-green">ใช่</button>
+                <button onclick="closeModals()" class="btn-red">ไม่ใช่</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Init Mock Data if empty ---
+        function initData() {
+            if(!localStorage.getItem('carReports')) {
+                localStorage.setItem('carReports', JSON.stringify([
+                    { carId: "1231", license: "ตอม4448", color: "ขาว", status: "ผ่าน" },
+                    { carId: "1232", license: "รวย8887", color: "ขาว", status: "ไม่ผ่าน" }
+                ]));
+            }
+            if(!localStorage.getItem('employees')) {
+                localStorage.setItem('employees', JSON.stringify([
+                    { id: "001", fname: "คาลอส", lname: "ไดรอน", user: "001KD1", pass: "1234" },
+                    { id: "002", fname: "เร็น", lname: "โซล", user: "002RH2", pass: "5678" },
+                    { id: "003", fname: "นิกซ์", lname: "วี", user: "003NV3", pass: "9101" },
+                    { id: "004", fname: "ออสติน", lname: "ไรอัน", user: "004OR4", pass: "1213" }
+                ]));
+            }
+            if(!localStorage.getItem('cars')) {
+                localStorage.setItem('cars', JSON.stringify([
+                    { id: "1231", license: "ตอม4448", color: "ขาว" },
+                    { id: "1232", license: "รวย8887", color: "ขาว" },
+                    { id: "1233", license: "ญญณ3333", color: "ดำ" },
+                    { id: "1234", license: "พนธ9999", color: "ดำ" }
+                ]));
+            }
+            if(!localStorage.getItem('repairReqs')) {
+                localStorage.setItem('repairReqs', JSON.stringify([]));
             }
         }
-        
-        if(html === '') html = `<tr><td colspan="4" style="text-align:center; color:var(--text-gray); padding: 20px;">- ไม่มีข้อมูลอาคาร -</td></tr>`;
-        document.getElementById('tableBody').innerHTML = html;
-        document.getElementById('outTotal').innerText = totalHC.toLocaleString();
+        initData();
 
-        const chartWrapper = document.getElementById('chartWrapper');
-        if(totalHC > 0 && chartLabels.length > 0) {
-            chartWrapper.style.display = 'block';
-            if(hcChartInstance) {
-                hcChartInstance.data.labels = chartLabels;
-                hcChartInstance.data.datasets[0].data = chartData;
-                updateChartConfig();
+        // --- Login Routing ---
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let user = document.getElementById('username').value.trim().toLowerCase();
+            
+            document.getElementById('login-view').classList.remove('active');
+            
+            if(user === 'admin') {
+                document.getElementById('admin-view').classList.add('active');
+                showAdminSection('emp'); // Default page for admin
+            } else {
+                document.getElementById('user-view').classList.add('active');
+                showUserSection('home-sec'); // Default page for user
             }
-        } else {
-            chartWrapper.style.display = 'none';
+        });
+
+        // --- User Navigation ---
+        function showUserSection(sectionId) {
+            document.querySelectorAll('.user-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.user-nav .nav-link').forEach(nav => nav.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            let navId = sectionId.replace('-sec', '');
+            let navEl = document.getElementById('nav-' + navId);
+            if(navEl) navEl.classList.add('active');
+
+            if(sectionId === 'report-sec') loadReports();
         }
 
-        let uiDayHtml = ''; let uiNightHtml = '';
-        textForChat += `---------------------------\n*Total Production-HC for OT = ${totalHC.toLocaleString()}*\n\n👨‍💼 *Support Team Summary:*\n[ ☀️ DAY SHIFT ]\n`;
-        
-        if(Object.keys(daySupportMap).length === 0) {
-            uiDayHtml = `<div class="staff-group-item"><span class="staff-name-bold">- ไม่มีระบุ -</span></div>`; textForChat += `  - (ไม่มีระบุ)\n`;
-        } else {
-            for(let name in daySupportMap) {
-                let bldgs = daySupportMap[name].length === validBuildingCount ? "All Buildings" : daySupportMap[name].join(', ');
-                uiDayHtml += `<div class="staff-group-item"><span class="staff-name-bold">${name}</span> <span class="staff-bldg-list">(${bldgs})</span></div>`; textForChat += `  • ${name} (${bldgs})\n`;
-            }
+        // --- Admin Navigation ---
+        function showAdminSection(type) {
+            document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.admin-menu-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(`admin-${type}-sec`).classList.add('active');
+            document.getElementById(`menu-${type}`).classList.add('active');
+
+            if(type === 'emp') loadAdminEmployees();
+            if(type === 'car') loadAdminCars();
+            if(type === 'approve') loadAdminApprovals();
         }
 
-        textForChat += `[ 🌙 NIGHT SHIFT ]\n`;
-        if(Object.keys(nightSupportMap).length === 0) {
-            uiNightHtml = `<div class="staff-group-item"><span class="staff-name-bold">- ไม่มีระบุ -</span></div>`; textForChat += `  - (ไม่มีระบุ)\n`;
-        } else {
-            for(let name in nightSupportMap) {
-                let bldgs = nightSupportMap[name].length === validBuildingCount ? "All Buildings" : nightSupportMap[name].join(', ');
-                uiNightHtml += `<div class="staff-group-item"><span class="staff-name-bold">${name}</span> <span class="staff-bldg-list">(${bldgs})</span></div>`; textForChat += `  • ${name} (${bldgs})\n`;
-            }
-        }
-
-        document.getElementById('outDayStaffGroup').innerHTML = uiDayHtml;
-        document.getElementById('outNightStaffGroup').innerHTML = uiNightHtml;
-
-        updateTimestamp();
-        if(shouldSave) saveToLocalStorage();
-    }
-
-    // 8. ระบบ Export
-    function copyToLine() {
-        navigator.clipboard.writeText(textForChat).then(() => { alert("คัดลอกข้อความ Text สำเร็จ! 📋"); });
-    }
-
-    // แคปภาพแบบบังคับ HD 1200px
-    function copyCardAsImage() {
-        const btn = document.getElementById('btnCopyImg');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = "⏳ กำลังขยายและประมวลผล..."; 
-        btn.disabled = true;
-
-        const targetElement = document.getElementById('capture-area');
-        const bgColor = document.body.classList.contains('dark-mode') ? '#1e293b' : '#ffffff';
-
-        // บังคับกว้าง 1200px ให้ภาพสวยเต็มจอเสมอ
-        const originalWidth = targetElement.style.width;
-        const originalMaxWidth = targetElement.style.maxWidth;
-        targetElement.style.width = '1200px';
-        targetElement.style.maxWidth = '1200px';
-
-        setTimeout(() => {
-            html2canvas(targetElement, { 
-                scale: 3, // เร่งความชัด 3 เท่า
-                useCORS: true, 
-                backgroundColor: bgColor 
-            }).then(canvas => {
-                canvas.toBlob(blob => {
-                    try {
-                        const item = new ClipboardItem({ "image/png": blob });
-                        navigator.clipboard.write([item]).then(() => {
-                            alert("📸 คัดลอกรูปภาพขนาด HD สำเร็จ!\nภาพจะกว้างสวยงาม นำไป Paste ได้เลยครับ");
-                        }).catch(err => { fallbackDownload(canvas); });
-                    } catch (err) { fallbackDownload(canvas); }
-                }, "image/png");
-            }).finally(() => { 
-                // หดกลับเท่าเดิม
-                targetElement.style.width = originalWidth;
-                targetElement.style.maxWidth = originalMaxWidth;
-                btn.innerHTML = originalText; btn.disabled = false; 
+        // --- User: Submit Check ---
+        document.getElementById('check-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let checks = ['chk_tire', 'chk_brake', 'chk_elec', 'chk_water', 'chk_oil'];
+            let isPass = true;
+            checks.forEach(name => {
+                let val = document.querySelector(`input[name="${name}"]:checked`).value;
+                if(val === 'fail') isPass = false;
             });
-        }, 100);
-    }
 
-    function fallbackDownload(canvas) {
-        const link = document.createElement('a');
-        link.download = 'OT-Summary-Report.png'; link.href = canvas.toDataURL('image/png'); link.click();
-        alert("⬇️ ดาวน์โหลดรูปภาพลงเครื่องสำเร็จ!");
-    }
+            let reports = JSON.parse(localStorage.getItem('carReports'));
+            reports.push({
+                carId: document.getElementById('c_carid').value,
+                license: document.getElementById('c_license').value,
+                color: document.getElementById('c_color').value,
+                status: isPass ? 'ผ่าน' : 'ไม่ผ่าน'
+            });
+            localStorage.setItem('carReports', JSON.stringify(reports));
+            
+            showSuccessModal('อัปเดตสถานะเรียบร้อยแล้ว!');
+            this.reset();
+        });
 
-    window.onload = function() {
-        initTheme(); 
-        initChart(); 
-        loadFromLocalStorage(); 
-    };
-</script>
+        function loadReports() {
+            let reports = JSON.parse(localStorage.getItem('carReports'));
+            let tbody = document.getElementById('report-tbody');
+            tbody.innerHTML = '';
+            reports.forEach((item, index) => {
+                let statusClass = item.status === 'ผ่าน' ? 'status-pass' : 'status-fail';
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td><td>${item.carId}</td><td>${item.license}</td>
+                        <td>${item.color}</td><td class="${statusClass}">${item.status}</td>
+                    </tr>`;
+            });
+        }
 
+        // --- User: Submit Repair ---
+        document.getElementById('repair-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let reqs = JSON.parse(localStorage.getItem('repairReqs'));
+            reqs.push({
+                id: Date.now().toString(),
+                license: document.getElementById('r_license').value,
+                name: document.getElementById('r_name').value,
+                dept: document.getElementById('r_dept').value,
+                detail: document.getElementById('r_detail').value,
+                status: 'pending'
+            });
+            localStorage.setItem('repairReqs', JSON.stringify(reqs));
+            showSuccessModal('ส่งคำขอแจ้งซ่อมเรียบร้อยแล้ว!');
+            this.reset();
+        });
+
+        // --- Admin: Render Tables ---
+        function loadAdminEmployees() {
+            let emps = JSON.parse(localStorage.getItem('employees'));
+            let tbody = document.getElementById('admin-emp-tbody');
+            tbody.innerHTML = '';
+            emps.forEach(emp => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${emp.id}</td><td>${emp.fname}</td><td>${emp.lname}</td>
+                        <td>${emp.user}</td><td>${emp.pass}</td>
+                        <td><span class="action-edit" onclick="alert('ฟังก์ชันแก้ไขกำลังพัฒนา')">✏️ แก้ไข</span></td>
+                        <td><span class="action-delete" onclick="deleteEmp('${emp.id}')">🗑️ ลบ</span></td>
+                    </tr>`;
+            });
+        }
+
+        function loadAdminCars() {
+            let cars = JSON.parse(localStorage.getItem('cars'));
+            let tbody = document.getElementById('admin-car-tbody');
+            tbody.innerHTML = '';
+            cars.forEach(car => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${car.id}</td><td>${car.license}</td><td>${car.color}</td>
+                        <td><span class="action-edit" onclick="alert('ฟังก์ชันแก้ไขกำลังพัฒนา')">✏️ แก้ไข</span></td>
+                        <td><span class="action-delete" onclick="deleteCar('${car.id}')">🗑️ ลบ</span></td>
+                    </tr>`;
+            });
+        }
+
+        // --- Admin: Load & Approve Requests ---
+        function loadAdminApprovals() {
+            let reqs = JSON.parse(localStorage.getItem('repairReqs'));
+            let list = document.getElementById('approval-list');
+            list.innerHTML = '';
+            
+            if(reqs.length === 0) {
+                list.innerHTML = '<p style="color:#666;">ไม่มีคำขออนุมัติในขณะนี้</p>';
+                return;
+            }
+
+            // Reverse to show newest first
+            reqs.slice().reverse().forEach(req => {
+                let isApproved = req.status === 'approved';
+                list.innerHTML += `
+                    <div class="approval-card">
+                        <div class="approval-info">
+                            <div style="background:#ddd; font-weight:bold; padding:5px 10px;">คำขออนุมัติ</div>
+                            <div><span>หมายเลขทะเบียนรถยนต์</span><span>${req.license}</span></div>
+                            <div><span>ชื่อผู้ขอ</span><span>${req.name}</span></div>
+                            <div><span>แผนก</span><span>${req.dept}</span></div>
+                            <div><span>รายการแจ้งซ่อม</span><span>${req.detail}</span></div>
+                            <div>
+                                <span>รูปภาพ</span>
+                                <div style="width:80px; height:80px; background:#e0e0e0; display:flex; align-items:center; justify-content:center; border:1px solid #ccc; font-size:12px; color:#666;">รูปภาพ</div>
+                            </div>
+                        </div>
+                        <div class="approval-status">
+                            <div style="margin-bottom:10px; font-weight:bold;">สถานะ:</div>
+                            ${isApproved 
+                                ? `<button class="btn-approve" disabled style="background:#a2e0a2;">อนุมัติแล้ว</button>`
+                                : `<button class="btn-approve" onclick="approveReq('${req.id}')">อนุมัติ</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function approveReq(id) {
+            let reqs = JSON.parse(localStorage.getItem('repairReqs'));
+            let target = reqs.find(r => r.id === id);
+            if(target) target.status = 'approved';
+            localStorage.setItem('repairReqs', JSON.stringify(reqs));
+            loadAdminApprovals();
+            showSuccessModal('อัปเดตสถานะเรียบร้อยแล้ว!');
+        }
+
+        // --- Mock Delete Functions ---
+        function deleteEmp(id) {
+            if(confirm('ยืนยันการลบพนักงานรหัส: ' + id)) {
+                let emps = JSON.parse(localStorage.getItem('employees')).filter(e => e.id !== id);
+                localStorage.setItem('employees', JSON.stringify(emps));
+                loadAdminEmployees();
+            }
+        }
+
+        function deleteCar(id) {
+            if(confirm('ยืนยันการลบรถยนต์รหัส: ' + id)) {
+                let cars = JSON.parse(localStorage.getItem('cars')).filter(c => c.id !== id);
+                localStorage.setItem('cars', JSON.stringify(cars));
+                loadAdminCars();
+            }
+        }
+
+        // --- Shared Modals ---
+        function showSuccessModal(msg) {
+            document.getElementById('success-msg').innerText = msg;
+            document.getElementById('success-modal').classList.add('active');
+        }
+
+        function showLogoutModal() {
+            document.getElementById('logout-modal').classList.add('active');
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        }
+
+        function logout() {
+            closeModals();
+            document.getElementById('user-view').classList.remove('active');
+            document.getElementById('admin-view').classList.remove('active');
+            document.getElementById('login-view').classList.add('active');
+            document.getElementById('login-form').reset();
+        }
+    </script>
 </body>
 </html>
