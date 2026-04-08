@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบริหารจัดการรถยนต์และซ่อมบำรุง - CARMA</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="login-view" class="view active">
+        <div class="login-box">
+            <h1><i class="fas fa-car-crash"></i> CARMA</h1>
+            <p class="text-muted mb-2">ระบบบริหารจัดการรถยนต์และซ่อมบำรุง ฉบับสมบูรณ์</p>
+            
+            <div class="login-hints">
+                <strong style="color: var(--primary-color);"><i class="fas fa-info-circle"></i> ข้อมูลสำหรับทดสอบระบบ:</strong><br><br>
+                <i class="fas fa-crown" style="color: gold;"></i> <b>แอดมิน (Admin):</b> ผู้ใช้: <code>admin</code> | รหัส: <code>admin123</code><br>
+                <i class="fas fa-user" style="color: var(--accent-color); margin-top: 5px;"></i> <b>พนักงาน (Staff):</b> ผู้ใช้: <code>user</code> | รหัส: <code>user123</code>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <input type="text" id="username" class="form-input form-input-login" placeholder="ชื่อผู้ใช้ (Username)" autocomplete="off" required>
+                </div>
+                <div class="form-group mb-2">
+                    <input type="password" id="password" class="form-input form-input-login" placeholder="รหัสผ่าน (Password)" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">เข้าสู่ระบบ <i class="fas fa-sign-in-alt"></i></button>
+                <div id="login-error" class="login-error"><i class="fas fa-exclamation-triangle"></i> ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!</div>
+            </form>
+        </div>
+    </div>
+
+    <div id="staff-view" class="view">
+        <div class="main-layout">
+            <nav class="sidebar">
+                <div class="sidebar-brand"><i class="fas fa-car-crash"></i> CARMA</div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-menu-item"><a onclick="showView('staff-check')" id="staff-check-menu" class="sidebar-menu-link active"><i class="fas fa-clipboard-check"></i> บันทึกตรวจเช็ค</a></li>
+                    <li class="sidebar-menu-item"><a onclick="showView('staff-repair')" id="staff-repair-menu" class="sidebar-menu-link"><i class="fas fa-tools"></i> แจ้งซ่อม</a></li>
+                    <li class="sidebar-menu-item"><a onclick="showView('staff-status')" id="staff-status-menu" class="sidebar-menu-link"><i class="fas fa-tasks"></i> สถานะงาน</a></li>
+                    <li class="sidebar-menu-item mobile-logout"><a onclick="showLogoutModal()" class="sidebar-menu-link logout-link"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</a></li>
+                </ul>
+                <div class="user-panel">
+                    <div class="user-name" id="staff-user-name">พนักงาน</div>
+                    <div class="user-role"><i class="fas fa-user-circle"></i> ฝ่ายเช็คสภาพ</div>
+                </div>
+            </nav>
+
+            <main class="main-content">
+                <div class="content-header">
+                    <h1><i id="staff-header-icon" class="fas fa-clipboard-check"></i> <span id="staff-content-title">บันทึกการตรวจเช็คสภาพรถยนต์</span></h1>
+                    <p id="staff-content-desc" class="content-desc">กรอกข้อมูลรถยนต์และตรวจสอบรายการสภาพรถตามมาตรฐาน</p>
+                </div>
+
+                <div id="staff-check-content" class="content-section">
+                    <form id="staff-check-form">
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-car"></i> 1. ข้อมูลรถยนต์</div>
+                            <div class="form-grid-3">
+                                <div class="form-group">
+                                    <label class="form-label">หมายเลขทะเบียนรถยนต์ <span class="required">*</span></label>
+                                    <input type="text" id="check-license" class="form-input" placeholder="เช่น กข 1234" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">รหัสรถยนต์ <span class="required">*</span></label>
+                                    <input type="text" id="check-carid" class="form-input" placeholder="เช่น CAR-001" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">สีรถยนต์ <span class="required">*</span></label>
+                                    <input type="text" id="check-color" class="form-input" placeholder="เช่น ขาว, ดำ" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-list-check"></i> 2. รายการตรวจเช็คสภาพ</div>
+                            <div id="check-items-list"></div>
+                            <div class="form-actions">
+                                <button type="reset" class="btn btn-warning mr-2"><i class="fas fa-eraser"></i> ล้างข้อมูล</button>
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> บันทึกผล</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="staff-repair-content" class="content-section" style="display: none;">
+                    <form id="staff-repair-form">
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-tools"></i> แบบฟอร์มแจ้งซ่อมบำรุง</div>
+                            <div class="repair-form-layout">
+                                <div class="repair-image-side">
+                                    <div class="image-box" onclick="alert('ฟังก์ชันอัปโหลดภาพจำลองการทำงานเรียบร้อย')">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>อัปโหลดรูปภาพ</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">ความเร่งด่วน</label>
+                                        <select id="repair-priority" class="form-input">
+                                            <option value="low">ปกติ (1-3 วัน)</option>
+                                            <option value="medium">ด่วน (24 ชม.)</option>
+                                            <option value="high">ด่วนที่สุด (รถวิ่งไม่ได้)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="repair-info-side">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">ทะเบียนรถยนต์ <span class="required">*</span></label>
+                                            <input type="text" id="repair-license" class="form-input" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">ชื่อผู้แจ้งซ่อม</label>
+                                            <input type="text" id="repair-name" class="form-input" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">แผนก/ฝ่าย <span class="required">*</span></label>
+                                        <input type="text" id="repair-dept" class="form-input" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">รายละเอียดอาการเสีย <span class="required">*</span></label>
+                                        <textarea id="repair-detail" class="form-input" rows="4" required></textarea>
+                                    </div>
+                                    <div class="text-right">
+                                        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> ส่งคำขอแจ้งซ่อม</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="staff-status-content" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header"><div><i class="fas fa-list-ul"></i> ประวัติรายการของคุณ</div></div>
+                        <div class="toolbar">
+                            <div class="search-box">
+                                <i class="fas fa-search text-muted"></i>
+                                <input type="text" id="search-staff-status" onkeyup="filterTable('search-staff-status', 'staff-status-table')" placeholder="ค้นหาทะเบียนรถ...">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table id="staff-status-table">
+                                <thead>
+                                    <tr>
+                                        <th>วันที่</th>
+                                        <th>ทะเบียนรถ</th>
+                                        <th>ประเภท</th>
+                                        <th>รายละเอียด</th>
+                                        <th>สถานะ</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="admin-view" class="view">
+        <div class="main-layout">
+            <nav class="sidebar">
+                <div class="sidebar-brand"><i class="fas fa-car-crash"></i> CARMA (Admin)</div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-menu-item"><a onclick="showAdminView('admin-dashboard')" id="admin-dashboard-menu" class="sidebar-menu-link active"><i class="fas fa-tachometer-alt"></i> แดชบอร์ด</a></li>
+                    <li class="sidebar-menu-item"><a onclick="showAdminView('admin-users')" id="admin-users-menu" class="sidebar-menu-link"><i class="fas fa-users-cog"></i> จัดการผู้ใช้</a></li>
+                    <li class="sidebar-menu-item"><a onclick="showAdminView('admin-cars')" id="admin-cars-menu" class="sidebar-menu-link"><i class="fas fa-car"></i> จัดการรถยนต์</a></li>
+                    <li class="sidebar-menu-item"><a onclick="showAdminView('admin-repairs')" id="admin-repairs-menu" class="sidebar-menu-link"><i class="fas fa-clipboard-check"></i> อนุมัติซ่อม</a></li>
+                    <li class="sidebar-menu-item"><a onclick="showAdminView('admin-reports')" id="admin-reports-menu" class="sidebar-menu-link"><i class="fas fa-file-invoice"></i> รายงาน</a></li>
+                    <li class="sidebar-menu-item mobile-logout"><a onclick="showLogoutModal()" class="sidebar-menu-link logout-link"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</a></li>
+                </ul>
+                <div class="user-panel">
+                    <div class="user-name">ผู้ดูแลระบบ</div>
+                    <div class="user-role"><i class="fas fa-user-shield"></i> Admin Panel</div>
+                </div>
+            </nav>
+
+            <main class="main-content">
+                <div class="content-header">
+                    <h1><i id="admin-header-icon" class="fas fa-tachometer-alt"></i> <span id="admin-content-title">หน้าหลัก - แดชบอร์ดภาพรวม</span></h1>
+                    <p id="admin-content-desc" class="content-desc">ภาพรวมสถิติและสถานะการทำงานของระบบ</p>
+                </div>
+
+                <div id="admin-dashboard-content" class="content-section">
+                    <div class="dashboard-grid">
+                        <div class="widget-card">
+                            <div class="widget-icon"><i class="fas fa-users"></i></div>
+                            <div class="widget-info">
+                                <div class="widget-title">ผู้ใช้งานในระบบ</div>
+                                <div class="widget-value" id="dashboard-users">0</div>
+                            </div>
+                        </div>
+                        <div class="widget-card border-success">
+                            <div class="widget-icon icon-success"><i class="fas fa-car"></i></div>
+                            <div class="widget-info">
+                                <div class="widget-title">รถยนต์ทั้งหมด</div>
+                                <div class="widget-value" id="dashboard-cars">0</div>
+                            </div>
+                        </div>
+                        <div class="widget-card border-warning">
+                            <div class="widget-icon icon-warning"><i class="fas fa-tools"></i></div>
+                            <div class="widget-info">
+                                <div class="widget-title">รออนุมัติแจ้งซ่อม</div>
+                                <div class="widget-value" id="dashboard-repairs-pending">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="admin-users-content" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div><i class="fas fa-users-cog"></i> ฐานข้อมูลผู้ใช้</div>
+                            <button onclick="addUser()" class="btn btn-primary"><i class="fas fa-user-plus"></i> เพิ่มผู้ใช้ใหม่</button>
+                        </div>
+                        <div class="toolbar">
+                            <div class="search-box">
+                                <i class="fas fa-search text-muted"></i>
+                                <input type="text" id="search-users" onkeyup="filterTable('search-users', 'admin-users-table')" placeholder="ค้นหาชื่อผู้ใช้...">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table id="admin-users-table">
+                                <thead>
+                                    <tr>
+                                        <th>รหัสพนักงาน</th>
+                                        <th>ชื่อ-นามสกุล</th>
+                                        <th>Username</th>
+                                        <th>สิทธิ์</th>
+                                        <th>จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="admin-cars-content" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div><i class="fas fa-car"></i> ทะเบียนรถยนต์ทั้งหมด</div>
+                            <button onclick="addCar()" class="btn btn-primary"><i class="fas fa-car-plus"></i> เพิ่มรถใหม่</button>
+                        </div>
+                        <div class="toolbar">
+                            <div class="search-box">
+                                <i class="fas fa-search text-muted"></i>
+                                <input type="text" id="search-cars" onkeyup="filterTable('search-cars', 'admin-cars-table')" placeholder="ค้นหาทะเบียนรถ...">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table id="admin-cars-table">
+                                <thead>
+                                    <tr>
+                                        <th>รหัสรถยนต์</th>
+                                        <th>ป้ายทะเบียน</th>
+                                        <th>สีรถยนต์</th>
+                                        <th>จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="admin-repairs-content" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header"><div><i class="fas fa-clipboard-check"></i> รายการคำขอแจ้งซ่อม (รอพิจารณา)</div></div>
+                        <div class="table-container">
+                            <table id="admin-repairs-table">
+                                <thead>
+                                    <tr>
+                                        <th>วันที่</th>
+                                        <th>ทะเบียนรถ</th>
+                                        <th>ผู้แจ้ง (แผนก)</th>
+                                        <th>รายละเอียด</th>
+                                        <th>จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="admin-reports-content" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header"><div><i class="fas fa-file-invoice"></i> สรุปรายงานการตรวจเช็คและซ่อมบำรุง</div></div>
+                        
+                        <div class="toolbar export-toolbar">
+                            <div class="search-box mb-0">
+                                <i class="fas fa-search text-muted"></i>
+                                <input type="text" id="search-reports" onkeyup="filterTable('search-reports', 'admin-reports-table')" placeholder="ค้นหาในรายงาน...">
+                            </div>
+                            <div class="export-actions">
+                                <button onclick="alert('เริ่มดาวน์โหลดไฟล์ Excel...')" class="btn btn-success"><i class="fas fa-file-excel"></i> Export Excel</button>
+                                <button onclick="alert('สร้างไฟล์ PDF สำเร็จ...')" class="btn btn-danger"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <table id="admin-reports-table">
+                                <thead>
+                                    <tr>
+                                        <th>วันที่</th>
+                                        <th>ทะเบียนรถ</th>
+                                        <th>รหัสรถยนต์</th>
+                                        <th>ผู้ตรวจสอบ</th>
+                                        <th>ผลประเมิน</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="success-modal" class="modal-overlay">
+        <div class="modal-box">
+            <i class="fas fa-check-circle modal-icon text-success"></i>
+            <h3 class="modal-title">สำเร็จ!</h3>
+            <p id="success-msg" class="modal-desc">ดำเนินการเรียบร้อยแล้ว</p>
+            <button onclick="closeModals()" class="btn btn-success btn-full">ตกลง</button>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="modal-overlay">
+        <div class="modal-box">
+            <i class="fas fa-trash-alt modal-icon text-danger"></i>
+            <h3 class="modal-title">ยืนยันการลบ?</h3>
+            <p class="modal-desc">ข้อมูลที่ถูกลบจะไม่สามารถกู้คืนได้</p>
+            <div class="modal-buttons">
+                <button onclick="executeDelete()" class="btn btn-danger flex-1">ลบเลย</button>
+                <button onclick="closeModals()" class="btn btn-warning flex-1">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="logout-modal" class="modal-overlay">
+        <div class="modal-box">
+            <i class="fas fa-sign-out-alt modal-icon text-warning"></i>
+            <h3 class="modal-title">ออกจากระบบ?</h3>
+            <div class="modal-buttons">
+                <button onclick="logout()" class="btn btn-danger flex-1">ออกจากระบบ</button>
+                <button onclick="closeModals()" class="btn btn-light flex-1">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
