@@ -41,7 +41,17 @@
         }
         .login-box h2 {
             color: #3498db;
+            margin-bottom: 10px;
+        }
+        .login-hints {
+            background: #f8f9fa;
+            border: 1px dashed #ccc;
+            padding: 10px;
             margin-bottom: 20px;
+            font-size: 13px;
+            text-align: left;
+            border-radius: 4px;
+            color: #555;
         }
         .form-group {
             margin-bottom: 15px;
@@ -60,7 +70,7 @@
             border-radius: 4px;
             background: #e9ecef;
         }
-        .btn-blue { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .btn-blue { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; width: 100%;}
         .btn-blue:hover { background: #2980b9; }
 
         /* ================= USER NAV ================= */
@@ -122,7 +132,7 @@
             color: #333;
         }
         .admin-sidebar button.active {
-            background: #a2e0a2; /* สีเขียวตามหน้าจอ */
+            background: #a2e0a2;
         }
         .admin-content {
             flex: 1;
@@ -159,8 +169,8 @@
         th { background: #e0e0e0; font-weight: bold; }
         .action-edit { color: #555; cursor: pointer; text-decoration: none; margin-right: 15px; }
         .action-delete { color: #d32f2f; cursor: pointer; text-decoration: none; }
-        .status-pass { color: green; }
-        .status-fail { color: red; }
+        .status-pass { color: green; font-weight: bold;}
+        .status-fail { color: red; font-weight: bold;}
 
         /* ================= FORM LAYOUTS ================= */
         .check-layout { display: flex; gap: 40px; }
@@ -233,15 +243,21 @@
     <div id="login-view" class="view active">
         <div class="login-box">
             <h2>เข้าสู่ระบบ</h2>
-            <p style="color: #666; font-size: 12px; margin-bottom: 15px;">(พิมพ์ชื่อผู้ใช้ 'admin' เพื่อเข้าระบบผู้ดูแล / พิมพ์ชื่ออื่นเพื่อเข้าระบบพนักงาน)</p>
+            
+            <div class="login-hints">
+                <strong>ข้อมูลสำหรับทดสอบเข้าระบบ:</strong><br>
+                👑 <b>แอดมิน:</b> user: <code>admin</code> | pass: <code>admin123</code><br>
+                👤 <b>พนักงาน:</b> user: <code>user</code> | pass: <code>user123</code>
+            </div>
+
             <form id="login-form">
                 <div class="form-group">
                     <label>ชื่อผู้ใช้</label>
-                    <input type="text" id="username" placeholder="********" required>
+                    <input type="text" id="username" placeholder="กรอกชื่อผู้ใช้" required>
                 </div>
                 <div class="form-group">
                     <label>รหัสผ่าน</label>
-                    <input type="password" id="password" placeholder="********" required>
+                    <input type="password" id="password" placeholder="กรอกรหัสผ่าน" required>
                 </div>
                 <button type="submit" class="btn-blue">เข้าสู่ระบบ</button>
             </form>
@@ -322,7 +338,7 @@
                                 </div>
                             </div>
                             <div style="text-align: right; margin-top: 20px;">
-                                <button type="submit" class="btn-blue">ส่ง</button>
+                                <button type="submit" class="btn-blue" style="width: auto;">ส่ง</button>
                             </div>
                         </div>
                     </div>
@@ -371,7 +387,7 @@
                                 <input type="text" id="r_detail" required style="background:#fff;">
                             </div>
                             <div style="text-align: right;">
-                                <button type="submit" class="btn-blue">ส่ง</button>
+                                <button type="submit" class="btn-blue" style="width: auto;">ส่ง</button>
                             </div>
                         </div>
                     </div>
@@ -480,19 +496,27 @@
         }
         initData();
 
-        // --- Login Routing ---
+        // --- ล็อครหัสผ่านตรงนี้ (Login Validation) ---
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            let user = document.getElementById('username').value.trim().toLowerCase();
+            let user = document.getElementById('username').value.trim();
+            let pass = document.getElementById('password').value.trim();
             
-            document.getElementById('login-view').classList.remove('active');
-            
-            if(user === 'admin') {
+            // เช็คว่าเป็นแอดมินหรือไม่
+            if(user === 'admin' && pass === 'admin123') {
+                document.getElementById('login-view').classList.remove('active');
                 document.getElementById('admin-view').classList.add('active');
-                showAdminSection('emp'); // Default page for admin
-            } else {
+                showAdminSection('emp');
+            } 
+            // เช็คว่าเป็นพนักงานหรือไม่
+            else if(user === 'user' && pass === 'user123') {
+                document.getElementById('login-view').classList.remove('active');
                 document.getElementById('user-view').classList.add('active');
-                showUserSection('home-sec'); // Default page for user
+                showUserSection('home-sec');
+            } 
+            // ถ้ารหัสผิด
+            else {
+                alert('❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง! กรุณาลองใหม่อีกครั้ง');
             }
         });
 
