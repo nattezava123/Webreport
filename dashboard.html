@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Dashboard Overview - Factory IT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="style.css"></head><body>
+    <aside id="sidebar">
+        <div class="h-20 flex items-center px-8 border-b border-slate-800 text-white font-bold text-lg"><i class="fas fa-industry text-blue-500 mr-3"></i> Factory IT</div>
+        <div class="p-6 mx-4 my-2 bg-slate-800/30 rounded-2xl border border-slate-700/50">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-white"><i class="fas fa-user"></i></div>
+                <div class="overflow-hidden">
+                    <div id="user-email" class="text-white font-bold truncate text-xs">Loading...</div>
+                    <div id="user-role" class="text-[9px] text-blue-400 font-black uppercase tracking-widest mt-0.5">User</div>
+                </div>
+            </div>
+        </div>
+        <nav class="flex-1 mt-2 space-y-1 overflow-y-auto">
+            <p class="px-8 text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3 mt-4">Workspace</p>
+            <a href="dashboard.html" class="menu-link active"><i class="fas fa-border-all w-8 text-lg"></i> Dashboard</a>
+            <a href="my-tickets.html" class="menu-link "><i class="fas fa-layer-group w-8 text-lg"></i> My Tickets</a>
+            <a href="create-ticket.html" class="menu-link "><i class="fas fa-plus-circle w-8 text-lg"></i> Create Ticket</a>
+            
+            <p class="px-8 text-[10px] font-black uppercase tracking-widest text-slate-500 mt-6 mb-3">AI Engine</p>
+            <button onclick="openAIModal()" class="w-full text-left menu-link text-indigo-400"><i class="fas fa-robot w-8 text-lg"></i> Serviceman AI</button>
+            
+            <div id="admin-menu" class="hidden">
+                <p class="px-8 text-[10px] font-black uppercase tracking-widest text-slate-500 mt-6 mb-3">Admin</p>
+                <a href="admin.html" class="menu-link  text-rose-400"><i class="fas fa-shield-halved w-8 text-lg"></i> Command Center</a>
+            </div>
+        </nav>
+        <div class="p-6"><button id="logout-btn" class="w-full flex justify-center gap-3 text-rose-400 font-bold py-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-sm border border-rose-500/20"><i class="fas fa-power-off"></i> Log Out</button></div>
+    </aside>
+    <main><header class="mb-8"><h1 class="text-3xl font-black text-slate-800">Dashboard Overview</h1></header><div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200"><p class="text-slate-400 text-xs font-bold uppercase mb-2">Total Tickets</p><p class="text-4xl font-black text-slate-800" id="stat-total">0</p></div>
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200"><p class="text-slate-400 text-xs font-bold uppercase mb-2">In Progress</p><p class="text-4xl font-black text-amber-500" id="stat-progress">0</p></div>
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200"><p class="text-slate-400 text-xs font-bold uppercase mb-2">Resolved</p><p class="text-4xl font-black text-emerald-500" id="stat-resolved">0</p></div>
+</div>
+<script type="module">
+    import { db } from './js/firebase-config.js';
+    import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    onSnapshot(query(collection(db, "incidents"), orderBy("createdAt", "desc")), (snap) => {
+        let n = 0, p = 0, r = 0, t = 0;
+        snap.forEach((doc) => { t++; const data = doc.data(); if(data.status === 'New') n++; if(data.status === 'In Progress') p++; if(data.status === 'Resolved') r++; });
+        document.getElementById('stat-total').innerText = t; document.getElementById('stat-progress').innerText = p; document.getElementById('stat-resolved').innerText = r;
+    });
+</script></main>
+    <div id="ai-modal" class="fixed inset-0 z-[300] hidden items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 transition-opacity duration-300 opacity-0" style="transition: opacity 0.3s ease;">
+        <div class="bg-white w-[450px] h-[600px] rounded-[2rem] flex flex-col overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 relative" id="ai-box">
+            <div class="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-indigo-600 to-purple-600 -z-10"></div>
+            <div class="px-6 py-5 flex justify-between items-center text-white">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md shadow-inner border border-white/30"><i class="fas fa-robot text-xl"></i></div>
+                    <div><h3 class="font-black tracking-tight leading-tight">Serviceman AI</h3><p class="text-[10px] font-medium text-indigo-100 opacity-90">Factory IT Assistant</p></div>
+                </div>
+                <button onclick="closeAIModal()" class="w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-5 bg-slate-50/50 rounded-t-[2rem]" id="ai-chat-box">
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0 shadow-md"><i class="fas fa-robot text-[10px]"></i></div>
+                    <div class="flex flex-col gap-2 max-w-[85%]">
+                        <div class="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-sm shadow-sm text-sm text-slate-700 leading-relaxed">สวัสดีครับ! ผมคือ <strong>Serviceman</strong> 🤖 วันนี้มีอะไรให้ผมช่วยไหมครับ?</div>
+                        <div class="flex flex-wrap gap-2 mt-1">
+                            <button onclick="sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-full text-xs font-bold">💻 คอมพิวเตอร์</button>
+                            <button onclick="sendQuickReply('ปริ้นไม่ออก')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-full text-xs font-bold">🖨️ เครื่องปริ้น</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-white border-t border-slate-100">
+                <div class="relative">
+                    <input type="text" id="ai-input" placeholder="พิมพ์ข้อความที่นี่..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-12 py-3.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/20" onkeypress="if(event.key === 'Enter') sendAIMessage()">
+                    <button onclick="sendAIMessage()" class="absolute right-2 top-2 bottom-2 aspect-square bg-indigo-600 text-white rounded-lg flex items-center justify-center shadow-md"><i class="fas fa-paper-plane text-xs"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/bot.js"></script>
+    <script type="module">
+        import { auth } from './js/firebase-config.js';
+        import { signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => window.location.href = 'login.html');
+    </script>
+    <script type="module" src="js/auth-check.js"></script>
+    </body></html>
