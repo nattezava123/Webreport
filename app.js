@@ -149,6 +149,7 @@ const dict = {
         form_line: "Line",
         form_item: "Broken Part / Item",
         modal_loc: "Location & Item",
+        btn_export: "Export CSV",
         dash_welcome: "Welcome back,",
         dash_sub: "Here's what's happening with your IT support tickets today.",
         dash_recent: "Recent Activity",
@@ -214,6 +215,7 @@ const dict = {
         form_line: "ไลน์การผลิต",
         form_item: "อะไร/ชิ้นไหนเสีย",
         modal_loc: "ข้อมูลสถานที่และอุปกรณ์",
+        btn_export: "ดาวน์โหลด CSV",
         dash_welcome: "ยินดีต้อนรับ,",
         dash_sub: "สรุปภาพรวมการแจ้งซ่อมไอทีของคุณในวันนี้",
         dash_recent: "รายการอัปเดตล่าสุด",
@@ -700,19 +702,7 @@ window.editTicket = (id) => {
                 </div>
                 <div class="col-span-2">
                     <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Broken Item</label>
-                    <select id="edit-item" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none">
-                        <option value="${t.brokenItem || ''}" hidden selected>${t.brokenItem || 'เลือกอุปกรณ์ที่มีปัญหา...'}</option>
-                        <option value="PC / คอมพิวเตอร์">💻 PC / คอมพิวเตอร์</option>
-                        <option value="Notebook / โน้ตบุ๊ก">💻 Notebook / โน้ตบุ๊ก</option>
-                        <option value="Monitor / จอภาพ">🖥️ Monitor / จอภาพ</option>
-                        <option value="Mouse & Keyboard">🖱️ Mouse & Keyboard</option>
-                        <option value="Printer / เครื่องพิมพ์">🖨️ Printer / เครื่องพิมพ์ (กระดาษ)</option>
-                        <option value="Barcode Printer / เครื่องพิมพ์สติ๊กเกอร์">🏷️ Barcode Printer (สติ๊กเกอร์/Zebra)</option>
-                        <option value="Scanner / เครื่องยิงบาร์โค้ด">📠 Scanner / เครื่องยิงบาร์โค้ด</option>
-                        <option value="Network / อินเทอร์เน็ต, Wi-Fi">📡 Network / อินเทอร์เน็ต, Wi-Fi</option>
-                        <option value="Software / โปรแกรมระบบ (ERP, etc.)">⚙️ Software / โปรแกรมระบบ (ERP, SAP)</option>
-                        <option value="Other / อื่นๆ (ระบุในรายละเอียด)">❓ Other / อื่นๆ (ระบุในรายละเอียด)</option>
-                    </select>
+                    <input id="edit-item" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none" value="${t.brokenItem || ''}">
                 </div>
             </div>
             <div>
@@ -739,6 +729,20 @@ window.editTicket = (id) => {
             Toast.fire({ icon: 'success', title: currentLang === 'th' ? 'อัปเดตข้อมูลสำเร็จ' : 'Updated' });
         }
     });
+};
+
+window.exportCSV = () => {
+    let csv = "ID,Subject,Status,Priority,Category,Building,Floor,Department,Line,BrokenItem,Caller,AssignedTo,Date\n";
+    for(let id in window.globalTickets) {
+        let t = window.globalTickets[id];
+        let dateStr = t.createdAt ? t.createdAt.toDate().toISOString() : "";
+        csv += `${id},"${t.subject}",${t.status},"${t.priority}",${t.category},"${t.building||'-'}","${t.floor||'-'}","${t.department||'-'}","${t.line||'-'}","${t.brokenItem||'-'}",${t.callerEmail},${t.assignedTo||''},${dateStr}\n`;
+    }
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `FactoryIT_Tickets_${new Date().toISOString().slice(0,10)}.csv`;
+    link.click();
 };
 
 window.filterTickets = (tableId, inputId) => {
