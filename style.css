@@ -5,11 +5,9 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; 
 .menu-link.active { background: linear-gradient(135deg, #3b82f6, #2563eb) !important; color: white !important; font-weight: 600; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
 .bg-animated-gradient { background: linear-gradient(-45deg, #0f172a, #1e3a8a, #312e81, #0f172a); background-size: 400% 400%; animation: gradientMove 15s ease infinite; }
 @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-/* Sidebar styling */
 #sidebar { width: 18rem; background: #020617; height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column; border-right: 1px solid #1e293b; z-index: 100;}
 main { margin-left: 18rem; padding: 2.5rem; min-height: 100vh; }
 @media (max-width: 768px) { #sidebar { display: none; } main { margin-left: 0; } }
-
 .chat-bubble { padding: 1rem; border-radius: 1rem; margin-bottom: 1rem; max-width: 85%; font-size: 14px; line-height: 1.5; }
 .chat-me { background: #2563eb; color: white; margin-left: auto; border-bottom-right-radius: 0.2rem; }
 .chat-ai { background: #f1f5f9; color: #1e293b; border-bottom-left-radius: 0.2rem; border: 1px solid #e2e8f0; }

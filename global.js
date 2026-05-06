@@ -5,7 +5,16 @@ import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, doc } from "
 window.globalTickets = {};
 window.currentTicketId = null;
 
-// Auth State Check globally
+// Convert Image to Base64
+window.getBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+};
+
 onAuthStateChanged(auth, user => {
     const isLogin = window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/');
     if(!user && !isLogin) window.location.href = 'index.html';
@@ -15,10 +24,6 @@ onAuthStateChanged(auth, user => {
         if(document.getElementById('user-email')) document.getElementById('user-email').innerText = user.email;
         if(user.email === 'nattezava1996@gmail.com' || user.email.includes('admin')) {
             if(document.getElementById('admin-menu')) document.getElementById('admin-menu').classList.remove('hidden');
-            if(document.getElementById('user-role')) {
-                document.getElementById('user-role').innerText = 'IT Admin';
-                document.getElementById('user-role').classList.replace('text-blue-400', 'text-rose-400');
-            }
         }
     }
 });
@@ -27,7 +32,6 @@ if(document.getElementById('logout-btn')) {
     document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => window.location.href = 'index.html');
 }
 
-// Global Ticket Loading for My Tickets and Admin (and Dash stats)
 export function loadTickets(isAdminView, tableId) {
     onSnapshot(query(collection(db, "incidents"), orderBy("createdAt", "desc")), (snap) => {
         let html = "";
@@ -67,7 +71,6 @@ export function loadTickets(isAdminView, tableId) {
         
         if(document.getElementById(tableId)) document.getElementById(tableId).innerHTML = html || `<tr><td colspan="6" class="p-8 text-center text-slate-400">No tickets found.</td></tr>`;
         
-        // Update dashboard stats if they exist
         if(document.getElementById('stat-total')) document.getElementById('stat-total').innerText = snap.size;
         if(document.getElementById('stat-new')) document.getElementById('stat-new').innerText = newCount;
         if(document.getElementById('stat-progress')) document.getElementById('stat-progress').innerText = progCount;
@@ -77,7 +80,6 @@ export function loadTickets(isAdminView, tableId) {
 
 window.updateTkt = (id, status) => { updateDoc(doc(db, "incidents", id), { status: status }); };
 
-// Modal System (Details & Chat)
 let chatUnsub = null;
 window.openModal = (id) => {
     window.currentTicketId = id;
@@ -86,6 +88,16 @@ window.openModal = (id) => {
     document.getElementById('modal-subject').innerText = t.subject;
     document.getElementById('modal-item').innerText = t.brokenItem || '-';
     document.getElementById('modal-desc').innerText = t.description;
+    document.getElementById('modal-location').innerText = `Building: ${t.building || '-'} | Floor: ${t.floor || '-'} | Dept: ${t.department || '-'} | Line: ${t.line || '-'}`;
+    document.getElementById('modal-priority-badge').innerText = t.priority || 'Normal';
+    
+    // Check for Image
+    if(t.imageUrl) {
+        document.getElementById('modal-image-container').classList.remove('hidden');
+        document.getElementById('modal-image').src = t.imageUrl;
+    } else {
+        document.getElementById('modal-image-container').classList.add('hidden');
+    }
     
     document.getElementById('ticket-modal').classList.remove('hidden');
     setTimeout(() => { document.getElementById('modal-box').classList.remove('scale-95'); document.getElementById('modal-box').classList.add('scale-100'); }, 10);
@@ -101,8 +113,9 @@ window.openModal = (id) => {
                 const isMe = d.senderEmail === auth.currentUser.email;
                 html += `<div class="flex flex-col ${isMe?'items-end':'items-start'} mb-4">
                     <div class="px-4 py-2 rounded-xl text-sm ${isMe?'bg-blue-600 text-white rounded-br-none':'bg-white border border-slate-200 text-slate-700 rounded-bl-none shadow-sm'}">
-                        <div class="text-[10px] opacity-70 mb-1">${isMe?'You':d.senderEmail.split('@')[0]}</div>${d.text}
-                    </div></div>`;
+                        <div class="text-[10px] opacity-70 mb-1">${isMe?'You':d.senderEmail.split('@')[0]}</div>`;
+                if(d.imageUrl) html += `<img src="${d.imageUrl}" class="w-48 rounded-lg mb-2">`;
+                html += `${d.text}</div></div>`;
             }
         });
         document.getElementById('chat-messages').innerHTML = html;
@@ -120,9 +133,23 @@ if(document.getElementById('comment-form')) {
     document.getElementById('comment-form').onsubmit = async (e) => {
         e.preventDefault();
         const input = document.getElementById('comment-text');
+        const imgInput = document.getElementById('comment-image');
         const text = input.value.trim();
-        if(!text) return;
+        if(!text && (!imgInput || !imgInput.files[0])) return;
+        
+        let cImgUrl = null;
+        if(imgInput && imgInput.files[0]) {
+            cImgUrl = await getBase64(imgInput.files[0]);
+        }
+        
         input.value = '';
-        await addDoc(collection(db, "incidents", window.currentTicketId, "comments"), { senderEmail: auth.currentUser.email, text: text, createdAt: new Date() });
+        if(imgInput) imgInput.value = '';
+        
+        await addDoc(collection(db, "incidents", window.currentTicketId, "comments"), { 
+            senderEmail: auth.currentUser.email, 
+            text: text, 
+            imageUrl: cImgUrl,
+            createdAt: new Date() 
+        });
     };
 }

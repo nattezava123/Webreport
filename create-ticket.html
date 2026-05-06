@@ -30,22 +30,31 @@
         </nav>
         <div class="p-6"><button id="logout-btn" class="w-full flex justify-center gap-3 text-rose-400 font-bold py-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-sm border border-rose-500/20 cursor-pointer"><i class="fas fa-power-off"></i> Log Out</button></div>
     </aside>
-    <main><header class="mb-8"><h1 class="text-3xl font-black text-slate-800">Create Support Ticket</h1></header><div class="bg-white p-10 rounded-[2rem] border border-slate-200 shadow-sm max-w-3xl">
+    <main><header class="mb-8"><h1 class="text-3xl font-black text-slate-800">Create Support Ticket</h1></header><div class="bg-white p-10 rounded-[2rem] border border-slate-200 shadow-sm max-w-4xl">
     <form id="create-form" class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Category</label>
             <select id="tk-cat" class="w-full p-4 rounded-xl border border-slate-200 bg-slate-50 outline-none"><option value="Hardware">Hardware / PC Issue</option><option value="Software">Software / Application</option><option value="Network">Network / Internet</option></select></div>
-            <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Broken Part / Item</label>
-            <select id="tk-item" class="w-full p-4 rounded-xl border border-slate-200 bg-slate-50 outline-none" required>
-                <option value="" disabled selected>เลือกอุปกรณ์ที่มีปัญหา...</option>
-                <option value="PC / คอมพิวเตอร์">💻 PC / คอมพิวเตอร์</option>
-                <option value="Printer / เครื่องพิมพ์">🖨️ Printer / เครื่องพิมพ์</option>
-                <option value="Network / อินเทอร์เน็ต">📡 Network / อินเทอร์เน็ต</option>
-                <option value="Other / อื่นๆ">❓ Other / อื่นๆ</option>
-            </select></div>
+            <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Priority</label>
+            <select id="tk-pri" class="w-full p-4 rounded-xl border border-slate-200 bg-slate-50 outline-none"><option value="Low">Low</option><option value="Moderate" selected>Moderate</option><option value="High">High</option><option value="Critical">Critical</option></select></div>
         </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Building</label><input type="text" id="tk-bldg" class="w-full p-2 border rounded bg-slate-50" placeholder="e.g. Main"></div>
+            <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Floor</label><input type="text" id="tk-floor" class="w-full p-2 border rounded bg-slate-50" placeholder="e.g. 1"></div>
+            <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Department</label><input type="text" id="tk-dept" class="w-full p-2 border rounded bg-slate-50" placeholder="e.g. IT"></div>
+            <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Line</label><input type="text" id="tk-line" class="w-full p-2 border rounded bg-slate-50" placeholder="e.g. Line 1"></div>
+        </div>
+        <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Broken Part / Item</label>
+        <select id="tk-item" class="w-full p-4 rounded-xl border border-slate-200 bg-slate-50 outline-none" required>
+            <option value="" disabled selected>เลือกอุปกรณ์ที่มีปัญหา...</option>
+            <option value="PC / คอมพิวเตอร์">💻 PC / คอมพิวเตอร์</option>
+            <option value="Printer / เครื่องพิมพ์">🖨️ Printer / เครื่องพิมพ์</option>
+            <option value="Network / อินเทอร์เน็ต">📡 Network / อินเทอร์เน็ต</option>
+            <option value="Other / อื่นๆ">❓ Other / อื่นๆ</option>
+        </select></div>
         <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Subject</label><input type="text" id="tk-sub" class="w-full p-4 rounded-xl border border-slate-200 outline-none" required></div>
         <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Description</label><textarea id="tk-desc" rows="4" class="w-full p-4 rounded-xl border border-slate-200 outline-none resize-none" required></textarea></div>
+        <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Attach Image</label><input type="file" id="tk-img" accept="image/*" class="w-full"></div>
         <button type="submit" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700">Submit Request</button>
     </form>
 </div>
@@ -56,7 +65,25 @@
         e.preventDefault();
         const btn = e.target.querySelector('button'); btn.disabled = true; btn.innerText = 'Submitting...';
         try {
-            const docRef = await addDoc(collection(db, "incidents"), { callerEmail: auth.currentUser.email, category: document.getElementById('tk-cat').value, brokenItem: document.getElementById('tk-item').value, subject: document.getElementById('tk-sub').value, description: document.getElementById('tk-desc').value, status: 'New', createdAt: new Date() });
+            let imgUrl = null;
+            const imgFile = document.getElementById('tk-img').files[0];
+            if(imgFile) imgUrl = await window.getBase64(imgFile);
+            
+            const docRef = await addDoc(collection(db, "incidents"), { 
+                callerEmail: auth.currentUser.email, 
+                category: document.getElementById('tk-cat').value, 
+                priority: document.getElementById('tk-pri').value, 
+                building: document.getElementById('tk-bldg').value, 
+                floor: document.getElementById('tk-floor').value, 
+                department: document.getElementById('tk-dept').value, 
+                line: document.getElementById('tk-line').value, 
+                brokenItem: document.getElementById('tk-item').value, 
+                subject: document.getElementById('tk-sub').value, 
+                description: document.getElementById('tk-desc').value, 
+                imageUrl: imgUrl,
+                status: 'New', 
+                createdAt: new Date() 
+            });
             await addDoc(collection(db, "incidents", docRef.id, "comments"), { senderEmail: "system", text: "Ticket created successfully.", createdAt: new Date() });
             Swal.fire('Success', 'Ticket Created!', 'success').then(() => window.location.href = 'my-tickets.html');
         } catch (err) { Swal.fire('Error', err.message, 'error'); btn.disabled = false; btn.innerText = 'Submit Request'; }
@@ -76,25 +103,34 @@
     <div id="ticket-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-[200] flex items-center justify-center p-6">
         <div class="bg-white w-full max-w-5xl h-[80vh] rounded-[2rem] flex flex-col overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300" id="modal-box">
             <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
-                <h3 class="font-black text-xl text-slate-800" id="modal-id">ID</h3>
+                <div class="flex items-center gap-3">
+                    <span id="modal-priority-badge" class="px-3 py-1 bg-slate-100 rounded-md text-[10px] font-black uppercase"></span>
+                    <h3 class="font-black text-xl text-slate-800" id="modal-id">ID</h3>
+                </div>
                 <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600"><i class="fas fa-times"></i></button>
             </div>
             <div class="flex-1 flex overflow-hidden bg-slate-50">
                 <div class="w-[40%] p-8 bg-white overflow-y-auto border-r border-slate-100">
                     <h4 class="text-2xl font-black text-slate-800 mb-4" id="modal-subject">Subject</h4>
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
-                        <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Item</p>
+                        <p class="text-[10px] font-black uppercase text-slate-400 mb-1" id="modal-location">Location</p>
                         <p class="text-sm font-bold text-rose-600" id="modal-item">Item</p>
                     </div>
-                    <div>
+                    <div class="mb-4">
                         <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Description</p>
                         <p class="text-sm text-slate-600 whitespace-pre-wrap" id="modal-desc">Desc</p>
+                    </div>
+                    <div id="modal-image-container" class="hidden">
+                        <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Attached Image</p>
+                        <img id="modal-image" src="" alt="Ticket Image" class="w-full rounded-xl border border-slate-200">
                     </div>
                 </div>
                 <div class="flex-1 flex flex-col bg-slate-50">
                     <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
                     <div class="p-4 bg-white border-t border-slate-200">
                         <form id="comment-form" class="flex gap-2">
+                            <input type="file" id="comment-image" accept="image/*" class="hidden">
+                            <label for="comment-image" class="w-12 h-12 flex items-center justify-center bg-slate-100 text-slate-500 rounded-xl cursor-pointer hover:bg-slate-200"><i class="fas fa-image"></i></label>
                             <input type="text" id="comment-text" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none" placeholder="Type a reply...">
                             <button type="submit" class="bg-blue-600 text-white w-12 rounded-xl flex items-center justify-center"><i class="fas fa-paper-plane"></i></button>
                         </form>

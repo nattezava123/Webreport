@@ -30,8 +30,12 @@
         </nav>
         <div class="p-6"><button id="logout-btn" class="w-full flex justify-center gap-3 text-rose-400 font-bold py-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-sm border border-rose-500/20 cursor-pointer"><i class="fas fa-power-off"></i> Log Out</button></div>
     </aside>
-    <main><header class="mb-8"><h1 class="text-3xl font-black text-slate-800">Command Center (Admin)</h1></header><div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-    <table class="w-full text-left">
+    <main><header class="mb-8"><h1 class="text-3xl font-black text-slate-800">Command Center (Admin)</h1></header>
+<div class="mb-4 flex gap-2">
+    <button onclick="exportCSV()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md hover:bg-emerald-700 transition">Export CSV</button>
+</div>
+<div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+    <table class="w-full text-left" id="admin-table">
         <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">
             <tr><th class="p-6">ID</th><th class="p-6">Subject</th><th class="p-6">Item</th><th class="p-6">Caller</th><th class="p-6">Status</th><th class="p-6">Action</th></tr>
         </thead>
@@ -41,6 +45,28 @@
 <script type="module">
     import { loadTickets } from './global.js';
     loadTickets(true, 'admin-list');
+    
+    window.exportCSV = () => {
+        let csvContent = "data:text/csv;charset=utf-8,ID,Subject,Item,Caller,Status,Building,Floor,Dept,Line,Priority\n";
+        for (let id in window.globalTickets) {
+            let t = window.globalTickets[id];
+            let row = [
+                "TKT-"+id.substring(0,4).toUpperCase(),
+                '"'+(t.subject||'')+'"',
+                '"'+(t.brokenItem||'')+'"',
+                t.callerEmail,
+                t.status,
+                t.building||'', t.floor||'', t.department||'', t.line||'', t.priority||''
+            ].join(",");
+            csvContent += row + "\r\n";
+        }
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "tickets_report.csv");
+        document.body.appendChild(link);
+        link.click();
+    };
 </script></main>
     <div id="ai-modal" class="fixed inset-0 z-[300] hidden items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 transition-opacity duration-300 opacity-0">
         <div class="bg-white w-[450px] h-[600px] rounded-[2rem] flex flex-col overflow-hidden shadow-2xl relative" id="ai-box">
@@ -56,25 +82,34 @@
     <div id="ticket-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-[200] flex items-center justify-center p-6">
         <div class="bg-white w-full max-w-5xl h-[80vh] rounded-[2rem] flex flex-col overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300" id="modal-box">
             <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
-                <h3 class="font-black text-xl text-slate-800" id="modal-id">ID</h3>
+                <div class="flex items-center gap-3">
+                    <span id="modal-priority-badge" class="px-3 py-1 bg-slate-100 rounded-md text-[10px] font-black uppercase"></span>
+                    <h3 class="font-black text-xl text-slate-800" id="modal-id">ID</h3>
+                </div>
                 <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600"><i class="fas fa-times"></i></button>
             </div>
             <div class="flex-1 flex overflow-hidden bg-slate-50">
                 <div class="w-[40%] p-8 bg-white overflow-y-auto border-r border-slate-100">
                     <h4 class="text-2xl font-black text-slate-800 mb-4" id="modal-subject">Subject</h4>
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
-                        <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Item</p>
+                        <p class="text-[10px] font-black uppercase text-slate-400 mb-1" id="modal-location">Location</p>
                         <p class="text-sm font-bold text-rose-600" id="modal-item">Item</p>
                     </div>
-                    <div>
+                    <div class="mb-4">
                         <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Description</p>
                         <p class="text-sm text-slate-600 whitespace-pre-wrap" id="modal-desc">Desc</p>
+                    </div>
+                    <div id="modal-image-container" class="hidden">
+                        <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Attached Image</p>
+                        <img id="modal-image" src="" alt="Ticket Image" class="w-full rounded-xl border border-slate-200">
                     </div>
                 </div>
                 <div class="flex-1 flex flex-col bg-slate-50">
                     <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
                     <div class="p-4 bg-white border-t border-slate-200">
                         <form id="comment-form" class="flex gap-2">
+                            <input type="file" id="comment-image" accept="image/*" class="hidden">
+                            <label for="comment-image" class="w-12 h-12 flex items-center justify-center bg-slate-100 text-slate-500 rounded-xl cursor-pointer hover:bg-slate-200"><i class="fas fa-image"></i></label>
                             <input type="text" id="comment-text" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none" placeholder="Type a reply...">
                             <button type="submit" class="bg-blue-600 text-white w-12 rounded-xl flex items-center justify-center"><i class="fas fa-paper-plane"></i></button>
                         </form>
