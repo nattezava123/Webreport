@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Factory IT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50">
+    
+    <aside id="sidebar">
+        <div class="h-20 flex items-center px-8 border-b border-slate-800 text-white font-bold text-lg"><i class="fas fa-industry text-blue-500 mr-3"></i> Factory IT</div>
+        <nav class="flex-1 mt-6 overflow-y-auto">
+            <p class="px-8 text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Workspace</p>
+            <a href="dashboard.html" class="menu-link active"><i class="fas fa-th-large w-6 text-center mr-2"></i> Dashboard</a>
+            <a href="my-tickets.html" class="menu-link "><i class="fas fa-list w-6 text-center mr-2"></i> My Tickets</a>
+            <a href="create-ticket.html" class="menu-link "><i class="fas fa-plus w-6 text-center mr-2"></i> Create Ticket</a>
+            
+            <p class="px-8 text-[10px] font-black uppercase tracking-widest text-slate-500 mt-6 mb-3">AI Engine</p>
+            <button onclick="openAIModal()" class="w-full text-left menu-link text-indigo-400 border-none bg-transparent cursor-pointer"><i class="fas fa-robot w-6 text-center mr-2"></i> Serviceman AI</button>
+            
+            <div id="admin-menu" class="hidden">
+                <p class="px-8 text-[10px] font-black uppercase tracking-widest text-slate-500 mt-6 mb-3">Admin</p>
+                <a href="admin.html" class="menu-link  text-rose-400"><i class="fas fa-shield-alt w-6 text-center mr-2"></i> Command Center</a>
+            </div>
+        </nav>
+        <div class="p-6">
+            <button id="logout-btn" class="w-full p-3 rounded-xl bg-rose-500/10 text-rose-500 font-bold border border-rose-500/20 hover:bg-rose-500/20 transition cursor-pointer"><i class="fas fa-power-off mr-2"></i> Logout</button>
+        </div>
+    </aside>
+    
+    <main>
+        <header class="mb-8 flex justify-between items-center">
+            <h1 class="text-3xl font-black text-slate-800">Dashboard</h1>
+        </header>
+        
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <p class="text-slate-400 text-xs font-bold uppercase mb-2">Total Tickets</p>
+            <p class="text-4xl font-black text-slate-800" id="stat-total">0</p>
+        </div>
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <p class="text-slate-400 text-xs font-bold uppercase mb-2">In Progress</p>
+            <p class="text-4xl font-black text-amber-500" id="stat-progress">0</p>
+        </div>
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+            <p class="text-slate-400 text-xs font-bold uppercase mb-2">Resolved</p>
+            <p class="text-4xl font-black text-emerald-500" id="stat-resolved">0</p>
+        </div>
+    </div>
+    <script type="module">
+        import { db } from './firebase-config.js';
+        import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        onSnapshot(collection(db, "incidents"), (snap) => {
+            let t=0, p=0, r=0;
+            snap.forEach(doc => {
+                t++; const d = doc.data();
+                if(d.status === 'In Progress') p++;
+                if(d.status === 'Resolved') r++;
+            });
+            document.getElementById('stat-total').innerText = t;
+            document.getElementById('stat-progress').innerText = p;
+            document.getElementById('stat-resolved').innerText = r;
+        });
+    </script>
+
+    </main>
+    
+    <div id="ai-modal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 transition-opacity duration-300 opacity-0">
+        <div class="bg-white w-full max-w-[400px] h-[500px] rounded-[2rem] flex flex-col shadow-2xl relative overflow-hidden">
+            <div class="p-6 bg-indigo-600 text-white flex justify-between items-center z-10 shadow-md">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-robot text-2xl"></i>
+                    <div><h3 class="font-bold leading-tight">Serviceman AI</h3><p class="text-[10px] opacity-80">Factory IT Assistant</p></div>
+                </div>
+                <button onclick="closeAIModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition cursor-pointer"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="ai-chat-box" class="flex-1 p-5 overflow-y-auto bg-slate-50">
+                <div class="chat-bubble chat-ai">สวัสดีครับ! ผมคือ <b>Serviceman</b> 🤖 วันนี้มีอะไรให้ผมช่วยไหมครับ?<br><br>
+                    <button onclick="sendQuickReply('คอมเปิดไม่ติด')" class="mt-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold border border-indigo-200 cursor-pointer">💻 คอมเปิดไม่ติด</button>
+                    <button onclick="sendQuickReply('ปริ้นไม่ออก')" class="mt-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold border border-indigo-200 cursor-pointer">🖨️ เครื่องพิมพ์</button>
+                </div>
+            </div>
+            <div class="p-4 bg-white border-t border-slate-100 flex gap-2">
+                <input type="text" id="ai-input" class="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" placeholder="พิมพ์ถามบอท..." onkeypress="if(event.key === 'Enter') sendAIMessage()">
+                <button onclick="sendAIMessage()" class="bg-indigo-600 text-white w-12 rounded-xl flex items-center justify-center shadow-md cursor-pointer hover:bg-indigo-700"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="bot.js"></script>
+    <script type="module">
+        import { auth } from './firebase-config.js';
+        import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        
+        document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => window.location.href = 'index.html');
+        
+        onAuthStateChanged(auth, user => {
+            if(!user) window.location.href = 'index.html';
+            if(user && (user.email === 'nattezava1996@gmail.com' || user.email.includes('admin'))) {
+                document.getElementById('admin-menu').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

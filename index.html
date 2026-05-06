@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Factory IT Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-animated-gradient min-h-screen flex items-center justify-center p-4">
+    <div class="glass-panel p-10 rounded-[2rem] w-full max-w-[420px] relative z-10">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4 shadow-xl text-white"><i class="fas fa-industry text-3xl"></i></div>
+            <h2 class="text-2xl font-bold text-slate-800" id="auth-title">Sign In</h2>
+        </div>
+        <form id="auth-form" class="space-y-4">
+            <input type="email" id="auth-email" placeholder="Email" class="w-full p-4 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500" required>
+            <input type="password" id="auth-password" placeholder="Password" class="w-full p-4 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500" required>
+            <button type="submit" id="auth-submit-btn" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-blue-600 transition shadow-lg">Login</button>
+        </form>
+        <div class="mt-6 text-center text-sm">
+            <span id="auth-switch-text">New here?</span> 
+            <button onclick="toggleAuthMode()" id="auth-switch-btn" class="text-blue-600 font-bold ml-1">Create an account</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth } from './firebase-config.js';
+        import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        let isLoginMode = true;
+        window.toggleAuthMode = () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? "Sign In" : "Register";
+            document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Login" : "Sign Up";
+            document.getElementById('auth-switch-text').innerText = isLoginMode ? "New here?" : "Already have an account?";
+            document.getElementById('auth-switch-btn').innerText = isLoginMode ? "Create an account" : "Login";
+        };
+
+        document.getElementById('auth-form').onsubmit = (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('auth-submit-btn');
+            btn.innerText = "Processing...";
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-password').value;
+            const action = isLoginMode ? signInWithEmailAndPassword : createUserWithEmailAndPassword;
+
+            action(auth, email, pass)
+                .then(() => window.location.href = 'dashboard.html')
+                .catch(err => {
+                    Swal.fire('Error', err.message, 'error');
+                    btn.innerText = isLoginMode ? "Login" : "Sign Up";
+                });
+        };
+
+        onAuthStateChanged(auth, user => { if(user) window.location.href = 'dashboard.html'; });
+    </script>
+</body>
+</html>
