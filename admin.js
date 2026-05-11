@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, query, onSnapshot, orderBy, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -15,14 +15,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const googleProvider = new GoogleAuthProvider();
 const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
 
 window.globalTickets = {};
 let currentTicketId = null;
 let currentAdminFilter = 'All';
 let chatUnsubscribe = null;
-let isLoginMode = true;
 let currentLang = localStorage.getItem('appLang') || 'en';
 
 const dict = {
@@ -88,29 +86,6 @@ window.switchTab = (tabName) => {
     document.querySelector(`.menu-link[onclick*="'${tabName}'"]`)?.classList.add('active');
     document.getElementById('page-title').innerText = dict[currentLang][`menu_${tabName}`] || dict[currentLang].app_name;
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
-};
-
-window.toggleAuthMode = () => { 
-    isLoginMode = !isLoginMode; 
-    const titleEl = document.getElementById('auth-title');
-    const subEl = document.getElementById('auth-subtitle');
-    const nameField = document.getElementById('field-name');
-    const confirmField = document.getElementById('field-confirm');
-    
-    if (isLoginMode) {
-        titleEl.innerText = dict[currentLang].app_name; titleEl.setAttribute('data-i18n', 'app_name');
-        subEl.innerText = dict[currentLang].auth_sub; subEl.setAttribute('data-i18n', 'auth_sub');
-        nameField.style.display = 'none'; confirmField.style.display = 'none';
-        document.getElementById('auth-name').required = false; document.getElementById('auth-confirm-password').required = false;
-    } else {
-        titleEl.innerText = dict[currentLang].title_register; titleEl.setAttribute('data-i18n', 'title_register');
-        subEl.innerText = dict[currentLang].sub_register; subEl.setAttribute('data-i18n', 'sub_register');
-        nameField.style.display = 'block'; confirmField.style.display = 'block';
-        document.getElementById('auth-name').required = true; document.getElementById('auth-confirm-password').required = true;
-    }
-    document.getElementById('auth-submit-btn').innerText = isLoginMode ? dict[currentLang].btn_signin : dict[currentLang].btn_register; 
-    document.getElementById('auth-switch-text').innerText = isLoginMode ? dict[currentLang].no_account : (currentLang === 'th' ? "มีบัญชีอยู่แล้ว?" : "Already have an account?");
-    document.getElementById('auth-switch-btn').innerText = isLoginMode ? dict[currentLang].btn_register : dict[currentLang].btn_signin; 
 };
 
 // 🤖 AI Admin
@@ -191,35 +166,6 @@ document.getElementById('comment-form').onsubmit = async (e) => {
         document.getElementById('comment-form').reset(); document.getElementById('comment-img-label').classList.replace('text-blue-500', 'text-slate-500');
     } catch (e) { console.error(e); }
 };
-
-// 🔥 ระบบ Login / Register ใหม่ (รวมอัปเดตชื่อผู้ใช้)
-document.getElementById('auth-form').onsubmit = async (e) => {
-    e.preventDefault(); 
-    const em = document.getElementById('auth-email').value;
-    const ps = document.getElementById('auth-password').value;
-    const btn = document.getElementById('auth-submit-btn');
-    const originalText = btn.innerText;
-    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-    try {
-        if (isLoginMode) {
-            await signInWithEmailAndPassword(auth, em, ps);
-        } else {
-            const name = document.getElementById('auth-name').value;
-            const confirmPs = document.getElementById('auth-confirm-password').value;
-            if (ps !== confirmPs) throw new Error(currentLang === 'th' ? "รหัสผ่านไม่ตรงกัน" : "Passwords do not match");
-            if (ps.length < 6) throw new Error(currentLang === 'th' ? "รหัสผ่านต้องมี 6 ตัวอักษรขึ้นไป" : "Password must be at least 6 characters");
-            const userCredential = await createUserWithEmailAndPassword(auth, em, ps);
-            await updateProfile(userCredential.user, { displayName: name });
-        }
-    } catch (error) { 
-        Swal.fire({ icon: 'error', text: error.message, confirmButtonColor: '#3b82f6' }); 
-    } finally { 
-        btn.disabled = false; btn.innerText = originalText; 
-    }
-};
-
-window.loginWithGoogle = () => signInWithPopup(auth, googleProvider).catch(e => Swal.fire({ icon: 'error', text: e.message }));
 
 document.getElementById('btn-logout').onclick = () => { signOut(auth).then(() => window.location.href = 'index.html'); };
 
