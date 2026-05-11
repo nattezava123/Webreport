@@ -120,3 +120,33 @@ onAuthStateChanged(auth, (user) => {
     }
     toggleLang(currentLang); 
 });
+// 🛑 ฝั่ง USER: เช็คว่าถ้าเป็น Admin ล็อกอินเข้ามา ให้เด้งไปหน้า admin.html
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const safeEmail = user.email ? user.email.toLowerCase().trim() : "";
+        const isAdmin = safeEmail === "nattezava1996@gmail.com" || safeEmail.includes("admin");
+
+        // ถ้ายูสเซอร์นี้เป็น Admin ให้เปลี่ยนหน้าไปที่ admin.html ทันที
+        if (isAdmin) {
+            window.location.href = 'admin.html';
+            return; // หยุดการทำงานของโค้ดด้านล่าง
+        }
+
+        // ถ้าเป็น User ปกติ ให้แสดงหน้า Workspace
+        document.getElementById('auth-view').classList.remove('active');
+        document.getElementById('app-view').classList.add('active');
+        document.getElementById('user-email').innerText = user.email;
+        
+        const roleElement = document.getElementById('user-role');
+        roleElement.setAttribute('data-i18n', 'role_user');
+        roleElement.classList.add('text-blue-400'); 
+        
+        loadDashboardData();
+        window.updatePriorityDesc();
+    } else {
+        // ถ้ายังไม่ล็อกอิน ให้แสดงหน้า Login
+        document.getElementById('app-view').classList.remove('active');
+        document.getElementById('auth-view').classList.add('active');
+    }
+    toggleLang(currentLang); 
+});
