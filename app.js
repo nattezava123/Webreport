@@ -63,14 +63,12 @@ window.toggleLang = (lang) => {
     currentLang = lang; localStorage.setItem('appLang', lang);
     const titleTag = document.getElementById('page-title-tag'); if(titleTag) titleTag.innerText = dict[lang].page_title;
     document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(dict[lang][k]) el.innerText = dict[lang][k]; });
-    
     const optHw = document.getElementById('opt-hw'), optSw = document.getElementById('opt-sw'), optNw = document.getElementById('opt-nw');
     if(optHw) optHw.innerText = dict[lang].cat_hw; if(optSw) optSw.innerText = dict[lang].cat_sw; if(optNw) optNw.innerText = dict[lang].cat_nw;
-
     window.updatePriorityDesc(); 
     ['auth', 'app'].forEach(v => {
         const en = document.getElementById(`lang-en-${v}`), th = document.getElementById(`lang-th-${v}`);
-        if(en && th) { en.className = (lang==='en' && v==='app') ? "px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold" : (lang==='en'?"px-4 py-1.5 bg-blue-600 text-white rounded-full text-xs font-bold":"px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold"); th.className = (lang==='th' && v==='app') ? "px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold" : (lang==='th'?"px-4 py-1.5 bg-blue-600 text-white rounded-full text-xs font-bold":"px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold"); }
+        if(en && th) { en.className = (lang==='en' && v==='app') ? "px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold shadow-sm" : (lang==='en'?"px-4 py-1.5 bg-blue-600 text-white rounded-full text-xs font-bold shadow-lg":"px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold"); th.className = (lang==='th' && v==='app') ? "px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold shadow-sm" : (lang==='th'?"px-4 py-1.5 bg-blue-600 text-white rounded-full text-xs font-bold shadow-lg":"px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold"); }
     });
 };
 
@@ -80,13 +78,9 @@ window.updatePriorityDesc = () => {
     const enTexts = { "4 - Low": "● Individual impact - SLA: 3 Days", "3 - Moderate": "● Department impact - SLA: 24 Hours", "2 - High": "● Business degraded - SLA: 4 Hours", "1 - Critical": "● Total failure - SLA: 1 Hour" };
     const descColors = { "4 - Low": "bg-emerald-50/50 border-emerald-100 text-emerald-800", "3 - Moderate": "bg-amber-50/50 border-amber-100 text-amber-800", "2 - High": "bg-orange-50/50 border-orange-100 text-orange-800", "1 - Critical": "bg-rose-50/50 border-rose-100 text-rose-800" };
     const iconColors = { "4 - Low": "text-emerald-500", "3 - Moderate": "text-amber-500", "2 - High": "text-orange-500", "1 - Critical": "text-rose-500" };
-
-    const priorityText = document.getElementById('priority-text');
-    if(priorityText) priorityText.innerText = currentLang === 'th' ? thTexts[val] : enTexts[val];
-    const priorityDesc = document.getElementById('priority-desc');
-    if(priorityDesc) priorityDesc.className = `p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors ${descColors[val]}`;
-    const priorityIcon = document.getElementById('priority-icon');
-    if(priorityIcon) priorityIcon.className = `fas fa-info-circle mt-0.5 ${iconColors[val]}`;
+    const pText = document.getElementById('priority-text'); if(pText) pText.innerText = currentLang === 'th' ? thTexts[val] : enTexts[val];
+    const pDesc = document.getElementById('priority-desc'); if(pDesc) pDesc.className = `p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors ${descColors[val]}`;
+    const pIcon = document.getElementById('priority-icon'); if(pIcon) pIcon.className = `fas fa-info-circle mt-0.5 ${iconColors[val]}`;
 };
 
 window.switchTab = (tabName) => {
@@ -100,59 +94,32 @@ window.switchTab = (tabName) => {
 window.toggleAuthMode = () => { isLoginMode = !isLoginMode; document.getElementById('auth-submit-btn').innerText = isLoginMode ? dict[currentLang].btn_signin : dict[currentLang].btn_register; };
 
 // ==========================================
-// 🤖 AI Assistant (สมบูรณ์ มีปุ่มครบ)
+// 🤖 AI Assistant (สมบูรณ์ 100% พร้อมปุ่ม)
 // ==========================================
 window.openAIModal = () => { document.getElementById('ai-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ai-modal').style.opacity = '1'; document.getElementById('ai-box').classList.replace('scale-95', 'scale-100'); }, 10); };
 window.closeAIModal = () => { document.getElementById('ai-modal').style.opacity = '0'; document.getElementById('ai-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => document.getElementById('ai-modal').classList.replace('flex', 'hidden'), 300); };
 window.sendQuickReply = (text) => { document.getElementById('ai-input').value = text; window.sendAIMessage(); };
 
 const botDatabase = [
-    { keywords: ["ดี", "ทัก", "เทส", "test", "สวัสดี", "hello", "hi"], answer: "สวัสดีครับ! ผมคือ **Serviceman** 🤖 วันนี้มีปัญหาไอทีตรงไหนให้ผมช่วยตรวจสอบไหมครับ พิมพ์อาการมาได้เลย" },
-    { keywords: ["ขอบคุณ", "thank", "thx", "เยี่ยม", "ok", "โอเค"], answer: "ยินดีให้บริการเสมอครับ! 🎉 ถ้ามีปัญหาอื่นๆ เปิดตั๋วแจ้งซ่อมมาได้ตลอดเลยนะครับ" },
-    { keywords: ["ลืมรหัส", "เปลี่ยนรหัส", "password", "เข้าไม่ได้"], answer: "ปัญหาเข้าสู่ระบบ/ลืมรหัสผ่าน 🔑 รบกวนกด **Create Ticket** แล้วระบุ Username เพื่อให้แอดมินรีเซ็ตรหัสผ่านให้นะครับ" },
-    { keywords: ["เน็ต", "internet", "wifi", "ไวไฟ", "เน็ตหลุด", "ต่อเน็ตไม่ได้"], answer: "ปัญหาอินเทอร์เน็ต/Wi-Fi 📡 ลองปิด-เปิด Wi-Fi ดูสักรอบนะครับ หากไม่หาย รบกวนเปิดตั๋วแจ้งซ่อมเลยครับช่างจะได้เข้าไปดูให้" },
-    { keywords: ["เปิดไม่ติด", "ดับ", "ไฟไม่เข้า"], answer: "คอมเปิดไม่ติด 🔌 รบกวนเช็คปลั๊กไฟใต้โต๊ะดูครับ หากไฟเข้าแต่เครื่องเงียบ รบกวนเปิดตั๋วแจ้งซ่อมด่วนเลยครับ!" },
-    { keywords: ["จอฟ้า", "blue screen", "ค้าง", "แฮงค์"], answer: "คอมจอฟ้า/ค้าง 💻 รบกวน **ถ่ายรูปหน้าจอ Error (รูปจอฟ้า)** แนบรูปตอนเปิดตั๋วแจ้งซ่อมด้วยนะครับ ทีมไอทีจะได้วิเคราะห์ถูกจุด" },
-    { keywords: ["ปริ้น", "printer", "เครื่องปริ้น", "print", "ไม่ออก"], answer: "ปัญหาเครื่องพิมพ์ (Printer) 🖨️ ลองรีสตาร์ทคอม 1 รอบดูก่อนครับ ถ้ายังพิมพ์ไม่ได้ เปิดตั๋วแจ้งซ่อมแล้วระบุชื่อเครื่องพิมพ์มาได้เลย" },
-    { keywords: ["สร้างตั๋ว", "เปิดตั๋ว", "แจ้งซ่อมยังไง", "วิธีแจ้งซ่อม"], answer: "การแจ้งปัญหา 📝 ให้กดที่เมนู **Create Ticket** ทางซ้ายมือ เลือกหมวดหมู่, ระบุสถานที่ และเขียนรายละเอียดอาการให้ครบถ้วน แล้วกด Submit ครับ" }
+    { keywords: ["ดี", "สวัสดี", "hello", "hi"], answer: "สวัสดีครับ! ผมคือ **Serviceman** 🤖 วันนี้มีปัญหาไอทีตรงไหนให้ผมช่วยตรวจสอบไหมครับ พิมพ์อาการมาได้เลย" },
+    { keywords: ["ลืมรหัส", "เปลี่ยนรหัส", "password"], answer: "ปัญหาเข้าสู่ระบบ/ลืมรหัสผ่าน 🔑 รบกวนกด **Create Ticket** แล้วระบุ Username เพื่อให้แอดมินรีเซ็ตรหัสผ่านให้นะครับ" },
+    { keywords: ["เน็ต", "internet", "wifi"], answer: "ปัญหาเน็ต/Wi-Fi 📡 ลองกดปิด-เปิด Wi-Fi ดูก่อนครับ หากไม่หาย รบกวนเปิดตั๋วแจ้งซ่อมเลยครับ" },
+    { keywords: ["เปิดไม่ติด", "ดับ"], answer: "คอมเปิดไม่ติด 🔌 รบกวนเช็คปลั๊กไฟใต้โต๊ะดูครับ หากไฟเข้าแต่เครื่องเงียบ รบกวนเปิดตั๋วแจ้งซ่อมด่วนเลยครับ!" }
 ];
 
 window.sendAIMessage = async () => {
-    const input = document.getElementById('ai-input'); 
-    const rawText = input.value.trim(); 
-    if (!rawText) return;
-    
+    const input = document.getElementById('ai-input'); const rawText = input.value.trim(); if (!rawText) return;
     const consoleBox = document.getElementById('ai-chat-box');
-    consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 flex-row-reverse chat-user-bubble"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0 shadow-sm"><i class="fas fa-user text-[10px]"></i></div><div class="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-sm shadow-md text-sm leading-relaxed max-w-[85%]">${rawText}</div></div>`);
-    input.value = ''; 
-    consoleBox.scrollTop = consoleBox.scrollHeight;
-
+    consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 flex-row-reverse chat-user-bubble"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0"><i class="fas fa-user text-[10px]"></i></div><div class="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-sm shadow-md text-sm leading-relaxed max-w-[85%]">${rawText}</div></div>`);
+    input.value = ''; consoleBox.scrollTop = consoleBox.scrollHeight;
     const thinkingId = 'think-' + Date.now();
-    consoleBox.insertAdjacentHTML('beforeend', `<div id="${thinkingId}" class="flex items-start gap-4 mb-6 chat-ai-bubble"><div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0"><i class="fas fa-robot text-[10px]"></i></div><div class="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-sm shadow-sm text-sm text-slate-400 flex items-center gap-1">กำลังค้นหาข้อมูล...</div></div>`);
-    consoleBox.scrollTop = consoleBox.scrollHeight;
-
+    consoleBox.insertAdjacentHTML('beforeend', `<div id="${thinkingId}" class="flex items-start gap-4 mb-6 chat-ai-bubble"><div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0"><i class="fas fa-robot text-[10px]"></i></div><div class="bg-white border p-4 rounded-2xl text-sm text-slate-400">กำลังค้นหา...</div></div>`);
     setTimeout(() => {
         document.getElementById(thinkingId)?.remove();
-        const cleanText = rawText.toLowerCase().replace(/\s+/g, '');
-        let botReply = "";
-
-        for (let entry of botDatabase) {
-            if (entry.keywords.some(k => cleanText.includes(k) || rawText.toLowerCase().includes(k))) {
-                botReply = entry.answer; break;
-            }
-        }
-
-        if (botReply === "") {
-            botReply = `ขออภัยครับ อาการนี้อาจจะต้องให้ช่างตรวจเช็คเชิงลึก 😅 แนะนำให้กดเมนู **Create Ticket** เพื่อให้พี่ๆ ทีมช่างไอทีไปตรวจสอบให้นะครับ ชัวร์ที่สุด!<br><br>หรือลองเลือกหัวข้อปัญหาด้านล่างนี้ดูครับ 👇<br>
-            <div class="flex flex-wrap gap-2 mt-3">
-                <button onclick="window.sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 rounded-full text-xs font-bold transition-colors">💻 คอมเปิดไม่ติด</button>
-                <button onclick="window.sendQuickReply('ปริ้นไม่ออก')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 rounded-full text-xs font-bold transition-colors">🖨️ เครื่องปริ้น</button>
-                <button onclick="window.sendQuickReply('เน็ตหลุด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 rounded-full text-xs font-bold transition-colors">📡 อินเทอร์เน็ต</button>
-            </div>`;
-        }
-
+        let botReply = ""; for (let entry of botDatabase) { if (entry.keywords.some(k => rawText.toLowerCase().includes(k))) { botReply = entry.answer; break; } }
+        if (botReply === "") botReply = `ขออภัยครับ แนะนำให้กดเมนู **Create Ticket** เพื่อแจ้งเรื่องครับ<br><br>หรือเลือกด้านล่าง 👇<br><div class="flex flex-wrap gap-2 mt-2"><button onclick="window.sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold">💻 คอมเสีย</button><button onclick="window.sendQuickReply('เน็ตหลุด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold">📡 เน็ตหลุด</button></div>`;
         botReply = botReply.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-600">$1</strong>').replace(/\n/g, '<br>');
-        consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 chat-ai-bubble"><div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0 shadow-md"><i class="fas fa-robot text-[10px]"></i></div><div class="bg-slate-50 border border-slate-100 p-5 rounded-2xl rounded-tl-sm shadow-sm text-sm text-slate-700 leading-relaxed max-w-[85%]">${botReply}</div></div>`);
+        consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 chat-ai-bubble"><div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0 shadow-md"><i class="fas fa-robot text-[10px]"></i></div><div class="bg-slate-50 border border-slate-100 p-5 rounded-2xl text-sm text-slate-700 leading-relaxed max-w-[85%]">${botReply}</div></div>`);
         consoleBox.scrollTop = consoleBox.scrollHeight;
     }, 800); 
 };
@@ -169,10 +136,10 @@ function loadDashboardData() {
             userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">${id.substring(0,4).toUpperCase()}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4 text-xs">${t.status}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
             if(recentCount<5){ recentHtml+=`<div class="p-4 bg-white border rounded-xl mb-2 text-sm cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><b>${t.subject}</b> - ${t.status}</div>`; recentCount++;}
         });
-        document.getElementById('user-ticket-list').innerHTML = userHtml;
+        document.getElementById('user-ticket-list').innerHTML = userHtml || '<tr><td colspan="4" class="p-8 text-center text-slate-400">No tickets found</td></tr>';
         document.getElementById('stat-new').innerText = counts.New || 0; document.getElementById('stat-progress').innerText = counts["In Progress"] || 0;
         document.getElementById('stat-resolved').innerText = counts.Resolved || 0; document.getElementById('stat-total').innerText = counts.Total || 0;
-        document.getElementById('dash-recent-list').innerHTML = recentHtml;
+        document.getElementById('dash-recent-list').innerHTML = recentHtml || '<p class="text-center text-slate-400 text-xs py-10">Clear!</p>';
         const u = auth.currentUser.email.split('@')[0]; document.getElementById('dash-user-name').innerText = u.charAt(0).toUpperCase() + u.slice(1);
     });
 }
@@ -190,29 +157,17 @@ document.getElementById('create-ticket-form').onsubmit = async (e) => {
 window.openModal = (id) => {
     currentTicketId = id; const t = window.globalTickets[id];
     document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); document.getElementById('modal-subject').innerText = t.subject;
-    document.getElementById('modal-category').innerText = t.category; document.getElementById('modal-priority').innerText = t.priority;
     document.getElementById('modal-location').innerText = `Bldg: ${t.building}, Floor: ${t.floor}, Dept: ${t.department}`;
     document.getElementById('modal-broken-item').innerText = t.brokenItem; document.getElementById('modal-desc').innerText = t.description;
     document.getElementById('modal-caller').innerText = t.callerEmail; document.getElementById('modal-date').innerText = t.createdAt?.toDate().toLocaleString();
     if(t.imageUrl) { document.getElementById('modal-image').src = t.imageUrl; document.getElementById('modal-image-container').classList.remove('hidden'); } else { document.getElementById('modal-image-container').classList.add('hidden'); }
-    
     document.getElementById('ticket-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ticket-modal').style.opacity = '1'; document.getElementById('modal-box').classList.replace('scale-95', 'scale-100'); }, 10);
     if(chatUnsubscribe) chatUnsubscribe();
-    
     chatUnsubscribe = onSnapshot(query(collection(db, "incidents", id, "comments"), orderBy("createdAt", "asc")), (snap) => {
-        let h = ""; 
-        snap.forEach(doc => { 
-            const d = doc.data();
-            if(d.senderEmail === 'system') { 
-                h += `<div class="flex justify-center my-4"><span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-[10px] font-bold"><i class="fas fa-cog"></i> ${d.text}</span></div>`; 
-            } else {
-                const isMe = d.senderEmail === auth.currentUser.email;
-                const align = isMe ? 'items-end' : 'items-start';
-                const bg = isMe ? 'bg-blue-600 text-white' : 'bg-white border text-slate-700';
-                const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
-                let chatImgHtml = d.imageUrl ? `<img src="${d.imageUrl}" class="mt-2 rounded-lg max-h-40 cursor-pointer border hover:opacity-90 transition" onclick="window.viewFullImage('${d.imageUrl}')">` : '';
-                h += `<div class="flex flex-col ${align} mb-4"><div class="max-w-[85%] ${bg} p-3 rounded-xl shadow-sm text-sm"><div class="text-[10px] font-bold opacity-70 mb-1">${senderName}</div>${d.text}${chatImgHtml}</div></div>`;
-            }
+        let h = ""; snap.forEach(doc => { 
+            const d = doc.data(); const isMe = d.senderEmail === auth.currentUser.email;
+            if(d.senderEmail === 'system') h += `<div class="flex justify-center my-4"><span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-[10px] font-bold">${d.text}</span></div>`; 
+            else { let cImg = d.imageUrl ? `<img src="${d.imageUrl}" class="mt-2 rounded-lg max-h-40 cursor-pointer" onclick="window.viewFullImage('${d.imageUrl}')">` : ''; h += `<div class="flex flex-col ${isMe?'items-end':'items-start'} mb-4"><div class="${isMe?'bg-blue-600 text-white':'bg-white border'} p-3 rounded-xl max-w-[85%] shadow-sm text-sm">${d.text}${cImg}</div></div>`; }
         });
         document.getElementById('chat-messages').innerHTML = h; document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
     });
@@ -220,36 +175,23 @@ window.openModal = (id) => {
 
 window.closeModal = () => { document.getElementById('ticket-modal').style.opacity = '0'; document.getElementById('modal-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => { document.getElementById('ticket-modal').classList.replace('flex', 'hidden'); if(chatUnsubscribe) chatUnsubscribe(); }, 300); };
 
-// รองรับ Ctrl+V
 document.getElementById('comment-text').addEventListener('paste', function(e) {
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    for (let index in items) {
-        if (items[index].kind === 'file' && items[index].type.includes('image')) {
-            const dataTransfer = new DataTransfer(); dataTransfer.items.add(items[index].getAsFile());
-            document.getElementById('comment-image').files = dataTransfer.files;
-            document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500');
-            Toast.fire({ icon: 'success', title: 'Image attached from Clipboard' }); e.preventDefault(); 
-        }
-    }
+    for (let i of items) { if (i.kind === 'file' && i.type.includes('image')) { const dt = new DataTransfer(); dt.items.add(i.getAsFile()); document.getElementById('comment-image').files = dt.files; document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500'); Toast.fire({ icon: 'success', title: 'Image attached' }); e.preventDefault(); } }
 });
 
 document.getElementById('comment-form').onsubmit = async (e) => {
-    e.preventDefault(); 
-    const textInput = document.getElementById('comment-text');
-    const imgInput = document.getElementById('comment-image');
-    const text = textInput.value.trim();
-    if(!text && imgInput.files.length === 0) return; 
-
-    const btnSubmit = document.getElementById('btn-comment-submit');
-    btnSubmit.disabled = true; btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i>';
-
-    try {
-        let uploadedImageUrl = null;
-        if (imgInput.files.length > 0) uploadedImageUrl = await resizeAndConvertToBase64(imgInput.files[0], 800, 800);
-        await addDoc(collection(db, "incidents", currentTicketId, "comments"), { senderEmail: auth.currentUser.email, text: text, imageUrl: uploadedImageUrl, createdAt: new Date() });
+    e.preventDefault(); const txt = document.getElementById('comment-text'), imgIn = document.getElementById('comment-image'), btn = document.getElementById('btn-comment-submit');
+    if(!txt.value.trim() && imgIn.files.length === 0) return; btn.disabled = true;
+    try { let uImg = null; if (imgIn.files.length > 0) uImg = await resizeAndConvertToBase64(imgIn.files[0], 800, 800);
+        await addDoc(collection(db, "incidents", currentTicketId, "comments"), { senderEmail: auth.currentUser.email, text: txt.value, imageUrl: uImg, createdAt: new Date() });
         document.getElementById('comment-form').reset(); document.getElementById('comment-img-label').classList.replace('text-blue-500', 'text-slate-500');
-    } catch (error) { Swal.fire({ icon: 'error', text: error.message }); } 
-    finally { btnSubmit.disabled = false; btnSubmit.innerHTML = '<i class="fas fa-paper-plane text-xs"></i>'; }
+    } catch (e) { Swal.fire({ icon: 'error', text: e.message }); } finally { btn.disabled = false; }
+};
+
+document.getElementById('btn-logout').onclick = () => {
+    Swal.fire({ title: currentLang === 'th' ? 'ออกจากระบบ?' : 'Sign Out?', icon: 'question', showCancelButton: true, confirmButtonColor: '#e11d48' })
+    .then((result) => { if (result.isConfirmed) signOut(auth).then(() => window.location.reload()); });
 };
 
 document.getElementById('auth-form').onsubmit = (e) => {
@@ -257,7 +199,7 @@ document.getElementById('auth-form').onsubmit = (e) => {
     (isLoginMode ? signInWithEmailAndPassword(auth, em, ps) : createUserWithEmailAndPassword(auth, em, ps)).catch(e => Swal.fire({ icon: 'error', text: e.message }));
 };
 
-window.loginWithGoogle = () => signInWithPopup(auth, googleProvider).catch(e => Swal.fire({ icon: 'error', text: e.message }));
+window.loginWithGoogle = () => signInWithPopup(auth, googleProvider);
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -265,8 +207,6 @@ onAuthStateChanged(auth, (user) => {
         if (isAdmin) { window.location.href = 'admin.html'; return; }
         document.getElementById('auth-view').classList.remove('active'); document.getElementById('app-view').classList.add('active');
         document.getElementById('user-email').innerText = user.email; loadDashboardData();
-    } else {
-        document.getElementById('app-view').classList.remove('active'); document.getElementById('auth-view').classList.add('active');
-    }
+    } else { document.getElementById('app-view').classList.remove('active'); document.getElementById('auth-view').classList.add('active'); }
     window.toggleLang(currentLang);
 });
