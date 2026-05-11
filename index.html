@@ -81,8 +81,8 @@
                 <div id="tab-create" class="tab-content max-w-2xl mx-auto">
                     <div class="bg-white p-8 rounded-[2rem] border shadow-sm">
                         <h2 class="text-2xl font-black mb-6" data-i18n="form_title">How can we help?</h2>
+                        
                         <form id="create-ticket-form" class="space-y-6">
-                            
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_cat">Category</label>
@@ -126,6 +126,7 @@
                                     <option value="Other">อื่นๆ (ระบุในรายละเอียด)</option>
                                 </select>
                             </div>
+
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="form_short">Subject</label>
                                 <select id="tk-subject" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50" required>
@@ -155,9 +156,38 @@
 
     <div id="ai-modal" class="fixed inset-0 z-[300] hidden items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0">
         <div class="bg-white w-full sm:w-[450px] h-[85vh] sm:h-[600px] rounded-[2rem] flex flex-col shadow-2xl relative" id="ai-box">
-            <div class="px-6 py-5 bg-indigo-600 rounded-t-[2rem] text-white flex justify-between"><h3>Serviceman AI</h3><button onclick="window.closeAIModal()">×</button></div>
-            <div class="flex-1 overflow-y-auto p-5 space-y-4 bg-slate-50" id="ai-chat-box"></div>
-            <div class="p-4 bg-white border-t flex gap-2"><input type="text" id="ai-input" class="flex-1 border rounded-xl px-4 py-2 text-sm outline-none" onkeypress="if(event.key === 'Enter') window.sendAIMessage()"><button onclick="window.sendAIMessage()" class="bg-indigo-600 text-white px-4 rounded-xl">ส่ง</button></div>
+            <div class="px-6 py-5 bg-indigo-600 rounded-t-[2rem] text-white flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md"><i class="fas fa-robot"></i></div>
+                    <div>
+                        <h3 class="font-black leading-tight">Serviceman AI</h3>
+                        <p class="text-[10px] text-indigo-200 font-bold uppercase">Factory IT Assistant</p>
+                    </div>
+                </div>
+                <button onclick="window.closeAIModal()" class="w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-5 space-y-4 bg-slate-50" id="ai-chat-box">
+                <div class="flex items-start gap-4 mb-6 chat-ai-bubble">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0 shadow-md"><i class="fas fa-robot text-[10px]"></i></div>
+                    <div class="flex flex-col gap-2 max-w-[85%]">
+                        <div class="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-sm shadow-sm text-sm text-slate-700 leading-relaxed">
+                            สวัสดีครับ! ผมคือ <strong>Serviceman</strong> 🤖 ผู้ช่วยไอทีประจำโรงงาน วันนี้ระบบไอทีมีปัญหาตรงไหนให้ผมช่วยตรวจสอบไหมครับ เลือกเมนูด้านล่าง หรือพิมพ์บอกผมได้เลยครับ 👇
+                        </div>
+                        <div class="flex flex-wrap gap-2 mt-1">
+                            <button onclick="window.sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 rounded-full text-xs font-bold transition-colors">💻 คอมเปิดไม่ติด</button>
+                            <button onclick="window.sendQuickReply('ปริ้นไม่ออก')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 rounded-full text-xs font-bold transition-colors">🖨️ เครื่องปริ้น</button>
+                            <button onclick="window.sendQuickReply('เน็ตหลุด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 rounded-full text-xs font-bold transition-colors">📡 อินเทอร์เน็ต</button>
+                            <button onclick="window.sendQuickReply('วิธีแจ้งซ่อม')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 rounded-full text-xs font-bold transition-colors">📝 วิธีแจ้งซ่อม</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-white border-t flex gap-2">
+                <input type="text" id="ai-input" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500/20" placeholder="พิมพ์บอกอาการเสียได้เลย..." onkeypress="if(event.key === 'Enter') window.sendAIMessage()">
+                <button onclick="window.sendAIMessage()" class="bg-indigo-600 text-white w-12 rounded-xl flex items-center justify-center hover:bg-indigo-700 transition shadow-md"><i class="fas fa-paper-plane text-xs"></i></button>
+            </div>
         </div>
     </div>
 
