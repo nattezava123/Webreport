@@ -20,51 +20,28 @@
         </div>
         <div class="glass-panel p-8 md:p-10 rounded-[2rem] w-full max-w-[420px] z-10 relative">
             <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl mb-5 shadow-xl">
-                    <i class="fas fa-industry text-3xl text-white"></i>
-                </div>
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl mb-5 shadow-xl"><i class="fas fa-industry text-3xl text-white"></i></div>
                 <h2 class="text-2xl font-extrabold text-slate-800" data-i18n="app_name">Factory IT Service Center</h2>
                 <p class="text-slate-500 text-sm mt-2" data-i18n="auth_sub">Enterprise Service Desk</p>
             </div>
             <form id="auth-form" class="space-y-4">
-                <div>
-                    <label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase" data-i18n="email">Email</label>
-                    <input type="email" id="auth-email" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none" placeholder="name@company.com" required>
-                </div>
-                <div>
-                    <label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase" data-i18n="password">Password</label>
-                    <input type="password" id="auth-password" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none" placeholder="••••••••" required>
-                </div>
+                <div><label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase" data-i18n="email">Email</label><input type="email" id="auth-email" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none" required></div>
+                <div><label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase" data-i18n="password">Password</label><input type="password" id="auth-password" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none" required></div>
                 <button type="submit" id="auth-submit-btn" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg mt-2" data-i18n="btn_signin">Sign In</button>
             </form>
-            <div class="mt-6 flex items-center relative justify-center">
-                <hr class="w-full border-slate-300">
-                <span class="absolute bg-white px-3 text-[10px] font-bold text-slate-400 uppercase">OR</span>
-            </div>
-            <button onclick="window.loginWithGoogle()" type="button" class="w-full mt-6 bg-white border border-slate-200 text-slate-700 font-bold py-3.5 rounded-xl flex items-center justify-center gap-3">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5">
-                <span data-i18n="btn_google">Continue with Google</span>
-            </button>
-            <div class="mt-8 text-center text-sm">
-                <span class="text-slate-500" data-i18n="no_account">New here?</span> 
-                <button onclick="window.toggleAuthMode()" id="auth-switch-btn" class="text-blue-600 font-bold" data-i18n="btn_register">Create an account</button>
-            </div>
+            <div class="mt-6 flex items-center relative justify-center"><hr class="w-full border-slate-300"><span class="absolute bg-white px-3 text-[10px] font-bold text-slate-400 uppercase">OR</span></div>
+            <button onclick="window.loginWithGoogle()" type="button" class="w-full mt-6 bg-white border border-slate-200 text-slate-700 font-bold py-3.5 rounded-xl flex items-center justify-center gap-3"><img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5"><span data-i18n="btn_google">Continue with Google</span></button>
+            <div class="mt-8 text-center text-sm"><span class="text-slate-500" data-i18n="no_account">New here?</span> <button onclick="window.toggleAuthMode()" id="auth-switch-btn" class="text-blue-600 font-bold" data-i18n="btn_register">Create an account</button></div>
         </div>
     </section>
 
     <section id="app-view" class="view-section h-screen w-full overflow-hidden bg-slate-50">
         <aside id="sidebar" class="w-72 bg-[#020617] flex flex-col flex-shrink-0 shadow-2xl z-20 border-r border-slate-800">
-            <div class="h-20 flex items-center px-8 border-b border-slate-800/80 text-white font-extrabold tracking-tight">
-                <i class="fas fa-industry text-blue-500 mr-3 text-xl"></i> 
-                <span data-i18n="app_name_short" class="text-sm">Factory IT</span>
-            </div>
+            <div class="h-20 flex items-center px-8 border-b border-slate-800/80 text-white font-extrabold tracking-tight"><i class="fas fa-industry text-blue-500 mr-3 text-xl"></i> <span data-i18n="app_name_short" class="text-sm">Factory IT</span></div>
             <div class="p-6 my-2 mx-4 bg-slate-800/30 rounded-2xl border border-slate-700/50">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-white"><i class="fas fa-user"></i></div>
-                    <div class="overflow-hidden">
-                        <div id="user-email" class="text-white font-bold truncate text-sm">User</div>
-                        <div id="user-role" class="text-[9px] text-blue-400 font-black uppercase" data-i18n="role_user">User</div>
-                    </div>
+                    <div class="overflow-hidden"><div id="user-email" class="text-white font-bold truncate text-sm">User</div><div id="user-role" class="text-[9px] text-blue-400 font-black uppercase" data-i18n="role_user">User</div></div>
                 </div>
             </div>
             <nav class="flex-1 mt-2 space-y-1.5">
@@ -73,29 +50,18 @@
                 <a href="#" onclick="window.switchTab('create')" class="flex items-center menu-link"><i class="fas fa-plus-circle w-8"></i> <span data-i18n="menu_create">Create Ticket</span></a>
                 <a href="#" onclick="window.openAIModal()" class="flex items-center menu-link text-indigo-400"><i class="fas fa-robot w-8"></i> <span>Serviceman</span></a>
             </nav>
-            <div class="p-6">
-                <button id="btn-logout" class="w-full flex items-center justify-center gap-3 text-rose-400 font-bold py-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20"><i class="fas fa-power-off"></i> <span data-i18n="btn_logout">Log Out</span></button>
-            </div>
+            <div class="p-6"><button id="btn-logout" class="w-full flex items-center justify-center gap-3 text-rose-400 font-bold py-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20"><i class="fas fa-power-off"></i> <span data-i18n="btn_logout">Log Out</span></button></div>
         </aside>
 
         <main class="flex-1 flex flex-col min-w-0 relative">
             <header class="h-20 glass-panel border-b border-slate-200 px-6 flex justify-between items-center z-10">
-                <div class="flex items-center gap-4">
-                    <button onclick="window.toggleMobileMenu()" class="md:hidden w-10 h-10 flex items-center justify-center bg-white rounded-full border"><i class="fas fa-bars"></i></button>
-                    <h1 id="page-title" class="text-xl md:text-2xl font-extrabold text-slate-800" data-i18n="menu_dash">Dashboard</h1>
-                </div>
-                <div class="flex bg-slate-100 p-1 rounded-full border">
-                    <button onclick="window.toggleLang('en')" id="lang-en-app" class="px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold">EN</button>
-                    <button onclick="window.toggleLang('th')" id="lang-th-app" class="px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold">TH</button>
-                </div>
+                <div class="flex items-center gap-4"><button onclick="window.toggleMobileMenu()" class="md:hidden w-10 h-10 flex items-center justify-center bg-white rounded-full border"><i class="fas fa-bars"></i></button><h1 id="page-title" class="text-xl md:text-2xl font-extrabold text-slate-800" data-i18n="menu_dash">Dashboard</h1></div>
+                <div class="flex bg-slate-100 p-1 rounded-full border"><button onclick="window.toggleLang('en')" id="lang-en-app" class="px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold">EN</button><button onclick="window.toggleLang('th')" id="lang-th-app" class="px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold">TH</button></div>
             </header>
 
             <div class="flex-1 overflow-y-auto p-4 md:p-10 pb-20">
                 <div id="tab-dashboard" class="tab-content active">
-                    <div class="mb-10">
-                        <h2 class="text-3xl font-black text-slate-800"><span data-i18n="dash_welcome">Welcome,</span> <span id="dash-user-name" class="text-blue-600">User</span>!</h2>
-                        <p class="text-slate-500 text-sm" data-i18n="dash_sub">IT support summary for today.</p>
-                    </div>
+                    <div class="mb-10"><h2 class="text-3xl font-black text-slate-800"><span data-i18n="dash_welcome">Welcome,</span> <span id="dash-user-name" class="text-blue-600">User</span>!</h2></div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
                         <div class="stat-card bg-white p-6 rounded-[1.5rem] border"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_open">New</p><h3 class="text-4xl font-black" id="stat-new">0</h3></div>
                         <div class="stat-card bg-white p-6 rounded-[1.5rem] border"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_progress">In Progress</p><h3 class="text-4xl font-black text-amber-500" id="stat-progress">0</h3></div>
@@ -121,12 +87,14 @@
                                 <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_pri">Priority</label><select id="tk-priority" onchange="window.updatePriorityDesc()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50"><option value="3 - Moderate">Moderate</option><option value="1 - Critical">Critical</option></select></div>
                             </div>
                             <div id="priority-desc" class="p-4 rounded-xl border text-xs"><i id="priority-icon" class="fas fa-info-circle mr-2"></i><span id="priority-text">...</span></div>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-xl">
-                                <input type="text" id="tk-building" placeholder="Bldg" class="border rounded px-2 py-2 text-xs" required>
-                                <input type="text" id="tk-floor" placeholder="Floor" class="border rounded px-2 py-2 text-xs" required>
-                                <input type="text" id="tk-dept" placeholder="Dept" class="border rounded px-2 py-2 text-xs" required>
-                                <input type="text" id="tk-line" placeholder="Line" class="border rounded px-2 py-2 text-xs" required>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Building</label><select id="tk-building" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="Building A">Building A</option><option value="Building B">Building B</option><option value="Warehouse">Warehouse</option></select></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Floor</label><select id="tk-floor" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="1">Floor 1</option><option value="2">Floor 2</option><option value="3">Floor 3</option></select></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Dept.</label><select id="tk-dept" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="Production">Production</option><option value="IT">IT</option><option value="HR">HR</option></select></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Line</label><select id="tk-line" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="N/A">N/A</option><option value="Line 1">Line 1</option><option value="Line 2">Line 2</option></select></div>
                             </div>
+                            
                             <input type="text" id="tk-item" placeholder="Broken Item" class="w-full border rounded-xl px-4 py-3 text-sm" required>
                             <input type="text" id="tk-subject" placeholder="Subject" class="w-full border rounded-xl px-4 py-3 text-sm" required>
                             <textarea id="tk-desc" rows="4" placeholder="Description" class="w-full border rounded-xl px-4 py-3 text-sm resize-none" required></textarea>
@@ -175,7 +143,7 @@
                                 <i class="fas fa-image"></i>
                                 <input type="file" id="comment-image" accept="image/*" class="hidden" onchange="document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500')">
                             </label>
-                            <input type="text" id="comment-text" class="flex-1 bg-slate-50 border rounded-xl px-4 py-3 text-sm outline-none" placeholder="Type a reply..." autocomplete="off">
+                            <input type="text" id="comment-text" class="flex-1 bg-slate-50 border rounded-xl px-4 py-3 text-sm outline-none" placeholder="Type a reply or paste image..." autocomplete="off">
                             <button type="submit" id="btn-comment-submit" class="w-12 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg"><i class="fas fa-paper-plane text-xs"></i></button>
                         </form>
                     </div>
