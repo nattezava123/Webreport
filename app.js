@@ -18,9 +18,6 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
 
-// ==========================================
-// ส่วนที่ 1: ตัวแปรและฟังก์ชัน Utility (ต้องผูกกับ window ทั้งหมด)
-// ==========================================
 window.globalTickets = {};
 let currentTicketId = null;
 let chatUnsubscribe = null;
@@ -66,14 +63,11 @@ window.toggleLang = (lang) => {
     currentLang = lang; localStorage.setItem('appLang', lang);
     const titleTag = document.getElementById('page-title-tag'); if(titleTag) titleTag.innerText = dict[lang].page_title;
     document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(dict[lang][k]) el.innerText = dict[lang][k]; });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const k = el.getAttribute('data-i18n-placeholder'); if(dict[lang][k]) el.placeholder = dict[lang][k]; });
     window.updatePriorityDesc(); 
     ['auth', 'app'].forEach(v => {
         const en = document.getElementById(`lang-en-${v}`), th = document.getElementById(`lang-th-${v}`);
         if(en && th) { en.className = (lang==='en' && v==='app') ? "px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold" : (lang==='en'?"px-4 py-1.5 bg-blue-600 text-white rounded-full text-xs font-bold":"px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold"); th.className = (lang==='th' && v==='app') ? "px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold" : (lang==='th'?"px-4 py-1.5 bg-blue-600 text-white rounded-full text-xs font-bold":"px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold"); }
     });
-    let activeTab = document.querySelector('.tab-content.active');
-    if(activeTab) document.getElementById('page-title').innerText = dict[lang][`menu_${activeTab.id.replace('tab-', '')}`] || dict[lang].app_name;
 };
 
 window.updatePriorityDesc = () => {
@@ -87,13 +81,11 @@ window.switchTab = (tabName) => {
     document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
     const target = document.getElementById(`tab-${tabName}`); if(target) target.classList.add('active');
     document.querySelector(`.menu-link[onclick*="'${tabName}'"]`)?.classList.add('active');
-    document.getElementById('page-title').innerText = dict[currentLang][`menu_${tabName}`] || dict[currentLang].app_name;
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
 };
 
 window.toggleAuthMode = () => { isLoginMode = !isLoginMode; document.getElementById('auth-submit-btn').innerText = isLoginMode ? dict[currentLang].btn_signin : dict[currentLang].btn_register; };
 
-// AI 
 window.openAIModal = () => { document.getElementById('ai-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ai-modal').style.opacity = '1'; document.getElementById('ai-box').classList.replace('scale-95', 'scale-100'); }, 10); };
 window.closeAIModal = () => { document.getElementById('ai-modal').style.opacity = '0'; document.getElementById('ai-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => document.getElementById('ai-modal').classList.replace('flex', 'hidden'), 300); };
 window.sendAIMessage = () => {
@@ -102,19 +94,20 @@ window.sendAIMessage = () => {
     setTimeout(() => { b.insertAdjacentHTML('beforeend', `<div class="flex gap-4 mb-6"><div class="bg-white border p-4 rounded-2xl text-sm text-slate-700">สวัสดีครับ ผม Serviceman ยินดีช่วยตรวจสอบครับ</div></div>`); b.scrollTop = b.scrollHeight; }, 600);
 };
 
-// Data
 function loadDashboardData() {
     onSnapshot(query(collection(db, "incidents"), orderBy("createdAt", "desc")), (snapshot) => {
-        let userHtml = "", recentHtml = "", counts = { New: 0, "In Progress": 0, Resolved: 0, Total: 0 };
+        let userHtml = "", recentHtml = "", counts = { New: 0, "In Progress": 0, Resolved: 0, Total: 0 }, recentCount=0;
         snapshot.forEach((docSnap) => {
             const t = docSnap.data(), id = docSnap.id; window.globalTickets[id] = t;
             if (t.callerEmail !== auth.currentUser.email) return;
             counts[t.status]++; counts.Total++;
             userHtml += `<tr class="border-b cursor-pointer" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs">${id.substring(0,4)}</td><td class="p-4 font-bold text-sm">${t.subject}</td><td class="p-4 text-xs">${t.status}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
+            if(recentCount<5){ recentHtml+=`<div class="p-4 bg-white border rounded-xl mb-2 text-sm cursor-pointer" onclick="window.openModal('${id}')"><b>${t.subject}</b> - ${t.status}</div>`; recentCount++;}
         });
         document.getElementById('user-ticket-list').innerHTML = userHtml;
         document.getElementById('stat-new').innerText = counts.New || 0; document.getElementById('stat-progress').innerText = counts["In Progress"] || 0;
         document.getElementById('stat-resolved').innerText = counts.Resolved || 0; document.getElementById('stat-total').innerText = counts.Total || 0;
+        document.getElementById('dash-recent-list').innerHTML = recentHtml;
         const u = auth.currentUser.email.split('@')[0]; document.getElementById('dash-user-name').innerText = u.charAt(0).toUpperCase() + u.slice(1);
     });
 }
@@ -132,25 +125,73 @@ document.getElementById('create-ticket-form').onsubmit = async (e) => {
 window.openModal = (id) => {
     currentTicketId = id; const t = window.globalTickets[id];
     document.getElementById('modal-id').innerText = id.substring(0,4); document.getElementById('modal-subject').innerText = t.subject;
-    document.getElementById('modal-location').innerText = `Bldg: ${t.building}, Floor: ${t.floor}`;
+    document.getElementById('modal-location').innerText = `Bldg: ${t.building}, Floor: ${t.floor}, Dept: ${t.department}`;
     document.getElementById('modal-broken-item').innerText = t.brokenItem; document.getElementById('modal-desc').innerText = t.description;
     document.getElementById('modal-caller').innerText = t.callerEmail; document.getElementById('modal-date').innerText = t.createdAt?.toDate().toLocaleString();
     if(t.imageUrl) { document.getElementById('modal-image').src = t.imageUrl; document.getElementById('modal-image-container').classList.remove('hidden'); } else { document.getElementById('modal-image-container').classList.add('hidden'); }
     
     document.getElementById('ticket-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ticket-modal').style.opacity = '1'; document.getElementById('modal-box').classList.replace('scale-95', 'scale-100'); }, 10);
     if(chatUnsubscribe) chatUnsubscribe();
+    
+    // 🔥 แก้แชทให้โชว์รูปภาพได้!
     chatUnsubscribe = onSnapshot(query(collection(db, "incidents", id, "comments"), orderBy("createdAt", "asc")), (snap) => {
-        let h = ""; snap.forEach(d => { const msg = d.data(); h += `<div class="p-2 border rounded-xl bg-white text-sm mb-2"><b>${msg.senderEmail.split('@')[0]}:</b> ${msg.text}</div>`; });
+        let h = ""; 
+        snap.forEach(doc => { 
+            const d = doc.data();
+            if(d.senderEmail === 'system') { 
+                h += `<div class="flex justify-center my-4"><span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-[10px] font-bold"><i class="fas fa-cog"></i> ${d.text}</span></div>`; 
+            } else {
+                const isMe = d.senderEmail === auth.currentUser.email;
+                const align = isMe ? 'items-end' : 'items-start';
+                const bg = isMe ? 'bg-blue-600 text-white' : 'bg-white border text-slate-700';
+                const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
+                let chatImgHtml = d.imageUrl ? `<img src="${d.imageUrl}" class="mt-2 rounded-lg max-h-40 cursor-pointer border hover:opacity-90 transition" onclick="window.viewFullImage('${d.imageUrl}')">` : '';
+                h += `<div class="flex flex-col ${align} mb-4"><div class="max-w-[85%] ${bg} p-3 rounded-xl shadow-sm text-sm"><div class="text-[10px] font-bold opacity-70 mb-1">${senderName}</div>${d.text}${chatImgHtml}</div></div>`;
+            }
+        });
         document.getElementById('chat-messages').innerHTML = h; document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
     });
 };
 
 window.closeModal = () => { document.getElementById('ticket-modal').style.opacity = '0'; document.getElementById('modal-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => { document.getElementById('ticket-modal').classList.replace('flex', 'hidden'); if(chatUnsubscribe) chatUnsubscribe(); }, 300); };
 
+// 🔥 ฟังก์ชัน Paste วางรูปภาพในแชทด้วย Ctrl+V
+document.getElementById('comment-text').addEventListener('paste', function(e) {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (let index in items) {
+        if (items[index].kind === 'file' && items[index].type.includes('image')) {
+            const dataTransfer = new DataTransfer(); dataTransfer.items.add(items[index].getAsFile());
+            document.getElementById('comment-image').files = dataTransfer.files;
+            document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500');
+            Toast.fire({ icon: 'success', title: 'Image attached from Clipboard' }); e.preventDefault(); 
+        }
+    }
+});
+
+// 🔥 แก้ฟอร์มให้ส่งรูปเข้าไปในฐานข้อมูลได้
 document.getElementById('comment-form').onsubmit = async (e) => {
-    e.preventDefault(); const t = document.getElementById('comment-text'); if(!t.value) return;
-    await addDoc(collection(db, "incidents", currentTicketId, "comments"), { senderEmail: auth.currentUser.email, text: t.value, createdAt: new Date() });
-    t.value = '';
+    e.preventDefault(); 
+    const textInput = document.getElementById('comment-text');
+    const imgInput = document.getElementById('comment-image');
+    const text = textInput.value.trim();
+    
+    if(!text && imgInput.files.length === 0) return; 
+
+    const btnSubmit = document.getElementById('btn-comment-submit');
+    btnSubmit.disabled = true; btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i>';
+
+    try {
+        let uploadedImageUrl = null;
+        if (imgInput.files.length > 0) uploadedImageUrl = await resizeAndConvertToBase64(imgInput.files[0], 800, 800);
+
+        await addDoc(collection(db, "incidents", currentTicketId, "comments"), { 
+            senderEmail: auth.currentUser.email, text: text, imageUrl: uploadedImageUrl, createdAt: new Date() 
+        });
+
+        document.getElementById('comment-form').reset(); 
+        document.getElementById('comment-img-label').classList.replace('text-blue-500', 'text-slate-500');
+    } catch (error) { Swal.fire({ icon: 'error', text: error.message }); } 
+    finally { btnSubmit.disabled = false; btnSubmit.innerHTML = '<i class="fas fa-paper-plane text-xs"></i>'; }
 };
 
 document.getElementById('auth-form').onsubmit = (e) => {
@@ -158,7 +199,7 @@ document.getElementById('auth-form').onsubmit = (e) => {
     (isLoginMode ? signInWithEmailAndPassword(auth, em, ps) : createUserWithEmailAndPassword(auth, em, ps)).catch(e => Swal.fire({ icon: 'error', text: e.message }));
 };
 
-window.loginWithGoogle = () => signInWithPopup(auth, googleProvider);
+window.loginWithGoogle = () => signInWithPopup(auth, googleProvider).catch(e => Swal.fire({ icon: 'error', text: e.message }));
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
