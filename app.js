@@ -25,8 +25,8 @@ let isLoginMode = true;
 let currentLang = localStorage.getItem('appLang') || 'en';
 
 const dict = {
-    en: { page_title: "Factory IT Service Center", app_name: "Factory IT Service Center", app_name_short: "Factory IT", auth_sub: "Enterprise Service Desk", email: "Email", password: "Password", btn_signin: "Sign In", no_account: "New here?", btn_register: "Create an account", auth_or: "OR", btn_google: "Continue with Google", role_user: "User", menu_group_1: "Workspace", menu_dash: "Dashboard", menu_incidents: "My Tickets", menu_create: "Create Ticket", btn_logout: "Log Out", stat_open: "New Tickets", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", th_subject: "Subject", th_status: "Status", th_date: "Timeline", btn_submit: "Submit Request", search_placeholder: "Search...", btn_new_ticket: "Create", form_title: "How can we help?", form_sub: "Support request details.", form_cat: "Category", form_pri: "Priority", form_short: "Subject", form_desc: "Description", form_loc_head: "Location", form_bldg: "Bldg", form_floor: "Floor", form_dept: "Dept", form_line: "Line", form_item: "Item", modal_loc: "Loc & Item", dash_welcome: "Welcome,", dash_sub: "IT support summary.", dash_recent: "Activity", btn_view_all: "All", dash_status: "Status", dash_status_sub: "Running smoothly.", sys_net: "Network", sys_erp: "ERP", cat_hw: "❖ Hardware", cat_sw: "❖ Software", cat_nw: "❖ Network", filter_all: "All", filter_active: "Active", filter_resolved: "Resolved", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved", empty_tickets: "None", empty_recent: "Clear!" },
-    th: { page_title: "ศูนย์บริการไอทีโรงงาน", app_name: "ศูนย์บริการไอทีโรงงาน", app_name_short: "ศูนย์บริการไอที", auth_sub: "ระบบแจ้งซ่อมไอที", email: "อีเมล", password: "รหัสผ่าน", btn_signin: "เข้าสู่ระบบ", no_account: "ยังไม่มีบัญชี?", btn_register: "สมัครสมาชิก", auth_or: "หรือ", btn_google: "ด้วย Google", role_user: "ผู้แจ้ง", menu_group_1: "พื้นที่ทำงาน", menu_dash: "ภาพรวมระบบ", menu_incidents: "ตั๋วของฉัน", menu_create: "แจ้งปัญหาใหม่", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "ทั้งหมด", th_subject: "หัวข้อ", th_status: "สถานะ", th_date: "ล่าสุด", btn_submit: "ส่งเรื่องแจ้งซ่อม", search_placeholder: "ค้นหา...", btn_new_ticket: "สร้างใหม่", form_title: "มีอะไรให้ช่วยไหม?", form_sub: "ระบุรายละเอียดเพื่อแจ้งซ่อม", form_cat: "หมวดหมู่", form_pri: "ความเร่งด่วน", form_short: "หัวข้อ", form_desc: "รายละเอียด", form_loc_head: "สถานที่", form_bldg: "ตึก", form_floor: "ชั้น", form_dept: "แผนก", form_line: "ไลน์", form_item: "ของที่เสีย", modal_loc: "สถานที่และของ", dash_welcome: "ยินดีต้อนรับ,", dash_sub: "สรุปภาพรวมวันนี้", dash_recent: "อัปเดตล่าสุด", btn_view_all: "ดูทั้งหมด", dash_status: "สถานะระบบ", dash_status_sub: "ทำงานปกติ", sys_net: "เครือข่าย", sys_erp: "ระบบ ERP", cat_hw: "❖ ฮาร์ดแวร์", cat_sw: "❖ ซอฟต์แวร์", cat_nw: "❖ เครือข่าย", filter_all: "ทั้งหมด", filter_active: "กำลังดำเนินการ", filter_resolved: "ปิดงานแล้ว", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว", empty_tickets: "ไม่พบข้อมูล", empty_recent: "จัดการครบแล้ว!" }
+    en: { page_title: "Factory IT Service Center", app_name: "Factory IT Service Center", app_name_short: "Factory IT", auth_sub: "Enterprise Service Desk", email: "Email", password: "Password", btn_signin: "Sign In", no_account: "New here?", btn_register: "Create an account", auth_or: "OR", btn_google: "Continue with Google", role_user: "User", menu_group_1: "Workspace", menu_dash: "Dashboard", menu_incidents: "My Tickets", menu_create: "Create Ticket", btn_logout: "Log Out", stat_open: "New Tickets", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", th_subject: "Subject", th_status: "Status", th_date: "Timeline", btn_submit: "Submit Request", search_placeholder: "Search...", btn_new_ticket: "Create", form_title: "How can we help?", form_sub: "Support request details.", form_cat: "Category", form_pri: "Priority", form_short: "Subject", form_desc: "Description", form_loc_head: "Location", form_bldg: "Bldg", form_floor: "Floor", form_dept: "Dept", form_line: "Line", form_item: "Item", modal_loc: "Loc & Item", dash_welcome: "Welcome,", dash_sub: "IT support summary.", dash_recent: "Activity", btn_view_all: "All", dash_status: "Status", dash_status_sub: "Running smoothly.", sys_net: "Network", sys_erp: "ERP", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", filter_all: "All", filter_active: "Active", filter_resolved: "Resolved", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved", empty_tickets: "None", empty_recent: "Clear!" },
+    th: { page_title: "ศูนย์บริการไอทีโรงงาน", app_name: "ศูนย์บริการไอทีโรงงาน", app_name_short: "ศูนย์บริการไอที", auth_sub: "ระบบแจ้งซ่อมไอที", email: "อีเมล", password: "รหัสผ่าน", btn_signin: "เข้าสู่ระบบ", no_account: "ยังไม่มีบัญชี?", btn_register: "สมัครสมาชิก", auth_or: "หรือ", btn_google: "ด้วย Google", role_user: "ผู้แจ้ง", menu_group_1: "พื้นที่ทำงาน", menu_dash: "ภาพรวมระบบ", menu_incidents: "ตั๋วของฉัน", menu_create: "แจ้งปัญหาใหม่", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "ทั้งหมด", th_subject: "หัวข้อ", th_status: "สถานะ", th_date: "ล่าสุด", btn_submit: "ส่งเรื่องแจ้งซ่อม", search_placeholder: "ค้นหา...", btn_new_ticket: "สร้างใหม่", form_title: "มีอะไรให้ช่วยไหม?", form_sub: "ระบุรายละเอียดเพื่อแจ้งซ่อม", form_cat: "หมวดหมู่", form_pri: "ความเร่งด่วน", form_short: "หัวข้อ", form_desc: "รายละเอียด", form_loc_head: "สถานที่", form_bldg: "ตึก", form_floor: "ชั้น", form_dept: "แผนก", form_line: "ไลน์", form_item: "ของที่เสีย", modal_loc: "สถานที่และของ", dash_welcome: "ยินดีต้อนรับ,", dash_sub: "สรุปภาพรวมวันนี้", dash_recent: "อัปเดตล่าสุด", btn_view_all: "ดูทั้งหมด", dash_status: "สถานะระบบ", dash_status_sub: "ทำงานปกติ", sys_net: "เครือข่าย", sys_erp: "ระบบ ERP", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", filter_all: "ทั้งหมด", filter_active: "กำลังดำเนินการ", filter_resolved: "ปิดงานแล้ว", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว", empty_tickets: "ไม่พบข้อมูล", empty_recent: "จัดการครบแล้ว!" }
 };
 
 window.viewFullImage = (url) => { Swal.fire({ imageUrl: url, imageAlt: 'Attached Image', width: 'auto', padding: '1rem', showConfirmButton: false, showCloseButton: true, customClass: { image: 'rounded-xl max-h-[80vh] object-contain' } }); };
@@ -63,6 +63,11 @@ window.toggleLang = (lang) => {
     currentLang = lang; localStorage.setItem('appLang', lang);
     const titleTag = document.getElementById('page-title-tag'); if(titleTag) titleTag.innerText = dict[lang].page_title;
     document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(dict[lang][k]) el.innerText = dict[lang][k]; });
+    
+    // 🔥 แปลภาษาให้ Category Option
+    const optHw = document.getElementById('opt-hw'), optSw = document.getElementById('opt-sw'), optNw = document.getElementById('opt-nw');
+    if(optHw) optHw.innerText = dict[lang].cat_hw; if(optSw) optSw.innerText = dict[lang].cat_sw; if(optNw) optNw.innerText = dict[lang].cat_nw;
+
     window.updatePriorityDesc(); 
     ['auth', 'app'].forEach(v => {
         const en = document.getElementById(`lang-en-${v}`), th = document.getElementById(`lang-th-${v}`);
@@ -70,10 +75,23 @@ window.toggleLang = (lang) => {
     });
 };
 
+// 🔥 กล่องแจ้งเตือนความเร่งด่วนแบบสมบูรณ์
 window.updatePriorityDesc = () => {
-    const s = document.getElementById('tk-priority'); if(!s) return; const v = s.value;
-    const txt = currentLang === 'th' ? { "3 - Moderate": "● กระทบระดับแผนก - SLA: 24 ชม.", "1 - Critical": "● ระบบหลักล่ม - SLA: 1 ชม." } : { "3 - Moderate": "● Department impact - SLA: 24h", "1 - Critical": "● Critical - SLA: 1h" };
-    const priorityText = document.getElementById('priority-text'); if(priorityText) priorityText.innerText = txt[v] || v;
+    const select = document.getElementById('tk-priority'); if(!select) return;
+    const val = select.value;
+    const thTexts = { "4 - Low": "● กระทบรายบุคคล - SLA: แก้ไขภายใน 3 วัน", "3 - Moderate": "● กระทบระดับแผนก - SLA: แก้ไขภายใน 24 ชม.", "2 - High": "● กระทบวงกว้าง - SLA: แก้ไขภายใน 4 ชม.", "1 - Critical": "● ระบบหลักล่ม - SLA: แก้ไขภายใน 1 ชม." };
+    const enTexts = { "4 - Low": "● Individual impact - SLA: 3 Days", "3 - Moderate": "● Department impact - SLA: 24 Hours", "2 - High": "● Business degraded - SLA: 4 Hours", "1 - Critical": "● Total failure - SLA: 1 Hour" };
+    const descColors = { "4 - Low": "bg-emerald-50/50 border-emerald-100 text-emerald-800", "3 - Moderate": "bg-amber-50/50 border-amber-100 text-amber-800", "2 - High": "bg-orange-50/50 border-orange-100 text-orange-800", "1 - Critical": "bg-rose-50/50 border-rose-100 text-rose-800" };
+    const iconColors = { "4 - Low": "text-emerald-500", "3 - Moderate": "text-amber-500", "2 - High": "text-orange-500", "1 - Critical": "text-rose-500" };
+
+    const priorityText = document.getElementById('priority-text');
+    if(priorityText) priorityText.innerText = currentLang === 'th' ? thTexts[val] : enTexts[val];
+    
+    const priorityDesc = document.getElementById('priority-desc');
+    if(priorityDesc) priorityDesc.className = `p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors ${descColors[val]}`;
+    
+    const priorityIcon = document.getElementById('priority-icon');
+    if(priorityIcon) priorityIcon.className = `fas fa-info-circle mt-0.5 ${iconColors[val]}`;
 };
 
 window.switchTab = (tabName) => {
@@ -91,7 +109,7 @@ window.closeAIModal = () => { document.getElementById('ai-modal').style.opacity 
 window.sendAIMessage = () => {
     const i = document.getElementById('ai-input'), b = document.getElementById('ai-chat-box'), t = i.value.trim(); if(!t) return;
     b.insertAdjacentHTML('beforeend', `<div class="flex flex-row-reverse gap-4 mb-6"><div class="bg-indigo-600 text-white p-4 rounded-2xl text-sm">${t}</div></div>`); i.value = '';
-    setTimeout(() => { b.insertAdjacentHTML('beforeend', `<div class="flex gap-4 mb-6"><div class="bg-white border p-4 rounded-2xl text-sm text-slate-700">สวัสดีครับ ผม Serviceman ยินดีช่วยตรวจสอบครับ</div></div>`); b.scrollTop = b.scrollHeight; }, 600);
+    setTimeout(() => { b.insertAdjacentHTML('beforeend', `<div class="flex gap-4 mb-6"><div class="bg-white border p-4 rounded-2xl text-sm text-slate-700">สวัสดีครับ ผม Serviceman ยินดีช่วยตรวจสอบครับ กดปุ่ม Create Ticket เพื่อแจ้งให้ช่างเข้าไปเช็คได้เลยนะครับ</div></div>`); b.scrollTop = b.scrollHeight; }, 600);
 };
 
 function loadDashboardData() {
@@ -101,7 +119,7 @@ function loadDashboardData() {
             const t = docSnap.data(), id = docSnap.id; window.globalTickets[id] = t;
             if (t.callerEmail !== auth.currentUser.email) return;
             counts[t.status]++; counts.Total++;
-            userHtml += `<tr class="border-b cursor-pointer" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs">${id.substring(0,4)}</td><td class="p-4 font-bold text-sm">${t.subject}</td><td class="p-4 text-xs">${t.status}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
+            userHtml += `<tr class="border-b cursor-pointer" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs">${id.substring(0,4).toUpperCase()}</td><td class="p-4 font-bold text-sm">${t.subject}</td><td class="p-4 text-xs">${t.status}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
             if(recentCount<5){ recentHtml+=`<div class="p-4 bg-white border rounded-xl mb-2 text-sm cursor-pointer" onclick="window.openModal('${id}')"><b>${t.subject}</b> - ${t.status}</div>`; recentCount++;}
         });
         document.getElementById('user-ticket-list').innerHTML = userHtml;
@@ -118,13 +136,14 @@ document.getElementById('create-ticket-form').onsubmit = async (e) => {
         let img = null; if(document.getElementById('tk-image').files[0]) img = await resizeAndConvertToBase64(document.getElementById('tk-image').files[0], 800, 800);
         const docRef = await addDoc(collection(db, "incidents"), { callerEmail: auth.currentUser.email, category: document.getElementById('tk-category').value, priority: document.getElementById('tk-priority').value, building: document.getElementById('tk-building').value, floor: document.getElementById('tk-floor').value, department: document.getElementById('tk-dept').value, line: document.getElementById('tk-line').value, brokenItem: document.getElementById('tk-item').value, subject: document.getElementById('tk-subject').value, description: document.getElementById('tk-desc').value, imageUrl: img, status: 'New', createdAt: new Date() });
         await addDoc(collection(db, "incidents", docRef.id, "comments"), { senderEmail: "system", text: "Ticket created.", createdAt: new Date() });
-        document.getElementById('create-ticket-form').reset(); window.clearCreateImage(); Toast.fire({ icon: 'success', title: 'Success!' }); window.switchTab('incidents');
+        document.getElementById('create-ticket-form').reset(); window.clearCreateImage(); window.updatePriorityDesc(); Toast.fire({ icon: 'success', title: 'Success!' }); window.switchTab('incidents');
     } catch (e) { Swal.fire({ icon: 'error', text: e.message }); } finally { b.disabled = false; }
 };
 
 window.openModal = (id) => {
     currentTicketId = id; const t = window.globalTickets[id];
-    document.getElementById('modal-id').innerText = id.substring(0,4); document.getElementById('modal-subject').innerText = t.subject;
+    document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); document.getElementById('modal-subject').innerText = t.subject;
+    document.getElementById('modal-category').innerText = t.category; document.getElementById('modal-priority').innerText = t.priority;
     document.getElementById('modal-location').innerText = `Bldg: ${t.building}, Floor: ${t.floor}, Dept: ${t.department}`;
     document.getElementById('modal-broken-item').innerText = t.brokenItem; document.getElementById('modal-desc').innerText = t.description;
     document.getElementById('modal-caller').innerText = t.callerEmail; document.getElementById('modal-date').innerText = t.createdAt?.toDate().toLocaleString();
@@ -133,7 +152,6 @@ window.openModal = (id) => {
     document.getElementById('ticket-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ticket-modal').style.opacity = '1'; document.getElementById('modal-box').classList.replace('scale-95', 'scale-100'); }, 10);
     if(chatUnsubscribe) chatUnsubscribe();
     
-    // 🔥 แก้แชทให้โชว์รูปภาพได้!
     chatUnsubscribe = onSnapshot(query(collection(db, "incidents", id, "comments"), orderBy("createdAt", "asc")), (snap) => {
         let h = ""; 
         snap.forEach(doc => { 
@@ -155,7 +173,6 @@ window.openModal = (id) => {
 
 window.closeModal = () => { document.getElementById('ticket-modal').style.opacity = '0'; document.getElementById('modal-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => { document.getElementById('ticket-modal').classList.replace('flex', 'hidden'); if(chatUnsubscribe) chatUnsubscribe(); }, 300); };
 
-// 🔥 ฟังก์ชัน Paste วางรูปภาพในแชทด้วย Ctrl+V
 document.getElementById('comment-text').addEventListener('paste', function(e) {
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;
     for (let index in items) {
@@ -168,13 +185,11 @@ document.getElementById('comment-text').addEventListener('paste', function(e) {
     }
 });
 
-// 🔥 แก้ฟอร์มให้ส่งรูปเข้าไปในฐานข้อมูลได้
 document.getElementById('comment-form').onsubmit = async (e) => {
     e.preventDefault(); 
     const textInput = document.getElementById('comment-text');
     const imgInput = document.getElementById('comment-image');
     const text = textInput.value.trim();
-    
     if(!text && imgInput.files.length === 0) return; 
 
     const btnSubmit = document.getElementById('btn-comment-submit');
@@ -183,13 +198,8 @@ document.getElementById('comment-form').onsubmit = async (e) => {
     try {
         let uploadedImageUrl = null;
         if (imgInput.files.length > 0) uploadedImageUrl = await resizeAndConvertToBase64(imgInput.files[0], 800, 800);
-
-        await addDoc(collection(db, "incidents", currentTicketId, "comments"), { 
-            senderEmail: auth.currentUser.email, text: text, imageUrl: uploadedImageUrl, createdAt: new Date() 
-        });
-
-        document.getElementById('comment-form').reset(); 
-        document.getElementById('comment-img-label').classList.replace('text-blue-500', 'text-slate-500');
+        await addDoc(collection(db, "incidents", currentTicketId, "comments"), { senderEmail: auth.currentUser.email, text: text, imageUrl: uploadedImageUrl, createdAt: new Date() });
+        document.getElementById('comment-form').reset(); document.getElementById('comment-img-label').classList.replace('text-blue-500', 'text-slate-500');
     } catch (error) { Swal.fire({ icon: 'error', text: error.message }); } 
     finally { btnSubmit.disabled = false; btnSubmit.innerHTML = '<i class="fas fa-paper-plane text-xs"></i>'; }
 };
