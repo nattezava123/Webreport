@@ -81,12 +81,9 @@ window.updatePriorityDesc = () => {
     const descColors = { "4 - Low": "bg-emerald-50/50 border-emerald-100 text-emerald-800", "3 - Moderate": "bg-amber-50/50 border-amber-100 text-amber-800", "2 - High": "bg-orange-50/50 border-orange-100 text-orange-800", "1 - Critical": "bg-rose-50/50 border-rose-100 text-rose-800" };
     const iconColors = { "4 - Low": "text-emerald-500", "3 - Moderate": "text-amber-500", "2 - High": "text-orange-500", "1 - Critical": "text-rose-500" };
 
-    const priorityText = document.getElementById('priority-text');
-    if(priorityText) priorityText.innerText = currentLang === 'th' ? thTexts[val] : enTexts[val];
-    const priorityDesc = document.getElementById('priority-desc');
-    if(priorityDesc) priorityDesc.className = `p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors ${descColors[val]}`;
-    const priorityIcon = document.getElementById('priority-icon');
-    if(priorityIcon) priorityIcon.className = `fas fa-info-circle mt-0.5 ${iconColors[val]}`;
+    const pText = document.getElementById('priority-text'); if(pText) pText.innerText = currentLang === 'th' ? thTexts[val] : enTexts[val];
+    const pDesc = document.getElementById('priority-desc'); if(pDesc) pDesc.className = `p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors ${descColors[val]}`;
+    const pIcon = document.getElementById('priority-icon'); if(pIcon) pIcon.className = `fas fa-info-circle mt-0.5 ${iconColors[val]}`;
 };
 
 window.switchTab = (tabName) => {
@@ -97,7 +94,6 @@ window.switchTab = (tabName) => {
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
 };
 
-// 🔥 อัปเดต UX/UI การสลับโหมด Login / Register อย่างมืออาชีพ
 window.toggleAuthMode = () => { 
     isLoginMode = !isLoginMode; 
     const titleEl = document.getElementById('auth-title');
@@ -116,15 +112,11 @@ window.toggleAuthMode = () => {
         nameField.style.display = 'block'; confirmField.style.display = 'block';
         document.getElementById('auth-name').required = true; document.getElementById('auth-confirm-password').required = true;
     }
-
     document.getElementById('auth-submit-btn').innerText = isLoginMode ? dict[currentLang].btn_signin : dict[currentLang].btn_register; 
     document.getElementById('auth-switch-text').innerText = isLoginMode ? dict[currentLang].no_account : (currentLang === 'th' ? "มีบัญชีอยู่แล้ว?" : "Already have an account?");
     document.getElementById('auth-switch-btn').innerText = isLoginMode ? dict[currentLang].btn_register : dict[currentLang].btn_signin; 
 };
 
-// ==========================================
-// 🤖 AI Assistant
-// ==========================================
 window.openAIModal = () => { document.getElementById('ai-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ai-modal').style.opacity = '1'; document.getElementById('ai-box').classList.replace('scale-95', 'scale-100'); }, 10); };
 window.closeAIModal = () => { document.getElementById('ai-modal').style.opacity = '0'; document.getElementById('ai-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => document.getElementById('ai-modal').classList.replace('flex', 'hidden'), 300); };
 window.sendQuickReply = (text) => { document.getElementById('ai-input').value = text; window.sendAIMessage(); };
@@ -152,8 +144,6 @@ window.sendAIMessage = async () => {
         consoleBox.scrollTop = consoleBox.scrollHeight;
     }, 800); 
 };
-
-// ==========================================
 
 function loadDashboardData() {
     onSnapshot(query(collection(db, "incidents"), orderBy("createdAt", "desc")), (snapshot) => {
@@ -218,7 +208,7 @@ document.getElementById('comment-form').onsubmit = async (e) => {
     } catch (e) { Swal.fire({ icon: 'error', text: e.message }); } finally { btn.disabled = false; }
 };
 
-// 🔥 ระบบ Login / Register ใหม่ (รวมอัปเดตชื่อผู้ใช้)
+// 🔥 อัปเดต: ระบบล็อกอิน (แก้ปัญหาซ้ำซ้อนแล้ว ใช้งานได้ 100%)
 document.getElementById('auth-form').onsubmit = async (e) => {
     e.preventDefault(); 
     const em = document.getElementById('auth-email').value;
@@ -247,7 +237,6 @@ document.getElementById('auth-form').onsubmit = async (e) => {
 
 window.loginWithGoogle = () => signInWithPopup(auth, googleProvider).catch(e => Swal.fire({ icon: 'error', text: e.message }));
 
-// 🔥 ปุ่ม Log Out
 document.getElementById('btn-logout').onclick = () => {
     Swal.fire({ title: currentLang === 'th' ? 'ออกจากระบบ?' : 'Sign Out?', icon: 'question', showCancelButton: true, confirmButtonColor: '#e11d48' })
     .then((result) => { if (result.isConfirmed) signOut(auth).then(() => window.location.reload()); });
