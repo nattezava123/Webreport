@@ -19,12 +19,13 @@ const googleProvider = new GoogleAuthProvider();
 const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
 
 // ==========================================
-// ส่วนที่ 1: ฟังก์ชัน Utility และตัวแปรพื้นฐาน
+// 1. ฟังก์ชัน Utility และ UI (แปะบน window)
 // ==========================================
 window.globalTickets = {};
 let currentTicketId = null;
 let chatUnsubscribe = null;
 let isLoginMode = true;
+let currentLang = localStorage.getItem('appLang') || 'en';
 
 window.viewFullImage = (url) => {
     Swal.fire({ imageUrl: url, imageAlt: 'Attached Image', width: 'auto', padding: '1rem', showConfirmButton: false, showCloseButton: true, customClass: { image: 'rounded-xl max-h-[80vh] object-contain' } });
@@ -47,9 +48,9 @@ window.clearCreateImage = () => {
     document.getElementById('create-image-preview-container').classList.add('hidden');
 };
 
-function resizeAndConvertToBase64(file, maxWidth, maxHeight) {
+async function resizeAndConvertToBase64(file, maxWidth, maxHeight) {
     return new Promise((resolve, reject) => {
-        if (!file.type.match(/image\/(jpeg|jpg|png|gif|webp)/i)) { reject(new Error("กรุณาอัปโหลดไฟล์รูปภาพ (JPG, PNG) เท่านั้นครับ")); return; }
+        if (!file.type.match(/image\/(jpeg|jpg|png|gif|webp)/i)) { reject(new Error("กรุณาอัปโหลดไฟล์รูปภาพเท่านั้นครับ")); return; }
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = (event) => {
@@ -64,10 +65,8 @@ function resizeAndConvertToBase64(file, maxWidth, maxHeight) {
                 ctx.drawImage(img, 0, 0, width, height);
                 resolve(canvas.toDataURL('image/jpeg', 0.7));
             };
-            img.onerror = () => reject(new Error("ไม่สามารถประมวลผลรูปภาพนี้ได้ (ไฟล์อาจเสีย)"));
             img.src = event.target.result;
         };
-        reader.onerror = () => reject(new Error("อ่านไฟล์ล้มเหลว"));
     });
 }
 
@@ -111,19 +110,19 @@ const dict = {
     }
 };
 
-let currentLang = localStorage.getItem('appLang') || 'en';
-
 window.toggleMobileMenu = () => { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('open'); };
 
 window.toggleLang = (lang) => {
     currentLang = lang; localStorage.setItem('appLang', lang);
-    document.getElementById('page-title-tag').innerText = dict[lang].page_title;
+    const titleTag = document.getElementById('page-title-tag');
+    if(titleTag) titleTag.innerText = dict[lang].page_title;
+    
     document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(dict[lang][k]) el.innerText = dict[lang][k]; });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const k = el.getAttribute('data-i18n-placeholder'); if(dict[lang][k]) el.placeholder = dict[lang][k]; });
     
     const optHw = document.getElementById('opt-hw'), optSw = document.getElementById('opt-sw'), optNw = document.getElementById('opt-nw');
     if(optHw) optHw.innerText = dict[lang].cat_hw; if(optSw) optSw.innerText = dict[lang].cat_sw; if(optNw) optNw.innerText = dict[lang].cat_nw;
-    if(typeof window.updatePriorityDesc === 'function') window.updatePriorityDesc(); 
+    window.updatePriorityDesc(); 
 
     ['auth', 'app'].forEach(view => {
         const btnEn = document.getElementById(`lang-en-${view}`), btnTh = document.getElementById(`lang-th-${view}`);
@@ -139,7 +138,10 @@ window.toggleLang = (lang) => {
     });
 
     let activeTab = document.querySelector('.tab-content.active');
-    if(activeTab) document.getElementById('page-title').innerText = dict[lang][`menu_${activeTab.id.replace('tab-', '')}`] || dict[lang].app_name;
+    if(activeTab) {
+        const tabKey = `menu_${activeTab.id.replace('tab-', '')}`;
+        document.getElementById('page-title').innerText = dict[lang][tabKey] || dict[lang].app_name;
+    }
 };
 
 window.updatePriorityDesc = () => {
@@ -150,7 +152,8 @@ window.updatePriorityDesc = () => {
     const descColors = { "4 - Low": "bg-emerald-50/50 border-emerald-100 text-emerald-800", "3 - Moderate": "bg-amber-50/50 border-amber-100 text-amber-800", "2 - High": "bg-orange-50/50 border-orange-100 text-orange-800", "1 - Critical": "bg-rose-50/50 border-rose-100 text-rose-800" };
     const iconColors = { "4 - Low": "text-emerald-500", "3 - Moderate": "text-amber-500", "2 - High": "text-orange-500", "1 - Critical": "text-rose-500" };
 
-    document.getElementById('priority-text').innerText = currentLang === 'th' ? thTexts[val] : enTexts[val];
+    const priorityText = document.getElementById('priority-text');
+    if(priorityText) priorityText.innerText = currentLang === 'th' ? thTexts[val] : enTexts[val];
     document.getElementById('priority-desc').className = `p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors ${descColors[val]}`;
     document.getElementById('priority-icon').className = `fas fa-info-circle mt-0.5 ${iconColors[val]}`;
 };
@@ -161,7 +164,7 @@ window.switchTab = (tabName) => {
     setTimeout(() => { document.getElementById(`tab-${tabName}`)?.classList.add('active'); }, 10);
     document.querySelector(`.menu-link[onclick*="'${tabName}'"]`)?.classList.add('active');
     document.getElementById('page-title').innerText = dict[currentLang][`menu_${tabName}`] || dict[currentLang].app_name;
-    if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) toggleMobileMenu();
+    if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
 };
 
 window.toggleAuthMode = () => {
@@ -172,13 +175,13 @@ window.toggleAuthMode = () => {
 };
 
 // ==========================================
-// ส่วนที่ 2: ระบบ AI Chatbot (คัดลอกมาแบบย่อเพื่อประหยัดพื้นที่ แต่ใช้งานได้เหมือนเดิม)
+// 2. ระบบ AI Assistant (Serviceman)
 // ==========================================
 window.openAIModal = () => {
     const modal = document.getElementById('ai-modal'); const box = document.getElementById('ai-box');
     modal.classList.remove('hidden'); modal.classList.add('flex');
     setTimeout(() => { modal.style.opacity = '1'; box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
-    if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) toggleMobileMenu();
+    if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
 };
 window.closeAIModal = () => {
     const modal = document.getElementById('ai-modal'); const box = document.getElementById('ai-box');
@@ -189,46 +192,28 @@ window.closeAIModal = () => {
 const botDatabase = [
     { keywords: ["ดี", "สวัสดี", "hello", "hi"], answer: "สวัสดีครับ! ผมคือ **Serviceman** 🤖 ผู้ช่วยไอทีประจำโรงงาน วันนี้ระบบไอทีมีปัญหาตรงไหนให้ผมช่วยไหมครับ" },
     { keywords: ["ลืมรหัส", "เปลี่ยนรหัส", "password"], answer: "ปัญหาเข้าสู่ระบบ/ลืมรหัสผ่าน 🔑 รบกวนกด **Create Ticket** แล้วระบุ Username เพื่อให้แอดมินรีเซ็ตรหัสผ่านให้นะครับ" },
-    { keywords: ["เน็ต", "อินเทอร์เน็ต", "internet", "wifi"], answer: "ปัญหาเน็ต/Wi-Fi 📡 ลองกดปิด-เปิด Wi-Fi ดูก่อนครับ หากไม่หาย รบกวนแจ้งพิกัดในหน้า Create Ticket ได้เลยครับ" },
-    { keywords: ["ปริ้น", "ปริ้นเตอร์", "เครื่องปริ้น", "print"], answer: "ปัญหาเครื่องพิมพ์ (Printer) 🖨️ ลองรีสตาร์ทคอม 1 รอบดูก่อนครับ ถ้ายังพิมพ์ไม่ได้ รบกวนเปิดตั๋วแจ้งซ่อมได้เลย" },
-    { keywords: ["คอมดับ", "เปิดไม่ติด"], answer: "คอมเปิดไม่ติด 🔌 รบกวนเช็คปลั๊กไฟใต้โต๊ะดูครับ หากไฟเข้าแต่เครื่องเงียบ เปิดตั๋วแจ้งซ่อมด่วนเลยครับ" }
+    { keywords: ["เน็ต", "อินเทอร์เน็ต", "internet"], answer: "ปัญหาเน็ต/Wi-Fi 📡 ลองกดปิด-เปิด Wi-Fi ดูก่อนครับ หากไม่หาย รบกวนแจ้งพิกัดในหน้า Create Ticket ได้เลยครับ" }
 ];
 
 window.sendQuickReply = (text) => { document.getElementById('ai-input').value = text; window.sendAIMessage(); };
 window.sendAIMessage = async () => {
     const input = document.getElementById('ai-input'); const rawText = input.value.trim(); if (!rawText) return;
     const consoleBox = document.getElementById('ai-chat-box');
-    consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 flex-row-reverse chat-user-bubble"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0"><i class="fas fa-user text-[10px]"></i></div><div class="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-sm text-sm">${rawText}</div></div>`);
+    consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 flex-row-reverse chat-user-bubble"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0"><i class="fas fa-user text-[10px]"></i></div><div class="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-sm text-sm shadow-md">${rawText}</div></div>`);
     input.value = ''; consoleBox.scrollTop = consoleBox.scrollHeight;
     
     setTimeout(() => {
-        let botReply = "ขออภัยครับ แนะนำให้กดเมนู **Create Ticket** เพื่อแจ้งให้พี่ๆ ช่างไอทีไปตรวจสอบให้นะครับ ชัวร์ที่สุดครับ!";
-        for (let entry of botDatabase) {
-            if (entry.keywords.some(k => rawText.toLowerCase().includes(k))) { botReply = entry.answer; break; }
-        }
+        let botReply = "ขออภัยครับ แนะนำให้กดเมนู **Create Ticket** เพื่อแจ้งให้พี่ๆ ช่างไอทีไปตรวจสอบให้นะครับ";
+        for (let entry of botDatabase) { if (entry.keywords.some(k => rawText.toLowerCase().includes(k))) { botReply = entry.answer; break; } }
         botReply = botReply.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-600">$1</strong>').replace(/\n/g, '<br>');
-        consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 chat-ai-bubble"><div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0"><i class="fas fa-robot text-[10px]"></i></div><div class="bg-slate-50 border border-slate-100 p-5 rounded-2xl rounded-tl-sm text-sm text-slate-700">${botReply}</div></div>`);
+        consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 chat-ai-bubble"><div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0 shadow-md"><i class="fas fa-robot text-[10px]"></i></div><div class="bg-slate-50 border border-slate-100 p-5 rounded-2xl rounded-tl-sm text-sm text-slate-700 leading-relaxed">${botReply}</div></div>`);
         consoleBox.scrollTop = consoleBox.scrollHeight;
     }, 800); 
 };
 
 // ==========================================
-// ส่วนที่ 3: ระบบ Auth และ Database (สำหรับ User)
+// 3. ระบบ Database & Auth (User Side)
 // ==========================================
-document.getElementById('auth-form').onsubmit = (e) => {
-    e.preventDefault();
-    const email = document.getElementById('auth-email').value, pass = document.getElementById('auth-password').value;
-    const action = isLoginMode ? signInWithEmailAndPassword : createUserWithEmailAndPassword;
-    action(auth, email, pass).catch(error => Swal.fire({ icon: 'error', text: error.message, confirmButtonColor: '#3b82f6' }));
-};
-
-window.loginWithGoogle = () => { signInWithPopup(auth, googleProvider).catch(error => Swal.fire({ icon: 'error', text: error.message, confirmButtonColor: '#3b82f6' })); };
-
-document.getElementById('btn-logout').onclick = () => {
-    Swal.fire({ title: currentLang === 'th' ? 'ออกจากระบบ?' : 'Sign Out?', icon: 'question', showCancelButton: true, confirmButtonColor: '#e11d48' })
-    .then((result) => { if (result.isConfirmed) signOut(auth).then(() => window.location.reload()); });
-};
-
 function loadDashboardData() {
     const q = query(collection(db, "incidents"), orderBy("createdAt", "desc"));
     onSnapshot(q, (snapshot) => {
@@ -238,8 +223,6 @@ function loadDashboardData() {
         snapshot.forEach((docSnap) => {
             const t = docSnap.data(), id = docSnap.id, displayId = "TKT-" + id.substring(0, 4).toUpperCase();
             window.globalTickets[id] = t;
-            
-            // กรองโชว์แค่ตั๋วของตัวเองเท่านั้น
             if (t.callerEmail !== auth.currentUser.email) return; 
             
             const safeStatus = t.status || 'New', safePriority = t.priority || '';
@@ -254,7 +237,7 @@ function loadDashboardData() {
             let priIndicator = safePriority.includes('1') ? '<i class="fas fa-fire text-rose-500 mr-2"></i>' : (safePriority.includes('2') ? '<i class="fas fa-exclamation-circle text-orange-500 mr-2"></i>' : '');
             let imgIcon = t.imageUrl ? ' <i class="fas fa-image text-blue-400 ml-1 text-[10px]"></i>' : '';
 
-            userHtml += `<tr class="hover:bg-slate-50 transition group border-b border-slate-50 cursor-pointer" onclick="openModal('${id}')">
+            userHtml += `<tr class="hover:bg-slate-50 transition border-b border-slate-50 cursor-pointer" onclick="openModal('${id}')">
                 <td class="py-4 px-6 font-bold text-slate-500 text-xs">${displayId}</td>
                 <td class="py-4 px-6"><div class="font-bold text-slate-800 text-sm">${priIndicator}${t.subject || 'No Subject'}${imgIcon}</div></td>
                 <td class="py-4 px-6">${statusHtml}</td>
@@ -271,8 +254,9 @@ function loadDashboardData() {
         document.getElementById('user-ticket-list').innerHTML = userHtml || emptyState;
         document.getElementById('stat-new').innerText = counts['New'] || 0; document.getElementById('stat-progress').innerText = counts['In Progress'] || 0;
         document.getElementById('stat-resolved').innerText = counts['Resolved'] || 0; document.getElementById('stat-total').innerText = counts['Total'] || 0;
-        document.getElementById('dash-recent-list').innerHTML = recentDashHtml || `<div class="p-8 text-center text-slate-400 border-2 border-dashed border-slate-100 rounded-xl"><p class="text-xs font-bold uppercase" data-i18n="empty_recent">${dict[currentLang].empty_recent}</p></div>`;
-        const userName = auth.currentUser.displayName ? auth.currentUser.displayName.split(' ')[0] : auth.currentUser.email.split('@')[0];
+        document.getElementById('dash-recent-list').innerHTML = recentDashHtml || `<div class="p-8 text-center text-slate-400 border-2 border-dashed border-slate-100 rounded-xl"><p class="text-xs font-bold uppercase">${dict[currentLang].empty_recent}</p></div>`;
+        const user = auth.currentUser;
+        const userName = user.displayName ? user.displayName.split(' ')[0] : user.email.split('@')[0];
         document.getElementById('dash-user-name').innerText = userName.charAt(0).toUpperCase() + userName.slice(1);
     }, (error) => console.error("Firebase Error:", error));
 }
@@ -289,9 +273,9 @@ document.getElementById('create-ticket-form').onsubmit = async (e) => {
             line: document.getElementById('tk-line').value, brokenItem: document.getElementById('tk-item').value, subject: document.getElementById('tk-subject').value,
             description: document.getElementById('tk-desc').value, imageUrl: uploadedImageUrl, status: 'New', assignedTo: null, createdAt: new Date()
         });
-        await addDoc(collection(db, "incidents", docRef.id, "comments"), { senderEmail: "system", text: "Ticket created and sent to IT Queue.", createdAt: new Date() });
-        document.getElementById('create-ticket-form').reset(); window.clearCreateImage(); window.updatePriorityDesc();
-        Toast.fire({ icon: 'success', title: currentLang === 'th' ? 'สร้างตั๋วสำเร็จ!' : 'Ticket Created!' }); switchTab('incidents');
+        await addDoc(collection(db, "incidents", docRef.id, "comments"), { senderEmail: "system", text: "Ticket created successfully.", createdAt: new Date() });
+        document.getElementById('create-ticket-form').reset(); window.clearCreateImage();
+        Toast.fire({ icon: 'success', title: currentLang === 'th' ? 'สร้างตั๋วสำเร็จ!' : 'Ticket Created!' }); window.switchTab('incidents');
     } catch (error) { Swal.fire({ icon: 'error', text: error.message }); } 
     finally { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> <span data-i18n="btn_submit">Submit Request</span>'; }
 };
@@ -323,7 +307,7 @@ window.openModal = (id) => {
             if(d.senderEmail === 'system') { html += `<div class="system-msg-container flex justify-center my-4"><span class="system-msg-pill shadow-sm"><i class="fas fa-cog mr-1 opacity-50"></i> ${d.text}</span></div>`; } 
             else {
                 const isMe = d.senderEmail === auth.currentUser.email, align = isMe ? 'items-end' : 'items-start', style = isMe ? 'chat-bubble-me' : 'chat-bubble-other', senderName = isMe ? (currentLang === 'th'?'คุณ':'You') : d.senderEmail.split('@')[0];
-                let chatImgHtml = d.imageUrl ? `<img src="${d.imageUrl}" class="mt-2 rounded-lg max-h-40 cursor-pointer border border-white/20 hover:opacity-90" onclick="viewFullImage('${d.imageUrl}')">` : '';
+                let chatImgHtml = d.imageUrl ? `<img src="${d.imageUrl}" class="mt-2 rounded-lg max-h-40 cursor-pointer border border-white/20" onclick="window.viewFullImage('${d.imageUrl}')">` : '';
                 html += `<div class="flex flex-col ${align}"><div class="${style} chat-bubble"><div class="chat-sender-name">${senderName} • ${timeStr}</div>${d.text}${chatImgHtml}</div></div>`;
             }
         });
@@ -337,18 +321,6 @@ window.closeModal = () => {
     setTimeout(() => modal.classList.add('hidden'), 300); if(chatUnsubscribe) chatUnsubscribe();
 };
 
-document.getElementById('comment-text').addEventListener('paste', function(e) {
-    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    for (let index in items) {
-        if (items[index].kind === 'file' && items[index].type.includes('image')) {
-            const dataTransfer = new DataTransfer(); dataTransfer.items.add(items[index].getAsFile());
-            document.getElementById('comment-image').files = dataTransfer.files;
-            document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500');
-            Toast.fire({ icon: 'success', title: currentLang === 'th' ? 'แนบรูปภาพจากหน้าจอแล้ว' : 'Image attached from Clipboard' }); e.preventDefault(); 
-        }
-    }
-});
-
 document.getElementById('comment-form').onsubmit = async (e) => {
     e.preventDefault(); const textInput = document.getElementById('comment-text'), imgInput = document.getElementById('comment-image'), text = textInput.value.trim();
     if(!text && imgInput.files.length === 0) return; 
@@ -360,17 +332,25 @@ document.getElementById('comment-form').onsubmit = async (e) => {
     } catch (error) { Swal.fire({ icon: 'error', text: error.message }); } finally { btnSubmit.disabled = false; btnSubmit.innerHTML = '<i class="fas fa-paper-plane text-xs -ml-0.5"></i>'; }
 };
 
+document.getElementById('auth-form').onsubmit = (e) => {
+    e.preventDefault();
+    const email = document.getElementById('auth-email').value, pass = document.getElementById('auth-password').value;
+    const action = isLoginMode ? signInWithEmailAndPassword : createUserWithEmailAndPassword;
+    action(auth, email, pass).catch(error => Swal.fire({ icon: 'error', text: error.message }));
+};
+
+window.loginWithGoogle = () => { signInWithPopup(auth, googleProvider).catch(error => Swal.fire({ icon: 'error', text: error.message })); };
+
 // ==========================================
-// ส่วนที่ 4: การตรวจสอบสิทธิ์เข้าใช้งาน
+// 4. การตรวจสอบสิทธิ์ และเปลี่ยนหน้า
 // ==========================================
 onAuthStateChanged(auth, (user) => {
     if (user) {
         const safeEmail = user.email ? user.email.toLowerCase().trim() : "";
         const isAdmin = safeEmail === "nattezava1996@gmail.com" || safeEmail.includes("admin");
 
-        // 🛑 ถ้ายูสเซอร์นี้เป็น Admin ให้เปลี่ยนหน้าไปที่ admin.html ทันที
         if (isAdmin) {
-            window.location.href = 'admin.html';
+            window.location.href = 'admin.html'; // 🚀 เด้งไปหน้าแอดมิน
             return; 
         }
 
@@ -379,14 +359,15 @@ onAuthStateChanged(auth, (user) => {
         document.getElementById('user-email').innerText = user.email;
         
         const roleElement = document.getElementById('user-role');
-        roleElement.setAttribute('data-i18n', 'role_user');
-        roleElement.classList.add('text-blue-400'); 
+        if(roleElement) {
+            roleElement.setAttribute('data-i18n', 'role_user');
+            roleElement.classList.add('text-blue-400'); 
+        }
         
         loadDashboardData();
-        window.updatePriorityDesc();
     } else {
         document.getElementById('app-view').classList.remove('active');
         document.getElementById('auth-view').classList.add('active');
     }
-    toggleLang(currentLang); 
+    window.toggleLang(currentLang); 
 });
