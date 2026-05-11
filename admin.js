@@ -97,7 +97,7 @@ window.switchTab = (tabName) => {
 };
 
 // ==========================================
-// AI Assistant (สมบูรณ์ 100%)
+// 🤖 AI Assistant
 // ==========================================
 window.openAIModal = () => { document.getElementById('ai-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ai-modal').style.opacity = '1'; document.getElementById('ai-box').classList.replace('scale-95', 'scale-100'); }, 10); };
 window.closeAIModal = () => { document.getElementById('ai-modal').style.opacity = '0'; document.getElementById('ai-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => document.getElementById('ai-modal').classList.replace('flex', 'hidden'), 300); };
@@ -324,6 +324,7 @@ window.openModal = (id) => {
 
 window.closeModal = () => { document.getElementById('ticket-modal').style.opacity = '0'; document.getElementById('modal-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => { document.getElementById('ticket-modal').classList.replace('flex', 'hidden'); if(chatUnsubscribe) chatUnsubscribe(); }, 300); };
 
+// รองรับ Ctrl+V
 document.getElementById('comment-text').addEventListener('paste', function(e) {
     const items = (e.clipboardData || e.originalEvent.clipboardData).items;
     for (let index in items) {
@@ -341,7 +342,6 @@ document.getElementById('comment-form').onsubmit = async (e) => {
     const textInput = document.getElementById('comment-text');
     const imgInput = document.getElementById('comment-image');
     const text = textInput.value.trim();
-    
     if(!text && imgInput.files.length === 0) return; 
 
     const btnSubmit = document.getElementById('btn-comment-submit');
@@ -350,13 +350,8 @@ document.getElementById('comment-form').onsubmit = async (e) => {
     try {
         let uploadedImageUrl = null;
         if (imgInput.files.length > 0) uploadedImageUrl = await resizeAndConvertToBase64(imgInput.files[0], 800, 800);
-
-        await addDoc(collection(db, "incidents", currentTicketId, "comments"), { 
-            senderEmail: auth.currentUser.email, text: text, imageUrl: uploadedImageUrl, createdAt: new Date() 
-        });
-
-        document.getElementById('comment-form').reset(); 
-        document.getElementById('comment-img-label').classList.replace('text-blue-500', 'text-slate-500');
+        await addDoc(collection(db, "incidents", currentTicketId, "comments"), { senderEmail: auth.currentUser.email, text: text, imageUrl: uploadedImageUrl, createdAt: new Date() });
+        document.getElementById('comment-form').reset(); document.getElementById('comment-img-label').classList.replace('text-blue-500', 'text-slate-500');
     } catch (error) { Swal.fire({ icon: 'error', text: error.message }); } 
     finally { btnSubmit.disabled = false; btnSubmit.innerHTML = '<i class="fas fa-paper-plane text-xs"></i>'; }
 };
