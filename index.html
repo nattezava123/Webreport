@@ -81,13 +81,30 @@
                 <div id="tab-create" class="tab-content max-w-2xl mx-auto">
                     <div class="bg-white p-8 rounded-[2rem] border shadow-sm">
                         <h2 class="text-2xl font-black mb-6" data-i18n="form_title">How can we help?</h2>
-                        
                         <form id="create-ticket-form" class="space-y-6">
+                            
                             <div class="grid grid-cols-2 gap-4">
-                                <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_cat">Category</label><select id="tk-category" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50"><option value="Hardware" id="opt-hw">Hardware</option><option value="Software" id="opt-sw">Software</option></select></div>
-                                <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_pri">Priority</label><select id="tk-priority" onchange="window.updatePriorityDesc()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50"><option value="3 - Moderate">Moderate</option><option value="1 - Critical">Critical</option></select></div>
+                                <div>
+                                    <label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_cat">Category</label>
+                                    <select id="tk-category" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50">
+                                        <option value="Hardware" id="opt-hw">❖ Hardware / PC Issue</option>
+                                        <option value="Software" id="opt-sw">❖ Software / Application</option>
+                                        <option value="Network" id="opt-nw">❖ Network / Internet</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_pri">Priority</label>
+                                    <select id="tk-priority" onchange="window.updatePriorityDesc()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50">
+                                        <option value="4 - Low">● Low (Minor issue)</option>
+                                        <option value="3 - Moderate" selected>● Moderate (Standard)</option>
+                                        <option value="2 - High">● High (Urgent)</option>
+                                        <option value="1 - Critical">● Critical (Emergency)</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div id="priority-desc" class="p-4 rounded-xl border text-xs"><i id="priority-icon" class="fas fa-info-circle mr-2"></i><span id="priority-text">...</span></div>
+                            <div id="priority-desc" class="p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors">
+                                <i id="priority-icon" class="fas fa-info-circle mt-0.5"></i><span id="priority-text">...</span>
+                            </div>
                             
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
                                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Building</label><select id="tk-building" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="Building A">Building A</option><option value="Building B">Building B</option><option value="Warehouse">Warehouse</option></select></div>
@@ -109,7 +126,6 @@
                                     <option value="Other">อื่นๆ (ระบุในรายละเอียด)</option>
                                 </select>
                             </div>
-
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="form_short">Subject</label>
                                 <select id="tk-subject" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50" required>
