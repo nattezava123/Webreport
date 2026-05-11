@@ -82,7 +82,6 @@ window.switchTab = (tabName) => {
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
 };
 
-// AI
 window.openAIModal = () => { document.getElementById('ai-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ai-modal').style.opacity = '1'; document.getElementById('ai-box').classList.replace('scale-95', 'scale-100'); }, 10); };
 window.closeAIModal = () => { document.getElementById('ai-modal').style.opacity = '0'; document.getElementById('ai-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => document.getElementById('ai-modal').classList.replace('flex', 'hidden'), 300); };
 window.sendAIMessage = () => {
@@ -91,7 +90,6 @@ window.sendAIMessage = () => {
     setTimeout(() => { b.insertAdjacentHTML('beforeend', `<div class="flex gap-4 mb-6"><div class="bg-white border p-4 rounded-2xl text-sm text-slate-700">สวัสดีครับ ผม Serviceman ยินดีช่วยตรวจสอบครับ</div></div>`); b.scrollTop = b.scrollHeight; }, 600);
 };
 
-// Data Load (ดึงทั้งตั๋วตัวเอง และตั๋วทั้งหมด)
 function loadDashboardData() {
     onSnapshot(query(collection(db, "incidents"), orderBy("createdAt", "desc")), (snapshot) => {
         let adminHtml = "", userHtml = "", recentDashHtml = "";
@@ -117,7 +115,6 @@ function loadDashboardData() {
             let priIndicator = safePriority.includes('1') ? '<i class="fas fa-fire text-rose-500 mr-2"></i>' : (safePriority.includes('2') ? '<i class="fas fa-exclamation-circle text-orange-500 mr-2"></i>' : '');
             let imgIcon = t.imageUrl ? ' <i class="fas fa-image text-blue-400 ml-1 text-[10px]"></i>' : '';
 
-            // ตารางหน้า Command Center
             adminHtml += `<tr class="hover:bg-slate-50 transition group border-b border-slate-50 cursor-pointer" data-status="${safeStatus}" onclick="window.openModal('${id}')">
                 <td class="py-4 px-4 font-bold text-slate-500 text-xs">${displayId}</td>
                 <td class="py-4 px-4"><div class="font-bold text-slate-800 text-sm">${priIndicator}${t.subject || 'No Subject'}${imgIcon}</div><div class="text-[10px] text-slate-400 mt-0.5">${t.callerEmail || '-'}</div></td>
@@ -130,7 +127,6 @@ function loadDashboardData() {
                     <button onclick="event.stopPropagation(); window.deleteTicket('${id}')" class="w-8 h-8 bg-white border border-rose-200 text-rose-500 rounded-lg shadow-sm"><i class="fas fa-trash text-xs"></i></button>
                 </td></tr>`;
 
-            // ตารางหน้า My Tickets
             if (isMyTicket) {
                 userHtml += `<tr class="hover:bg-slate-50 transition border-b border-slate-50 cursor-pointer" onclick="window.openModal('${id}')">
                     <td class="py-4 px-6 font-bold text-slate-500 text-xs">${displayId}</td>
@@ -157,7 +153,6 @@ function loadDashboardData() {
     });
 }
 
-// สร้างตั๋วใหม่ (กรณี Admin ต้องการแจ้งเรื่องด้วยตัวเอง)
 document.getElementById('create-ticket-form').onsubmit = async (e) => {
     e.preventDefault(); const b = document.getElementById('btn-create-submit'); b.disabled = true;
     try {
@@ -240,18 +235,66 @@ window.openModal = (id) => {
     
     document.getElementById('ticket-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ticket-modal').style.opacity = '1'; document.getElementById('modal-box').classList.replace('scale-95', 'scale-100'); }, 10);
     if(chatUnsubscribe) chatUnsubscribe();
+    
+    // 🔥 แก้แชทให้โชว์รูปภาพได้!
     chatUnsubscribe = onSnapshot(query(collection(db, "incidents", id, "comments"), orderBy("createdAt", "asc")), (snap) => {
-        let h = ""; snap.forEach(d => { const msg = d.data(); h += `<div class="p-2 border rounded-xl bg-white text-sm mb-2"><b>${msg.senderEmail.split('@')[0]}:</b> ${msg.text}</div>`; });
+        let h = ""; 
+        snap.forEach(doc => { 
+            const d = doc.data();
+            if(d.senderEmail === 'system') { 
+                h += `<div class="flex justify-center my-4"><span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-[10px] font-bold"><i class="fas fa-cog"></i> ${d.text}</span></div>`; 
+            } else {
+                const isMe = d.senderEmail === auth.currentUser.email;
+                const align = isMe ? 'items-end' : 'items-start';
+                const bg = isMe ? 'bg-blue-600 text-white' : 'bg-white border text-slate-700';
+                const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
+                let chatImgHtml = d.imageUrl ? `<img src="${d.imageUrl}" class="mt-2 rounded-lg max-h-40 cursor-pointer border hover:opacity-90 transition" onclick="window.viewFullImage('${d.imageUrl}')">` : '';
+                h += `<div class="flex flex-col ${align} mb-4"><div class="max-w-[85%] ${bg} p-3 rounded-xl shadow-sm text-sm"><div class="text-[10px] font-bold opacity-70 mb-1">${senderName}</div>${d.text}${chatImgHtml}</div></div>`;
+            }
+        });
         document.getElementById('chat-messages').innerHTML = h; document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
     });
 };
 
 window.closeModal = () => { document.getElementById('ticket-modal').style.opacity = '0'; document.getElementById('modal-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => { document.getElementById('ticket-modal').classList.replace('flex', 'hidden'); if(chatUnsubscribe) chatUnsubscribe(); }, 300); };
 
+// 🔥 ฟังก์ชัน Paste วางรูปภาพในแชทด้วย Ctrl+V
+document.getElementById('comment-text').addEventListener('paste', function(e) {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (let index in items) {
+        if (items[index].kind === 'file' && items[index].type.includes('image')) {
+            const dataTransfer = new DataTransfer(); dataTransfer.items.add(items[index].getAsFile());
+            document.getElementById('comment-image').files = dataTransfer.files;
+            document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500');
+            Toast.fire({ icon: 'success', title: 'Image attached from Clipboard' }); e.preventDefault(); 
+        }
+    }
+});
+
+// 🔥 แก้ฟอร์มให้ส่งรูปเข้าไปในฐานข้อมูลได้
 document.getElementById('comment-form').onsubmit = async (e) => {
-    e.preventDefault(); const t = document.getElementById('comment-text'); if(!t.value) return;
-    await addDoc(collection(db, "incidents", currentTicketId, "comments"), { senderEmail: auth.currentUser.email, text: t.value, createdAt: new Date() });
-    t.value = '';
+    e.preventDefault(); 
+    const textInput = document.getElementById('comment-text');
+    const imgInput = document.getElementById('comment-image');
+    const text = textInput.value.trim();
+    
+    if(!text && imgInput.files.length === 0) return; 
+
+    const btnSubmit = document.getElementById('btn-comment-submit');
+    btnSubmit.disabled = true; btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i>';
+
+    try {
+        let uploadedImageUrl = null;
+        if (imgInput.files.length > 0) uploadedImageUrl = await resizeAndConvertToBase64(imgInput.files[0], 800, 800);
+
+        await addDoc(collection(db, "incidents", currentTicketId, "comments"), { 
+            senderEmail: auth.currentUser.email, text: text, imageUrl: uploadedImageUrl, createdAt: new Date() 
+        });
+
+        document.getElementById('comment-form').reset(); 
+        document.getElementById('comment-img-label').classList.replace('text-blue-500', 'text-slate-500');
+    } catch (error) { Swal.fire({ icon: 'error', text: error.message }); } 
+    finally { btnSubmit.disabled = false; btnSubmit.innerHTML = '<i class="fas fa-paper-plane text-xs"></i>'; }
 };
 
 document.getElementById('btn-logout').onclick = () => {
