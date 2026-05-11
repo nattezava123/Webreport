@@ -117,3 +117,32 @@ onAuthStateChanged(auth, (user) => {
         document.getElementById('auth-view').classList.add('active');
     }
 });
+// 🛑 ฝั่ง ADMIN: เช็คว่าถ้าไม่ใช่ Admin แอบเข้ามา ให้เด้งกลับไปหน้า User
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const safeEmail = user.email ? user.email.toLowerCase().trim() : "";
+        const isAdmin = safeEmail === "nattezava1996@gmail.com" || safeEmail.includes("admin");
+
+        // ถ้าล็อกอินแล้ว แต่ "ไม่ใช่ Admin" ให้เตะกลับไปหน้า index.html
+        if (!isAdmin) {
+            Swal.fire({ 
+                icon: 'error', 
+                title: 'Access Denied', 
+                text: 'คุณไม่มีสิทธิ์เข้าถึงหน้า Admin ครับ',
+                confirmButtonColor: '#3b82f6'
+            }).then(() => {
+                window.location.href = 'index.html'; // เด้งกลับไปหน้า User ปกติ
+            });
+            return; // หยุดการทำงานของโค้ดด้านล่าง
+        }
+
+        // ถ้าเป็น Admin เข้ามา ให้แสดงหน้า Command Center
+        document.getElementById('auth-view').classList.remove('active');
+        document.getElementById('app-view').classList.add('active');
+        document.getElementById('user-email').innerText = user.email;
+        loadDashboardData();
+    } else {
+        // ถ้าใครยังไม่ล็อกอินแล้วหลงเข้ามาหน้านี้ ให้เด้งกลับไปล็อกอินที่หน้าหลัก
+        window.location.href = 'index.html';
+    }
+});
