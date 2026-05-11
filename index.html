@@ -13,25 +13,48 @@
 <body>
     <div id="sidebar-overlay" onclick="window.toggleMobileMenu()"></div>
 
-    <section id="auth-view" class="view-section active min-h-screen flex-col md:flex-row items-center justify-center bg-animated-gradient p-4 relative overflow-hidden">
+    <section id="auth-view" class="view-section active min-h-screen flex flex-col md:flex-row items-center justify-center bg-animated-gradient p-4 relative overflow-hidden">
         <div class="absolute top-6 right-6 flex gap-2 z-10">
             <button onclick="window.toggleLang('en')" id="lang-en-auth" class="px-4 py-1.5 bg-blue-600 text-white rounded-full text-xs font-bold shadow-lg">EN</button>
             <button onclick="window.toggleLang('th')" id="lang-th-auth" class="px-4 py-1.5 bg-white/10 text-white backdrop-blur rounded-full border border-white/20 text-xs font-bold">TH</button>
         </div>
-        <div class="glass-panel p-8 md:p-10 rounded-[2rem] w-full max-w-[420px] z-10 relative">
+        <div class="glass-panel p-8 md:p-10 rounded-[2rem] w-full max-w-[420px] z-10 relative transition-all duration-500">
             <div class="text-center mb-8">
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl mb-5 shadow-xl"><i class="fas fa-industry text-3xl text-white"></i></div>
-                <h2 class="text-2xl font-extrabold text-slate-800" data-i18n="app_name">Factory IT Service Center</h2>
-                <p class="text-slate-500 text-sm mt-2" data-i18n="auth_sub">Enterprise Service Desk</p>
+                <h2 class="text-2xl font-extrabold text-slate-800 transition-colors" id="auth-title" data-i18n="app_name">Factory IT Service Center</h2>
+                <p class="text-slate-500 text-sm mt-2 transition-colors" id="auth-subtitle" data-i18n="auth_sub">Enterprise Service Desk</p>
             </div>
             <form id="auth-form" class="space-y-4">
-                <div><label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase" data-i18n="email">Email</label><input type="email" id="auth-email" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none" required></div>
-                <div><label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase" data-i18n="password">Password</label><input type="password" id="auth-password" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none" required></div>
-                <button type="submit" id="auth-submit-btn" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg mt-2" data-i18n="btn_signin">Sign In</button>
+                
+                <div id="field-name" style="display: none;" class="animate-fadeIn">
+                    <label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase tracking-widest" data-i18n="name">Full Name</label>
+                    <input type="text" id="auth-name" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="John Doe">
+                </div>
+
+                <div>
+                    <label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase tracking-widest" data-i18n="email">Email</label>
+                    <input type="email" id="auth-email" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="name@company.com" required>
+                </div>
+                <div>
+                    <label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase tracking-widest" data-i18n="password">Password</label>
+                    <input type="password" id="auth-password" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="••••••••" required>
+                </div>
+
+                <div id="field-confirm" style="display: none;" class="animate-fadeIn">
+                    <label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase tracking-widest" data-i18n="confirm_password">Confirm Password</label>
+                    <input type="password" id="auth-confirm-password" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="••••••••">
+                </div>
+
+                <button type="submit" id="auth-submit-btn" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg mt-4 transition transform hover:-translate-y-0.5" data-i18n="btn_signin">Sign In</button>
             </form>
+
             <div class="mt-6 flex items-center relative justify-center"><hr class="w-full border-slate-300"><span class="absolute bg-white px-3 text-[10px] font-bold text-slate-400 uppercase">OR</span></div>
-            <button onclick="window.loginWithGoogle()" type="button" class="w-full mt-6 bg-white border border-slate-200 text-slate-700 font-bold py-3.5 rounded-xl flex items-center justify-center gap-3"><img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5"><span data-i18n="btn_google">Continue with Google</span></button>
-            <div class="mt-8 text-center text-sm"><span class="text-slate-500" data-i18n="no_account">New here?</span> <button onclick="window.toggleAuthMode()" id="auth-switch-btn" class="text-blue-600 font-bold" data-i18n="btn_register">Create an account</button></div>
+            <button onclick="window.loginWithGoogle()" type="button" class="w-full mt-6 bg-white border border-slate-200 text-slate-700 font-bold py-3.5 rounded-xl flex items-center justify-center gap-3 transition hover:bg-slate-50"><img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5"><span data-i18n="btn_google">Continue with Google</span></button>
+            
+            <div class="mt-8 text-center text-sm">
+                <span class="text-slate-500" id="auth-switch-text" data-i18n="no_account">New here?</span> 
+                <button onclick="window.toggleAuthMode()" id="auth-switch-btn" class="text-blue-600 font-bold hover:text-blue-800 transition" data-i18n="btn_register">Create an account</button>
+            </div>
         </div>
     </section>
 
@@ -84,27 +107,10 @@
                         
                         <form id="create-ticket-form" class="space-y-6">
                             <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_cat">Category</label>
-                                    <select id="tk-category" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50">
-                                        <option value="Hardware" id="opt-hw">❖ Hardware / PC Issue</option>
-                                        <option value="Software" id="opt-sw">❖ Software / Application</option>
-                                        <option value="Network" id="opt-nw">❖ Network / Internet</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_pri">Priority</label>
-                                    <select id="tk-priority" onchange="window.updatePriorityDesc()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50">
-                                        <option value="4 - Low">● Low (Minor issue)</option>
-                                        <option value="3 - Moderate" selected>● Moderate (Standard)</option>
-                                        <option value="2 - High">● High (Urgent)</option>
-                                        <option value="1 - Critical">● Critical (Emergency)</option>
-                                    </select>
-                                </div>
+                                <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_cat">Category</label><select id="tk-category" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50"><option value="Hardware" id="opt-hw">❖ Hardware / PC Issue</option><option value="Software" id="opt-sw">❖ Software / Application</option><option value="Network" id="opt-nw">❖ Network / Internet</option></select></div>
+                                <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_pri">Priority</label><select id="tk-priority" onchange="window.updatePriorityDesc()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50"><option value="4 - Low">● Low (Minor issue)</option><option value="3 - Moderate" selected>● Moderate (Standard)</option><option value="2 - High">● High (Urgent)</option><option value="1 - Critical">● Critical (Emergency)</option></select></div>
                             </div>
-                            <div id="priority-desc" class="p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors">
-                                <i id="priority-icon" class="fas fa-info-circle mt-0.5"></i><span id="priority-text">...</span>
-                            </div>
+                            <div id="priority-desc" class="p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors"><i id="priority-icon" class="fas fa-info-circle mt-0.5"></i><span id="priority-text">...</span></div>
                             
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
                                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Building</label><select id="tk-building" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="Building A">Building A</option><option value="Building B">Building B</option><option value="Warehouse">Warehouse</option></select></div>
@@ -113,33 +119,8 @@
                                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Line</label><select id="tk-line" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="N/A">N/A</option><option value="Line 1">Line 1</option><option value="Line 2">Line 2</option></select></div>
                             </div>
                             
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="form_item">Broken Part / Item</label>
-                                <select id="tk-item" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50" required>
-                                    <option value="" disabled selected>เลือกอุปกรณ์ที่เสีย...</option>
-                                    <option value="PC / Desktop">คอมพิวเตอร์ (PC / Desktop)</option>
-                                    <option value="Laptop / Notebook">โน้ตบุ๊ก (Laptop / Notebook)</option>
-                                    <option value="Monitor">หน้าจอ (Monitor)</option>
-                                    <option value="Printer / Scanner">เครื่องปริ้น / สแกนเนอร์</option>
-                                    <option value="Network / Wi-Fi">อุปกรณ์เน็ตเวิร์ค / Wi-Fi</option>
-                                    <option value="Software / System">โปรแกรม / ระบบ ERP</option>
-                                    <option value="Other">อื่นๆ (ระบุในรายละเอียด)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="form_short">Subject</label>
-                                <select id="tk-subject" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50" required>
-                                    <option value="" disabled selected>เลือกหัวข้อปัญหา...</option>
-                                    <option value="Cannot power on / No display">เปิดไม่ติด / ไม่มีภาพ</option>
-                                    <option value="Cannot print / Paper jam">ปริ้นไม่ออก / กระดาษติด</option>
-                                    <option value="No Internet / Network drops">ไม่มีเน็ต / อินเทอร์เน็ตหลุด</option>
-                                    <option value="System Error / Software crashes">ระบบค้าง / โปรแกรมมีปัญหา Error</option>
-                                    <option value="Request for access / New Account">ขอสิทธิ์เข้าใช้งาน / สร้าง User ใหม่</option>
-                                    <option value="Hardware replacement / Upgrade">ขอเบิกอุปกรณ์ / เปลี่ยนอะไหล่</option>
-                                    <option value="Other">อื่นๆ (ระบุในรายละเอียด)</option>
-                                </select>
-                            </div>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="form_item">Broken Part / Item</label><select id="tk-item" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50" required><option value="" disabled selected>เลือกอุปกรณ์ที่เสีย...</option><option value="PC / Desktop">คอมพิวเตอร์ (PC / Desktop)</option><option value="Laptop / Notebook">โน้ตบุ๊ก (Laptop / Notebook)</option><option value="Monitor">หน้าจอ (Monitor)</option><option value="Printer / Scanner">เครื่องปริ้น / สแกนเนอร์</option><option value="Network / Wi-Fi">อุปกรณ์เน็ตเวิร์ค / Wi-Fi</option><option value="Software / System">โปรแกรม / ระบบ ERP</option><option value="Other">อื่นๆ (ระบุในรายละเอียด)</option></select></div>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="form_short">Subject</label><select id="tk-subject" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50" required><option value="" disabled selected>เลือกหัวข้อปัญหา...</option><option value="Cannot power on / No display">เปิดไม่ติด / ไม่มีภาพ</option><option value="Cannot print / Paper jam">ปริ้นไม่ออก / กระดาษติด</option><option value="No Internet / Network drops">ไม่มีเน็ต / อินเทอร์เน็ตหลุด</option><option value="System Error / Software crashes">ระบบค้าง / โปรแกรมมีปัญหา Error</option><option value="Request for access / New Account">ขอสิทธิ์เข้าใช้งาน / สร้าง User ใหม่</option><option value="Hardware replacement / Upgrade">ขอเบิกอุปกรณ์ / เปลี่ยนอะไหล่</option><option value="Other">อื่นๆ (ระบุในรายละเอียด)</option></select></div>
 
                             <textarea id="tk-desc" rows="4" placeholder="Description (ระบุรายละเอียดเพิ่มเติม หรืออาการเสียให้ชัดเจน)" class="w-full border rounded-xl px-4 py-3 text-sm resize-none" required></textarea>
                             
@@ -157,13 +138,7 @@
     <div id="ai-modal" class="fixed inset-0 z-[300] hidden items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0">
         <div class="bg-white w-full sm:w-[450px] h-[85vh] sm:h-[600px] rounded-[2rem] flex flex-col shadow-2xl relative" id="ai-box">
             <div class="px-6 py-5 bg-indigo-600 rounded-t-[2rem] text-white flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md"><i class="fas fa-robot"></i></div>
-                    <div>
-                        <h3 class="font-black leading-tight">Serviceman AI</h3>
-                        <p class="text-[10px] text-indigo-200 font-bold uppercase">Factory IT Assistant</p>
-                    </div>
-                </div>
+                <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md"><i class="fas fa-robot"></i></div><div><h3 class="font-black leading-tight">Serviceman AI</h3><p class="text-[10px] text-indigo-200 font-bold uppercase">Factory IT Assistant</p></div></div>
                 <button onclick="window.closeAIModal()" class="w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition"><i class="fas fa-times"></i></button>
             </div>
             
