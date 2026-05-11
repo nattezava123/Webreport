@@ -21,19 +21,22 @@
             </div>
             <div class="p-6 my-2 mx-4 bg-slate-800/30 rounded-2xl border border-slate-700/50">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-rose-500 to-orange-500 flex items-center justify-center text-white"><i class="fas fa-user-shield"></i></div>
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-rose-500 to-orange-500 flex items-center justify-center text-white shadow-lg"><i class="fas fa-user-shield"></i></div>
                     <div class="overflow-hidden">
                         <div id="user-email" class="text-white font-bold truncate text-sm">Admin</div>
                         <div id="user-role" class="text-[9px] text-rose-400 font-black uppercase">IT Admin</div>
                     </div>
                 </div>
             </div>
-            <nav class="flex-1 mt-2 space-y-1.5">
-                <p class="px-8 text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3 mt-4" data-i18n="menu_group_1">Workspace</p>
+            <nav class="flex-1 mt-2 space-y-1.5 overflow-y-auto">
+                <p class="px-8 text-[10px] font-black uppercase text-slate-500 mb-3 mt-4" data-i18n="menu_group_1">Workspace</p>
                 <a href="#" onclick="window.switchTab('dashboard')" class="flex items-center menu-link active"><i class="fas fa-border-all w-8"></i> <span data-i18n="menu_dash">Dashboard</span></a>
+                <a href="#" onclick="window.switchTab('incidents')" class="flex items-center menu-link"><i class="fas fa-layer-group w-8"></i> <span data-i18n="menu_incidents">My Tickets</span></a>
+                <a href="#" onclick="window.switchTab('create')" class="flex items-center menu-link"><i class="fas fa-plus-circle w-8"></i> <span data-i18n="menu_create">Create Ticket</span></a>
+                <a href="#" onclick="window.openAIModal()" class="flex items-center menu-link text-indigo-400"><i class="fas fa-robot w-8"></i> <span>Serviceman</span></a>
                 
-                <p class="px-8 text-[10px] font-black uppercase tracking-widest text-slate-500 mt-8 mb-3" data-i18n="menu_group_2">Admin</p>
-                <a href="#" onclick="window.switchTab('admin')" class="flex items-center menu-link text-indigo-400"><i class="fas fa-shield-halved w-8"></i> <span data-i18n="menu_admin">Command Center</span></a>
+                <p class="px-8 text-[10px] font-black uppercase text-slate-500 mt-8 mb-3" data-i18n="menu_group_2">Admin</p>
+                <a href="#" onclick="window.switchTab('admin')" class="flex items-center menu-link text-rose-400"><i class="fas fa-server w-8"></i> <span data-i18n="menu_admin">Command Center</span></a>
             </nav>
             <div class="p-6">
                 <button id="btn-logout" class="w-full flex items-center justify-center gap-3 text-rose-400 font-bold py-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20"><i class="fas fa-power-off"></i> <span data-i18n="btn_logout">Log Out</span></button>
@@ -58,47 +61,82 @@
                         <h2 class="text-3xl font-black text-slate-800"><span data-i18n="dash_welcome">Welcome,</span> <span id="dash-user-name" class="text-rose-600">Admin</span>!</h2>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-                        <div class="stat-card bg-white p-6 rounded-[1.5rem] border shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_open">New Tickets</p><h3 class="text-4xl font-black" id="stat-new">0</h3></div>
-                        <div class="stat-card bg-white p-6 rounded-[1.5rem] border shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_progress">In Progress</p><h3 class="text-4xl font-black text-amber-500" id="stat-progress">0</h3></div>
-                        <div class="stat-card bg-white p-6 rounded-[1.5rem] border shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_resolved">Resolved</p><h3 class="text-4xl font-black text-emerald-500" id="stat-resolved">0</h3></div>
+                        <div class="stat-card bg-white p-6 rounded-[1.5rem] border"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_open">New Tickets</p><h3 class="text-4xl font-black" id="stat-new">0</h3></div>
+                        <div class="stat-card bg-white p-6 rounded-[1.5rem] border"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_progress">In Progress</p><h3 class="text-4xl font-black text-amber-500" id="stat-progress">0</h3></div>
+                        <div class="stat-card bg-white p-6 rounded-[1.5rem] border"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_resolved">Resolved</p><h3 class="text-4xl font-black text-emerald-500" id="stat-resolved">0</h3></div>
                         <div class="stat-card bg-slate-900 p-6 rounded-[1.5rem]"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_total">Total Volume</p><h3 class="text-4xl font-black text-white" id="stat-total">0</h3></div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="col-span-1 lg:col-span-2 bg-white rounded-[1.5rem] border p-6"><h3 class="font-extrabold text-lg mb-6" data-i18n="dash_recent">Recent Activity</h3><div id="dash-recent-list" class="space-y-4"></div></div>
-                        <div class="col-span-1 bg-white rounded-[1.5rem] border p-6"><h3 class="font-extrabold text-lg mb-4" data-i18n="dash_status">System Status</h3><div class="space-y-4"><div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-white flex items-center justify-center"><i class="fas fa-network-wired text-slate-500"></i></div><div><p class="text-sm font-bold" data-i18n="sys_net">Network</p></div></div><span class="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-md">Online</span></div><div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-white flex items-center justify-center"><i class="fas fa-database text-slate-500"></i></div><div><p class="text-sm font-bold" data-i18n="sys_erp">ERP System</p></div></div><span class="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-md">Online</span></div></div></div>
+                        <div class="col-span-1 bg-white rounded-[1.5rem] border p-6"><h3 class="font-extrabold text-lg mb-4" data-i18n="dash_status">System Status</h3><div class="space-y-4"><div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-white flex items-center justify-center"><i class="fas fa-network-wired text-slate-500"></i></div><div><p class="text-sm font-bold" data-i18n="sys_net">Network</p></div></div><span class="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-md">Online</span></div></div></div>
+                    </div>
+                </div>
+
+                <div id="tab-incidents" class="tab-content max-w-7xl mx-auto">
+                    <div class="bg-white rounded-[1.5rem] border overflow-hidden flex flex-col h-[70vh]">
+                        <div class="p-5 border-b bg-white flex justify-between items-center gap-4">
+                             <input type="text" id="search-ticket" onkeyup="window.filterTickets('ticket-table', 'search-ticket')" placeholder="Search My Tickets..." class="w-full md:max-w-sm px-4 py-3 bg-slate-50 rounded-xl text-sm outline-none">
+                             <button onclick="window.switchTab('create')" class="bg-blue-600 text-white px-5 py-3 rounded-xl text-sm font-bold shadow-lg">Create</button>
+                        </div>
+                        <div class="overflow-auto flex-1 p-2">
+                            <table class="w-full text-left" id="ticket-table"><tbody id="user-ticket-list"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-create" class="tab-content max-w-2xl mx-auto">
+                    <div class="bg-white p-8 rounded-[2rem] border shadow-sm">
+                        <h2 class="text-2xl font-black mb-6" data-i18n="form_title">How can we help?</h2>
+                        <form id="create-ticket-form" class="space-y-6">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_cat">Category</label><select id="tk-category" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50"><option value="Hardware" id="opt-hw">Hardware</option><option value="Software" id="opt-sw">Software</option></select></div>
+                                <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_pri">Priority</label><select id="tk-priority" onchange="window.updatePriorityDesc()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50"><option value="3 - Moderate">Moderate</option><option value="1 - Critical">Critical</option></select></div>
+                            </div>
+                            <div id="priority-desc" class="p-4 rounded-xl border text-xs"><i id="priority-icon" class="fas fa-info-circle mr-2"></i><span id="priority-text">...</span></div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-xl">
+                                <input type="text" id="tk-building" placeholder="Bldg" class="border rounded px-2 py-2 text-xs" required>
+                                <input type="text" id="tk-floor" placeholder="Floor" class="border rounded px-2 py-2 text-xs" required>
+                                <input type="text" id="tk-dept" placeholder="Dept" class="border rounded px-2 py-2 text-xs" required>
+                                <input type="text" id="tk-line" placeholder="Line" class="border rounded px-2 py-2 text-xs" required>
+                            </div>
+                            <input type="text" id="tk-item" placeholder="Broken Item" class="w-full border rounded-xl px-4 py-3 text-sm" required>
+                            <input type="text" id="tk-subject" placeholder="Subject" class="w-full border rounded-xl px-4 py-3 text-sm" required>
+                            <textarea id="tk-desc" rows="4" placeholder="Description" class="w-full border rounded-xl px-4 py-3 text-sm resize-none" required></textarea>
+                            <input type="file" id="tk-image" accept="image/*" onchange="window.previewCreateImage(this)" class="text-xs">
+                            <div id="create-image-preview-container" class="hidden relative"><img id="create-image-preview" src="" class="h-32 rounded border"><button type="button" onclick="window.clearCreateImage()" class="absolute -top-2 -left-2 bg-rose-500 text-white rounded-full w-6 h-6">×</button></div>
+                            <button type="submit" id="btn-create-submit" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold shadow-lg">Submit Request</button>
+                        </form>
                     </div>
                 </div>
 
                 <div id="tab-admin" class="tab-content max-w-7xl mx-auto">
-                    <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-6 rounded-2xl shadow-lg flex justify-between items-center text-white mb-6">
-                        <div>
-                            <p class="text-blue-200 text-[10px] font-black uppercase mb-1" data-i18n="admin_my_resolved">My Resolved Tickets</p>
-                            <p class="text-4xl font-black flex items-center gap-3"><i class="fas fa-trophy text-amber-300"></i> <span id="stat-admin-my-resolved">0</span></p>
-                        </div>
-                        <button onclick="window.exportCSV()" class="bg-white/10 hover:bg-white/20 border border-white/20 px-5 py-2.5 rounded-xl text-xs font-bold transition"><i class="fas fa-download mr-2"></i> <span data-i18n="btn_export">Export CSV</span></button>
+                    <div class="bg-gradient-to-r from-rose-500 to-orange-500 p-6 rounded-2xl shadow-lg flex justify-between items-center text-white mb-6">
+                        <div><p class="text-rose-100 text-[10px] font-black uppercase mb-1" data-i18n="admin_my_resolved">My Resolved Tickets</p><p class="text-4xl font-black flex items-center gap-3"><i class="fas fa-trophy text-amber-300"></i> <span id="stat-admin-my-resolved">0</span></p></div>
+                        <button onclick="window.exportCSV()" class="bg-white/20 hover:bg-white/30 border border-white/20 px-5 py-2.5 rounded-xl text-xs font-bold transition"><i class="fas fa-download mr-2"></i> Export CSV</button>
                     </div>
-
                     <div class="bg-white rounded-[1.5rem] border overflow-hidden flex flex-col h-[65vh]">
                         <div class="p-4 border-b flex flex-wrap gap-2 items-center justify-between bg-slate-50">
                             <div class="flex gap-2 bg-slate-100 p-1 rounded-xl border">
-                                <button onclick="window.setAdminFilter('All')" id="btn-filter-All" class="px-5 py-2 rounded-lg text-xs font-bold bg-white text-slate-800" data-i18n="filter_all">All</button>
-                                <button onclick="window.setAdminFilter('Active')" id="btn-filter-Active" class="px-5 py-2 rounded-lg text-xs font-bold text-slate-500" data-i18n="filter_active">Active</button>
-                                <button onclick="window.setAdminFilter('Resolved')" id="btn-filter-Resolved" class="px-5 py-2 rounded-lg text-xs font-bold text-slate-500" data-i18n="filter_resolved">Resolved</button>
+                                <button onclick="window.setAdminFilter('All')" id="btn-filter-All" class="px-5 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm">All</button>
+                                <button onclick="window.setAdminFilter('Active')" id="btn-filter-Active" class="px-5 py-2 rounded-lg text-xs font-bold text-slate-500">Active</button>
+                                <button onclick="window.setAdminFilter('Resolved')" id="btn-filter-Resolved" class="px-5 py-2 rounded-lg text-xs font-bold text-slate-500">Resolved</button>
                             </div>
-                            <div class="relative w-full md:w-64">
-                                <input type="text" id="search-admin" onkeyup="window.filterTickets('admin-table', 'search-admin')" placeholder="Search..." class="pl-4 pr-4 py-2 border rounded-lg text-xs w-full outline-none">
-                            </div>
+                            <input type="text" id="search-admin" onkeyup="window.filterTickets('admin-table', 'search-admin')" placeholder="Search All Tickets..." class="px-4 py-2 border rounded-lg text-xs w-full md:w-64 outline-none">
                         </div>
-                        <div class="overflow-auto flex-1 p-2">
-                            <table class="w-full text-left" id="admin-table">
-                                <tbody id="admin-ticket-list" class="divide-y divide-slate-100 text-sm"></tbody>
-                            </table>
-                        </div>
+                        <div class="overflow-auto flex-1 p-2"><table class="w-full text-left" id="admin-table"><tbody id="admin-ticket-list" class="divide-y divide-slate-100 text-sm"></tbody></table></div>
                     </div>
                 </div>
             </div>
         </main>
     </section>
+
+    <div id="ai-modal" class="fixed inset-0 z-[300] hidden items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div class="bg-white w-full sm:w-[450px] h-[85vh] sm:h-[600px] rounded-[2rem] flex flex-col shadow-2xl relative" id="ai-box">
+            <div class="px-6 py-5 bg-indigo-600 rounded-t-[2rem] text-white flex justify-between"><h3>Serviceman AI</h3><button onclick="window.closeAIModal()">×</button></div>
+            <div class="flex-1 overflow-y-auto p-5 space-y-4 bg-slate-50" id="ai-chat-box"></div>
+            <div class="p-4 bg-white border-t flex gap-2"><input type="text" id="ai-input" class="flex-1 border rounded-xl px-4 py-2 text-sm outline-none" onkeypress="if(event.key === 'Enter') window.sendAIMessage()"><button onclick="window.sendAIMessage()" class="bg-indigo-600 text-white px-4 rounded-xl">ส่ง</button></div>
+        </div>
+    </div>
 
     <div id="ticket-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-[200] flex items-center justify-center p-0 md:p-6 transition-all duration-300 opacity-0">
         <div class="bg-white w-full h-full md:max-w-6xl md:h-[85vh] md:rounded-[2rem] flex flex-col overflow-hidden shadow-2xl" id="modal-box">
