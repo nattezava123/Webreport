@@ -2,7 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, query, onSnapshot, orderBy, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// 🔥 สิ่งที่ทำให้คุณหน้าขาวคือตรงนี้ครับ ต้องใส่ Config กลับเข้ามาด้วย
 const firebaseConfig = {
     apiKey: "AIzaSyDHMRKJovs43b4CWdJOUbUlO5BEekqCmBI",
     authDomain: "servicenow-2b0cd.firebaseapp.com",
@@ -25,9 +24,29 @@ let chatUnsubscribe = null;
 let currentLang = localStorage.getItem('appLang') || 'en';
 
 const dict = {
-    en: { app_name: "Factory IT Service Center", menu_group_1: "Workspace", menu_group_2: "Admin", menu_dash: "Dashboard", menu_admin: "Command Center", btn_logout: "Log Out", stat_open: "New Tickets", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", admin_my_resolved: "My Resolved Tickets", btn_export: "Export CSV", dash_welcome: "Welcome,", dash_recent: "Recent Activity", dash_status: "System Status", sys_net: "Network", sys_erp: "ERP System", filter_all: "All", filter_active: "Active", filter_resolved: "Resolved", empty_recent: "All caught up!", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved" },
-    th: { app_name: "ศูนย์บริการไอทีโรงงาน", menu_group_1: "พื้นที่ทำงาน", menu_group_2: "ผู้ดูแลระบบ", menu_dash: "ภาพรวมระบบ", menu_admin: "ศูนย์จัดการงาน", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "จำนวนทั้งหมด", admin_my_resolved: "งานที่ฉันปิดแล้ว", btn_export: "ดาวน์โหลด CSV", dash_welcome: "ยินดีต้อนรับ,", dash_recent: "รายการอัปเดตล่าสุด", dash_status: "สถานะระบบโรงงาน", sys_net: "ระบบเครือข่าย", sys_erp: "ระบบ ERP", filter_all: "ทั้งหมด", filter_active: "กำลังดำเนินการ", filter_resolved: "ปิดงานแล้ว", empty_recent: "จัดการครบหมดแล้ว!", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว" }
+    en: { app_name: "Factory IT Service Center", menu_group_1: "Workspace", menu_group_2: "Admin", menu_dash: "Dashboard", menu_incidents: "My Tickets", menu_create: "Create Ticket", menu_admin: "Command Center", btn_logout: "Log Out", stat_open: "New Tickets", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", admin_my_resolved: "My Resolved Tickets", btn_export: "Export CSV", dash_welcome: "Welcome,", dash_recent: "Recent Activity", dash_status: "System Status", sys_net: "Network", sys_erp: "ERP System", filter_all: "All", filter_active: "Active", filter_resolved: "Resolved", empty_recent: "All caught up!", empty_tickets: "No tickets found", form_title: "How can we help?" },
+    th: { app_name: "ศูนย์บริการไอทีโรงงาน", menu_group_1: "พื้นที่ทำงาน", menu_group_2: "ผู้ดูแลระบบ", menu_dash: "ภาพรวมระบบ", menu_incidents: "ตั๋วของฉัน", menu_create: "แจ้งปัญหาใหม่", menu_admin: "ศูนย์จัดการงาน", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "จำนวนทั้งหมด", admin_my_resolved: "งานที่ฉันปิดแล้ว", btn_export: "ดาวน์โหลด CSV", dash_welcome: "ยินดีต้อนรับ,", dash_recent: "รายการอัปเดตล่าสุด", dash_status: "สถานะระบบโรงงาน", sys_net: "ระบบเครือข่าย", sys_erp: "ระบบ ERP", filter_all: "ทั้งหมด", filter_active: "กำลังดำเนินการ", filter_resolved: "ปิดงานแล้ว", empty_recent: "จัดการครบหมดแล้ว!", empty_tickets: "ไม่พบข้อมูล", form_title: "มีอะไรให้ช่วยไหม?" }
 };
+
+window.viewFullImage = (url) => { Swal.fire({ imageUrl: url, imageAlt: 'Attached Image', width: 'auto', padding: '1rem', showConfirmButton: false, showCloseButton: true, customClass: { image: 'rounded-xl max-h-[80vh] object-contain' } }); };
+window.previewCreateImage = (input) => { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = (e) => { document.getElementById('create-image-preview').src = e.target.result; document.getElementById('create-image-preview-container').classList.remove('hidden'); }; reader.readAsDataURL(input.files[0]); } };
+window.clearCreateImage = () => { document.getElementById('tk-image').value = ''; document.getElementById('create-image-preview').src = ''; document.getElementById('create-image-preview-container').classList.add('hidden'); };
+
+async function resizeAndConvertToBase64(file, maxWidth, maxHeight) {
+    return new Promise((resolve) => {
+        const reader = new FileReader(); reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image(); img.src = event.target.result;
+            img.onload = () => {
+                let width = img.width, height = img.height;
+                if (width > maxWidth) { height *= maxWidth / width; width = maxWidth; }
+                const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
+            };
+        };
+    });
+}
 
 function timeAgo(date) {
     if(!date) return '-'; const seconds = Math.floor((new Date() - date) / 1000);
@@ -48,6 +67,12 @@ window.toggleLang = (lang) => {
     });
 };
 
+window.updatePriorityDesc = () => {
+    const s = document.getElementById('tk-priority'); if(!s) return; const v = s.value;
+    const txt = currentLang === 'th' ? { "3 - Moderate": "● กระทบระดับแผนก - SLA: 24 ชม.", "1 - Critical": "● ระบบหลักล่ม - SLA: 1 ชม." } : { "3 - Moderate": "● Department impact - SLA: 24h", "1 - Critical": "● Critical - SLA: 1h" };
+    const priorityText = document.getElementById('priority-text'); if(priorityText) priorityText.innerText = txt[v] || v;
+};
+
 window.switchTab = (tabName) => {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
@@ -57,17 +82,28 @@ window.switchTab = (tabName) => {
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
 };
 
-window.viewFullImage = (url) => { Swal.fire({ imageUrl: url, imageAlt: 'Attached Image', width: 'auto', padding: '1rem', showConfirmButton: false, showCloseButton: true, customClass: { image: 'rounded-xl max-h-[80vh] object-contain' } }); };
+// AI
+window.openAIModal = () => { document.getElementById('ai-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ai-modal').style.opacity = '1'; document.getElementById('ai-box').classList.replace('scale-95', 'scale-100'); }, 10); };
+window.closeAIModal = () => { document.getElementById('ai-modal').style.opacity = '0'; document.getElementById('ai-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => document.getElementById('ai-modal').classList.replace('flex', 'hidden'), 300); };
+window.sendAIMessage = () => {
+    const i = document.getElementById('ai-input'), b = document.getElementById('ai-chat-box'), t = i.value.trim(); if(!t) return;
+    b.insertAdjacentHTML('beforeend', `<div class="flex flex-row-reverse gap-4 mb-6"><div class="bg-indigo-600 text-white p-4 rounded-2xl text-sm">${t}</div></div>`); i.value = '';
+    setTimeout(() => { b.insertAdjacentHTML('beforeend', `<div class="flex gap-4 mb-6"><div class="bg-white border p-4 rounded-2xl text-sm text-slate-700">สวัสดีครับ ผม Serviceman ยินดีช่วยตรวจสอบครับ</div></div>`); b.scrollTop = b.scrollHeight; }, 600);
+};
 
+// Data Load (ดึงทั้งตั๋วตัวเอง และตั๋วทั้งหมด)
 function loadDashboardData() {
     onSnapshot(query(collection(db, "incidents"), orderBy("createdAt", "desc")), (snapshot) => {
-        let adminHtml = "", recentDashHtml = "", counts = { New: 0, "In Progress": 0, Resolved: 0, Total: 0 }, myResolved = 0, recentCount = 0;
+        let adminHtml = "", userHtml = "", recentDashHtml = "";
+        let counts = { New: 0, "In Progress": 0, Resolved: 0, Total: 0 }, myResolved = 0, recentCount = 0;
         
         snapshot.forEach((docSnap) => {
             const t = docSnap.data(), id = docSnap.id, displayId = "TKT-" + id.substring(0, 4).toUpperCase();
             window.globalTickets[id] = t;
             
             const safeStatus = t.status || 'New', safePriority = t.priority || '';
+            const isMyTicket = t.callerEmail === auth.currentUser.email;
+
             if(safeStatus === 'Resolved' && t.assignedTo === auth.currentUser.email) myResolved++;
             counts[safeStatus] = (counts[safeStatus] || 0) + 1; counts['Total']++;
 
@@ -81,6 +117,7 @@ function loadDashboardData() {
             let priIndicator = safePriority.includes('1') ? '<i class="fas fa-fire text-rose-500 mr-2"></i>' : (safePriority.includes('2') ? '<i class="fas fa-exclamation-circle text-orange-500 mr-2"></i>' : '');
             let imgIcon = t.imageUrl ? ' <i class="fas fa-image text-blue-400 ml-1 text-[10px]"></i>' : '';
 
+            // ตารางหน้า Command Center
             adminHtml += `<tr class="hover:bg-slate-50 transition group border-b border-slate-50 cursor-pointer" data-status="${safeStatus}" onclick="window.openModal('${id}')">
                 <td class="py-4 px-4 font-bold text-slate-500 text-xs">${displayId}</td>
                 <td class="py-4 px-4"><div class="font-bold text-slate-800 text-sm">${priIndicator}${t.subject || 'No Subject'}${imgIcon}</div><div class="text-[10px] text-slate-400 mt-0.5">${t.callerEmail || '-'}</div></td>
@@ -93,20 +130,43 @@ function loadDashboardData() {
                     <button onclick="event.stopPropagation(); window.deleteTicket('${id}')" class="w-8 h-8 bg-white border border-rose-200 text-rose-500 rounded-lg shadow-sm"><i class="fas fa-trash text-xs"></i></button>
                 </td></tr>`;
 
+            // ตารางหน้า My Tickets
+            if (isMyTicket) {
+                userHtml += `<tr class="hover:bg-slate-50 transition border-b border-slate-50 cursor-pointer" onclick="window.openModal('${id}')">
+                    <td class="py-4 px-6 font-bold text-slate-500 text-xs">${displayId}</td>
+                    <td class="py-4 px-6"><div class="font-bold text-slate-800 text-sm">${priIndicator}${t.subject || 'No Subject'}${imgIcon}</div></td>
+                    <td class="py-4 px-6">${statusHtml}</td>
+                    <td class="py-4 px-6 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td>
+                </tr>`;
+            }
+
             if (recentCount < 5) {
                 recentDashHtml += `<div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100 transition cursor-pointer" onclick="window.openModal('${id}')"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-500"><i class="fas fa-ticket-alt"></i></div><div><p class="text-sm font-bold text-slate-800">${t.subject}</p><p class="text-[10px] text-slate-400 font-bold uppercase">${displayId}</p></div></div>${statusHtml}</div>`;
                 recentCount++;
             }
         });
 
-        document.getElementById('admin-ticket-list').innerHTML = adminHtml || `<tr><td colspan="5" class="p-16 text-center text-slate-400"><i class="fas fa-inbox text-5xl mb-4 opacity-20 block"></i><p>No tickets</p></td></tr>`;
+        document.getElementById('admin-ticket-list').innerHTML = adminHtml || `<tr><td colspan="5" class="p-16 text-center text-slate-400">No tickets</td></tr>`;
+        document.getElementById('user-ticket-list').innerHTML = userHtml || `<tr><td colspan="4" class="p-16 text-center text-slate-400">No tickets</td></tr>`;
+        
         document.getElementById('stat-new').innerText = counts['New'] || 0; document.getElementById('stat-progress').innerText = counts['In Progress'] || 0; document.getElementById('stat-resolved').innerText = counts['Resolved'] || 0; document.getElementById('stat-total').innerText = counts['Total'] || 0; document.getElementById('stat-admin-my-resolved').innerText = myResolved;
-        document.getElementById('dash-recent-list').innerHTML = recentDashHtml || `<div class="p-8 text-center text-slate-400 border-2 border-dashed border-slate-100 rounded-xl"><p class="text-xs font-bold uppercase">${dict[currentLang].empty_recent}</p></div>`;
+        document.getElementById('dash-recent-list').innerHTML = recentDashHtml || `<div class="p-8 text-center text-slate-400 border-2 border-dashed border-slate-100 rounded-xl"><p class="text-xs font-bold uppercase">Clear!</p></div>`;
         const u = auth.currentUser.email.split('@')[0]; document.getElementById('dash-user-name').innerText = u.charAt(0).toUpperCase() + u.slice(1);
         
         window.setAdminFilter(currentAdminFilter);
     });
 }
+
+// สร้างตั๋วใหม่ (กรณี Admin ต้องการแจ้งเรื่องด้วยตัวเอง)
+document.getElementById('create-ticket-form').onsubmit = async (e) => {
+    e.preventDefault(); const b = document.getElementById('btn-create-submit'); b.disabled = true;
+    try {
+        let img = null; if(document.getElementById('tk-image').files[0]) img = await resizeAndConvertToBase64(document.getElementById('tk-image').files[0], 800, 800);
+        const docRef = await addDoc(collection(db, "incidents"), { callerEmail: auth.currentUser.email, category: document.getElementById('tk-category').value, priority: document.getElementById('tk-priority').value, building: document.getElementById('tk-building').value, floor: document.getElementById('tk-floor').value, department: document.getElementById('tk-dept').value, line: document.getElementById('tk-line').value, brokenItem: document.getElementById('tk-item').value, subject: document.getElementById('tk-subject').value, description: document.getElementById('tk-desc').value, imageUrl: img, status: 'New', createdAt: new Date() });
+        await addDoc(collection(db, "incidents", docRef.id, "comments"), { senderEmail: "system", text: "Ticket created.", createdAt: new Date() });
+        document.getElementById('create-ticket-form').reset(); window.clearCreateImage(); Toast.fire({ icon: 'success', title: 'Success!' }); window.switchTab('incidents');
+    } catch (e) { Swal.fire({ icon: 'error', text: e.message }); } finally { b.disabled = false; }
+};
 
 window.updateTicket = (id, newStatus) => {
     updateDoc(doc(db, "incidents", id), { status: newStatus, assignedTo: auth.currentUser.email }).then(() => {
@@ -199,7 +259,7 @@ document.getElementById('btn-logout').onclick = () => {
     .then((result) => { if (result.isConfirmed) signOut(auth); });
 };
 
-// 🛑 ตรวจสอบสิทธิ์: ถ้าเข้ามาแล้วไม่ได้ล็อกอิน หรือไม่ใช่แอดมิน ให้เด้งกลับหน้า index.html
+// 🛑 ตรวจสอบสิทธิ์
 onAuthStateChanged(auth, (user) => {
     if (user) {
         const safeEmail = user.email ? user.email.toLowerCase().trim() : "";
@@ -216,7 +276,6 @@ onAuthStateChanged(auth, (user) => {
         document.getElementById('user-email').innerText = user.email;
         loadDashboardData();
     } else {
-        // ถ้ายังไม่ได้ล็อกอิน ให้เด้งไปหน้า index.html เพื่อล็อกอินก่อน
         window.location.href = 'index.html';
     }
     window.toggleLang(currentLang);
