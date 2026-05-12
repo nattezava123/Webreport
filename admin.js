@@ -211,4 +211,137 @@ function loadDashboardData() {
             let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
             let statusHtml = `<span class="${badgeBgClass} px-2.5 py-1 rounded-md text-[10px] uppercase font-black tracking-widest flex w-fit gap-1.5 items-center"><span class="w-1.5 h-1.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
-            let priIndicator = t.priority?.includes('1') ? '<i class="fas fa-fire text-rose-500 mr-2"></i>' : (t.priority?.includes('2') ? '<i class="fas fa-exclamation-circle text-orange-
+            let priIndicator = t.priority?.includes('1') ? '<i class="fas fa-fire text-rose-500 mr-2"></i>' : (t.priority?.includes('2') ? '<i class="fas fa-exclamation-circle text-orange-500 mr-2"></i>' : '');
+            let imgIcon = t.imageUrl ? ' <i class="fas fa-image text-blue-400 ml-1 text-[10px]"></i>' : '';
+
+            adminHtml += `<tr class="hover:bg-slate-50 transition group border-b border-slate-50 cursor-pointer" data-status="${safeStatus}" onclick="window.openModal('${id}')"><td class="py-4 px-4 font-bold text-slate-500 text-xs">${displayId}</td><td class="py-4 px-4"><div class="font-bold text-slate-800 text-sm">${priIndicator}${t.subject}${imgIcon}</div><div class="text-[10px] text-slate-400 mt-0.5">${t.callerEmail || '-'}</div></td><td class="py-4 px-4 text-xs font-bold text-slate-600">${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : '-'}</td><td class="py-4 px-4">${statusHtml}</td><td class="py-4 px-4 text-right opacity-0 group-hover:opacity-100 transition whitespace-nowrap"><button onclick="event.stopPropagation(); window.editTicket('${id}')" class="w-8 h-8 bg-white border border-blue-200 text-blue-500 rounded-lg shadow-sm mr-1"><i class="fas fa-edit text-xs"></i></button><button onclick="event.stopPropagation(); window.updateTicket('${id}', 'In Progress')" class="w-8 h-8 bg-white border border-amber-200 text-amber-500 rounded-lg shadow-sm mr-1"><i class="fas fa-play text-xs"></i></button><button onclick="event.stopPropagation(); window.updateTicket('${id}', 'Resolved')" class="w-8 h-8 bg-white border border-emerald-200 text-emerald-500 rounded-lg shadow-sm mr-2"><i class="fas fa-check text-xs"></i></button><button onclick="event.stopPropagation(); window.deleteTicket('${id}')" class="w-8 h-8 bg-white border border-rose-200 text-rose-500 rounded-lg shadow-sm"><i class="fas fa-trash text-xs"></i></button></td></tr>`;
+            
+            if (t.callerEmail === auth.currentUser.email) {
+                userHtml += `<tr class="border-b" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs">${displayId}</td><td class="p-4 font-bold text-sm">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
+            }
+
+            if (recentCount < 5) {
+                recentDashHtml += `<div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100 transition cursor-pointer" onclick="window.openModal('${id}')"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-500"><i class="fas fa-ticket-alt"></i></div><div><p class="text-sm font-bold text-slate-800">${t.subject}</p><p class="text-[10px] text-slate-400 font-bold uppercase">${displayId}</p></div></div>${statusHtml}</div>`;
+                recentCount++;
+            }
+        });
+        document.getElementById('admin-ticket-list').innerHTML = adminHtml || '<tr><td colspan="5" class="p-16 text-center text-slate-400">No requests found</td></tr>';
+        document.getElementById('user-ticket-list').innerHTML = userHtml || '<tr><td colspan="4" class="p-16 text-center text-slate-400">No requests found</td></tr>';
+        document.getElementById('stat-new').innerText = counts['New'] || 0; document.getElementById('stat-progress').innerText = counts['In Progress'] || 0; document.getElementById('stat-resolved').innerText = counts['Resolved'] || 0; document.getElementById('stat-total').innerText = counts['Total'] || 0; document.getElementById('stat-admin-my-resolved').innerText = myResolved;
+        document.getElementById('dash-recent-list').innerHTML = recentDashHtml || `<div class="p-8 text-center text-slate-400 border-2 border-dashed border-slate-100 rounded-xl"><p class="text-xs font-bold uppercase">Clear!</p></div>`;
+    });
+}
+
+document.getElementById('create-ticket-form').onsubmit = async (e) => {
+    e.preventDefault(); const b = document.getElementById('btn-create-submit'); b.disabled = true;
+    try {
+        let img = null; if(document.getElementById('tk-image').files[0]) img = await resizeAndConvertToBase64(document.getElementById('tk-image').files[0], 800, 800);
+        const docRef = await addDoc(collection(db, "incidents"), { callerEmail: auth.currentUser.email, category: document.getElementById('tk-category').value, priority: document.getElementById('tk-priority').value, building: document.getElementById('tk-building').value, floor: document.getElementById('tk-floor').value, department: document.getElementById('tk-dept').value, line: document.getElementById('tk-line').value, brokenItem: document.getElementById('tk-item').value, subject: document.getElementById('tk-subject').value, description: document.getElementById('tk-desc').value, imageUrl: img, status: 'New', createdAt: new Date() });
+        await addDoc(collection(db, "incidents", docRef.id, "comments"), { senderEmail: "system", text: "Ticket created.", createdAt: new Date() });
+        document.getElementById('create-ticket-form').reset(); window.clearCreateImage(); window.updatePriorityDesc(); Toast.fire({ icon: 'success', title: 'Success!' }); window.switchTab('incidents');
+    } catch (e) { Swal.fire({ icon: 'error', text: e.message }); } finally { b.disabled = false; }
+};
+
+window.updateTicket = (id, newStatus) => { updateDoc(doc(db, "incidents", id), { status: newStatus, assignedTo: auth.currentUser.email }).then(() => { addDoc(collection(db, "incidents", id, "comments"), { senderEmail: "system", text: `Status updated to ${newStatus} by ${auth.currentUser.email.split('@')[0]}`, createdAt: new Date() }); Toast.fire({ icon: 'success', title: 'Status Updated' }); }); };
+window.deleteTicket = (id) => { Swal.fire({ title: 'Delete Ticket?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#e11d48' }).then((result) => { if (result.isConfirmed) { deleteDoc(doc(db, "incidents", id)); Toast.fire({ icon: 'success', title: 'Deleted' }); } }); };
+
+window.editTicket = (id) => {
+    const t = window.globalTickets[id];
+    Swal.fire({
+        title: 'Edit Ticket Details', width: '600px',
+        html: `<div class="space-y-4 text-left mt-4">
+            <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Subject</label><input id="edit-sub" class="w-full border rounded-xl px-4 py-3 text-sm" value="${t.subject || ''}"></div>
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Category</label><select id="edit-cat" class="w-full border rounded-xl px-4 py-3 text-sm"><option value="Hardware" ${t.category==='Hardware'?'selected':''}>Hardware</option><option value="Software" ${t.category==='Software'?'selected':''}>Software</option><option value="Network" ${t.category==='Network'?'selected':''}>Network</option></select></div>
+                <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Priority</label><select id="edit-pri" class="w-full border rounded-xl px-4 py-3 text-sm"><option value="4 - Low" ${t.priority==='4 - Low'?'selected':''}>Low</option><option value="3 - Moderate" ${t.priority==='3 - Moderate'?'selected':''}>Moderate</option><option value="2 - High" ${t.priority==='2 - High'?'selected':''}>High</option><option value="1 - Critical" ${t.priority==='1 - Critical'?'selected':''}>Critical</option></select></div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border">
+                <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Building</label><input id="edit-bldg" class="w-full border rounded-lg px-3 py-2 text-sm" value="${t.building || ''}"></div>
+                <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Department</label><input id="edit-dept" class="w-full border rounded-lg px-3 py-2 text-sm" value="${t.department || ''}"></div>
+                <div class="col-span-2"><label class="block text-[10px] font-bold text-slate-500 uppercase">Broken Item</label><input id="edit-item" class="w-full border rounded-lg px-3 py-2 text-sm" value="${t.brokenItem || ''}"></div>
+            </div>
+            <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Description</label><textarea id="edit-desc" rows="4" class="w-full border rounded-xl px-4 py-3 text-sm resize-none">${t.description || ''}</textarea></div>
+        </div>`,
+        showCancelButton: true, confirmButtonColor: '#3b82f6',
+        preConfirm: () => ({ subject: document.getElementById('edit-sub').value, category: document.getElementById('edit-cat').value, priority: document.getElementById('edit-pri').value, building: document.getElementById('edit-bldg').value, department: document.getElementById('edit-dept').value, brokenItem: document.getElementById('edit-item').value, description: document.getElementById('edit-desc').value })
+    }).then((result) => { if (result.isConfirmed) { updateDoc(doc(db, "incidents", id), result.value); Toast.fire({ icon: 'success', title: 'Updated' }); } });
+};
+
+window.exportCSV = () => { let c = "ID,Subject,Status,Priority,Category,Building,Floor,Department,Line,BrokenItem,Caller,AssignedTo,Date\n"; for(let i in window.globalTickets){ let t = window.globalTickets[i]; c += `${i},"${t.subject}",${t.status},"${t.priority}",${t.category},"${t.building||'-'}","${t.floor||'-'}","${t.department||'-'}","${t.line||'-'}","${t.brokenItem||'-'}",${t.callerEmail},${t.assignedTo||''},${t.createdAt ? t.createdAt.toDate().toISOString() : ""}\n`; } let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([c],{type:'text/csv'})); a.download='Tickets.csv'; a.click(); };
+window.filterTickets = (tId, iId) => { let i = document.getElementById(iId).value.toUpperCase(), tr = document.getElementById(tId).getElementsByTagName("tr"); for(let x=0; x<tr.length; x++) { if(tr[x].innerText) { tr[x].style.display = tr[x].innerText.toUpperCase().includes(i) ? "" : "none"; } } };
+window.setAdminFilter = (f) => { currentAdminFilter = f; const act = "px-5 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm", inact = "px-5 py-2 rounded-lg text-xs font-bold text-slate-500"; ['All', 'Active', 'Resolved'].forEach(btn => { const b = document.getElementById(`btn-filter-${btn}`); if(b) b.className = btn === f ? act : inact; }); let tr = document.getElementById('admin-ticket-list').getElementsByTagName('tr'); for(let t of tr){ let s = t.getAttribute('data-status'); t.style.display = (f==='All'||(f==='Active'&&s!=='Resolved')||(f==='Resolved'&&s==='Resolved')) ? '' : 'none'; } };
+
+window.openModal = (id) => {
+    currentTicketId = id; 
+    const t = window.globalTickets[id];
+    
+    document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); 
+    document.getElementById('modal-subject').innerText = t.subject || 'No Subject';
+    document.getElementById('modal-category').innerText = t.category || '-'; 
+    document.getElementById('modal-priority').innerText = t.priority || '-';
+    document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`;
+    document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; 
+    document.getElementById('modal-desc').innerText = t.description || '-';
+    document.getElementById('modal-caller').innerText = t.callerEmail || '-'; 
+    document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned';
+    document.getElementById('modal-date').innerText = t.createdAt ? t.createdAt.toDate().toLocaleString() : '';
+
+    const safeStatus = t.status || 'New'; 
+    const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
+    let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); 
+    let displayStatus = dict[currentLang][statusKey] || safeStatus;
+    let badgeBgClass = bgColors[safeStatus] || bgColors['New']; 
+    let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
+    document.getElementById('modal-status-badge').innerHTML = `<span class="${badgeBgClass} px-4 py-1.5 rounded-lg text-xs uppercase font-black tracking-widest flex items-center gap-2"><span class="w-2 h-2 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
+
+    if(t.imageUrl) { document.getElementById('modal-image').src = t.imageUrl; document.getElementById('modal-image-container').classList.remove('hidden'); } else { document.getElementById('modal-image-container').classList.add('hidden'); }
+    
+    document.getElementById('ticket-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ticket-modal').style.opacity = '1'; document.getElementById('modal-box').classList.replace('scale-95', 'scale-100'); }, 10);
+    
+    if(chatUnsubscribe) chatUnsubscribe();
+    chatUnsubscribe = onSnapshot(query(collection(db, "incidents", id, "comments"), orderBy("createdAt", "asc")), (snap) => {
+        let h = ""; snap.forEach(doc => { 
+            const d = doc.data(); const isMe = d.senderEmail === auth.currentUser.email;
+            if(d.senderEmail === 'system') h += `<div class="flex justify-center my-4"><span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-[10px] font-bold">${d.text}</span></div>`; 
+            else { 
+                const bg = isMe ? 'bg-blue-600 text-white' : 'bg-white border text-slate-700';
+                const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
+                let cImg = d.imageUrl ? `<img src="${d.imageUrl}" class="mt-2 rounded-lg max-h-40 cursor-pointer border hover:opacity-90 transition" onclick="window.viewFullImage('${d.imageUrl}')">` : ''; 
+                h += `<div class="flex flex-col ${isMe?'items-end':'items-start'} mb-4"><div class="${bg} p-3 rounded-xl max-w-[85%] shadow-sm text-sm"><div class="text-[10px] font-bold opacity-70 mb-1">${senderName}</div>${d.text}${cImg}</div></div>`; 
+            }
+        });
+        document.getElementById('chat-messages').innerHTML = h; document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+    });
+};
+
+window.closeModal = () => { document.getElementById('ticket-modal').style.opacity = '0'; document.getElementById('modal-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => { document.getElementById('ticket-modal').classList.replace('flex', 'hidden'); if(chatUnsubscribe) chatUnsubscribe(); }, 300); };
+
+document.getElementById('comment-text').addEventListener('paste', function(e) {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (let i of items) { if (i.kind === 'file' && i.type.includes('image')) { const dt = new DataTransfer(); dt.items.add(i.getAsFile()); document.getElementById('comment-image').files = dt.files; document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500'); Toast.fire({ icon: 'success', title: 'Image attached' }); e.preventDefault(); } }
+});
+
+document.getElementById('comment-form').onsubmit = async (e) => {
+    e.preventDefault(); const txt = document.getElementById('comment-text'), imgIn = document.getElementById('comment-image'), btn = document.getElementById('btn-comment-submit');
+    if(!txt.value.trim() && imgIn.files.length === 0) return; btn.disabled = true;
+    try { let uImg = null; if (imgIn.files.length > 0) uImg = await resizeAndConvertToBase64(imgIn.files[0], 800, 800);
+        await addDoc(collection(db, "incidents", currentTicketId, "comments"), { senderEmail: auth.currentUser.email, text: txt.value, imageUrl: uImg, createdAt: new Date() });
+        document.getElementById('comment-form').reset(); document.getElementById('comment-img-label').classList.replace('text-blue-500', 'text-slate-500');
+    } catch (e) { Swal.fire({ icon: 'error', text: e.message }); } finally { btn.disabled = false; }
+};
+
+document.getElementById('btn-logout').onclick = () => {
+    Swal.fire({ title: currentLang === 'th' ? 'ออกจากระบบ?' : 'Sign Out?', icon: 'question', showCancelButton: true, confirmButtonColor: '#e11d48' })
+    .then((result) => { if (result.isConfirmed) signOut(auth).then(() => window.location.href = 'index.html'); });
+};
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const em = user.email.toLowerCase(); const isAdmin = em === "nattezava1996@gmail.com" || em.includes("admin");
+        if (!isAdmin) { window.location.href = 'index.html'; return; } 
+        document.getElementById('user-email').innerText = user.email; 
+        loadDashboardData();
+        loadLiveChat(); // 🔥 โหลด Live Chat ตอนล็อกอิน
+    } else { window.location.href = 'index.html'; } 
+    window.toggleLang(currentLang);
+});
