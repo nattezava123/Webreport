@@ -23,8 +23,8 @@ let chatUnsubscribe = null;
 let currentLang = localStorage.getItem('appLang') || 'en';
 
 const dict = {
-    en: { page_title: "Factory IT Service Center", app_name: "Factory IT Service Center", app_name_short: "Factory IT", role_user: "User", menu_group_1: "Workspace", menu_dash: "Dashboard", menu_incidents: "My Tickets", menu_create: "Create Ticket", btn_logout: "Log Out", stat_open: "New Tickets", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", th_subject: "Subject", th_status: "Status", th_date: "Timeline", btn_submit: "Submit Request", search_placeholder: "Search...", btn_new_ticket: "Create", form_title: "How can we help?", form_cat: "Category", form_pri: "Priority", form_short: "Subject", form_desc: "Description", form_loc_head: "Location", form_bldg: "Bldg", form_floor: "Floor", form_dept: "Dept", form_line: "Line", form_item: "Item", dash_welcome: "Welcome,", dash_sub: "IT support summary.", dash_recent: "Activity", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", empty_tickets: "None", empty_recent: "Clear!", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved" },
-    th: { page_title: "ศูนย์บริการไอทีโรงงาน", app_name: "ศูนย์บริการไอทีโรงงาน", app_name_short: "ศูนย์บริการไอที", role_user: "ผู้แจ้ง", menu_group_1: "พื้นที่ทำงาน", menu_dash: "ภาพรวมระบบ", menu_incidents: "ตั๋วของฉัน", menu_create: "แจ้งปัญหาใหม่", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "ทั้งหมด", th_subject: "หัวข้อ", th_status: "สถานะ", th_date: "ล่าสุด", btn_submit: "ส่งเรื่องแจ้งซ่อม", search_placeholder: "ค้นหา...", btn_new_ticket: "สร้างใหม่", form_title: "มีอะไรให้ช่วยไหม?", form_cat: "หมวดหมู่", form_pri: "ความเร่งด่วน", form_short: "หัวข้อ", form_desc: "รายละเอียด", form_loc_head: "สถานที่", form_bldg: "ตึก", form_floor: "ชั้น", form_dept: "แผนก", form_line: "ไลน์", form_item: "ของที่เสีย", dash_welcome: "ยินดีต้อนรับ,", dash_sub: "สรุปภาพรวมวันนี้", dash_recent: "อัปเดตล่าสุด", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", empty_tickets: "ไม่พบข้อมูล", empty_recent: "จัดการครบแล้ว!", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว" }
+    en: { page_title: "Factory IT Service Center", app_name: "Factory IT Service Center", app_name_short: "Factory IT", role_user: "User", menu_group_1: "Workspace", menu_dash: "Dashboard", menu_incidents: "My Requests", menu_create: "Create Ticket", btn_logout: "Log Out", stat_open: "New Tickets", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", th_subject: "Subject", th_status: "Status", th_date: "Timeline", btn_submit: "Submit Request", search_placeholder: "Search...", btn_new_ticket: "Create", form_title: "How can we help?", form_cat: "Category", form_pri: "Priority", form_short: "Subject", form_desc: "Description", form_loc_head: "Location", form_bldg: "Bldg", form_floor: "Floor", form_dept: "Dept", form_line: "Line", form_item: "Item", dash_welcome: "Welcome,", dash_sub: "IT support summary.", dash_recent: "Activity", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", empty_tickets: "None", empty_recent: "Clear!", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved" },
+    th: { page_title: "ศูนย์บริการไอทีโรงงาน", app_name: "ศูนย์บริการไอทีโรงงาน", app_name_short: "ศูนย์บริการไอที", role_user: "ผู้แจ้ง", menu_group_1: "พื้นที่ทำงาน", menu_dash: "ภาพรวมระบบ", menu_incidents: "รายการคำขอของฉัน", menu_create: "แจ้งปัญหาใหม่", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "ทั้งหมด", th_subject: "หัวข้อ", th_status: "สถานะ", th_date: "ล่าสุด", btn_submit: "ส่งเรื่องแจ้งซ่อม", search_placeholder: "ค้นหา...", btn_new_ticket: "สร้างใหม่", form_title: "มีอะไรให้ช่วยไหม?", form_cat: "หมวดหมู่", form_pri: "ความเร่งด่วน", form_short: "หัวข้อ", form_desc: "รายละเอียด", form_loc_head: "สถานที่", form_bldg: "ตึก", form_floor: "ชั้น", form_dept: "แผนก", form_line: "ไลน์", form_item: "ของที่เสีย", dash_welcome: "ยินดีต้อนรับ,", dash_sub: "สรุปภาพรวมวันนี้", dash_recent: "อัปเดตล่าสุด", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", empty_tickets: "ไม่พบข้อมูล", empty_recent: "จัดการครบแล้ว!", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว" }
 };
 
 window.viewFullImage = (url) => { Swal.fire({ imageUrl: url, imageAlt: 'Attached Image', width: 'auto', padding: '1rem', showConfirmButton: false, showCloseButton: true, customClass: { image: 'rounded-xl max-h-[80vh] object-contain' } }); };
@@ -79,37 +79,30 @@ window.updatePriorityDesc = () => {
     const pDesc = document.getElementById('priority-desc'); if(pDesc) pDesc.className = `p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors ${descColors[val]}`;
 };
 
-// 🔥 อัปเดตคำสั่งเปลี่ยนหน้าแท็บ ใช้ hidden เข้ามาช่วยซ่อนแบบ 100% แน่นอน
-// 🔥 อัปเดตคำสั่งเปลี่ยนหน้าแท็บ (แก้หัวข้อค้างให้แล้วครับ!)
 window.switchTab = (tabName) => {
-    // 1. ซ่อนทุกหน้า
     document.querySelectorAll('.tab-content').forEach(el => {
         el.classList.remove('block');
         el.classList.add('hidden');
     });
     
-    // 2. ปิดไฟปุ่มเมนูทั้งหมด
     document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
     
-    // 3. โชว์หน้าที่เรากด
     const target = document.getElementById(`tab-${tabName}`); 
     if(target) {
         target.classList.remove('hidden');
         target.classList.add('block');
     }
     
-    // 4. เปิดไฟปุ่มเมนูที่เรากด
     document.querySelector(`.menu-link[onclick*="'${tabName}'"]`)?.classList.add('active');
     
-    // 5. เปลี่ยนชื่อหัวขอด้านบน (ตรงนี้ที่หายไปครับ!)
+    // เปลี่ยนชื่อหัวข้อ
     const pageTitle = document.getElementById('page-title');
     if (pageTitle) {
         const key = `menu_${tabName}`;
-        pageTitle.setAttribute('data-i18n', key); // เซ็ตค่าเผื่อสลับภาษา EN/TH
+        pageTitle.setAttribute('data-i18n', key);
         pageTitle.innerText = dict[currentLang][key] || dict[currentLang].app_name;
     }
     
-    // ปิดเมนูบนมือถือถ้าเปิดอยู่
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
 };
 
@@ -172,7 +165,7 @@ function loadDashboardData() {
             userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">TKT-${id.substring(0,4).toUpperCase()}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
             if(recentCount<5){ recentHtml+=`<div class="p-4 bg-white border rounded-xl mb-2 text-sm cursor-pointer hover:bg-slate-50 transition flex justify-between items-center" onclick="window.openModal('${id}')"><div><b class="text-slate-800">${t.subject}</b></div>${statusHtml}</div>`; recentCount++;}
         });
-        document.getElementById('user-ticket-list').innerHTML = userHtml || '<tr><td colspan="4" class="p-8 text-center text-slate-400">No tickets found</td></tr>';
+        document.getElementById('user-ticket-list').innerHTML = userHtml || '<tr><td colspan="4" class="p-8 text-center text-slate-400">No requests found</td></tr>';
         document.getElementById('stat-new').innerText = counts.New || 0; document.getElementById('stat-progress').innerText = counts["In Progress"] || 0;
         document.getElementById('stat-resolved').innerText = counts.Resolved || 0; document.getElementById('stat-total').innerText = counts.Total || 0;
         document.getElementById('dash-recent-list').innerHTML = recentHtml || '<p class="text-center text-slate-400 text-xs py-10">Clear!</p>';
@@ -257,8 +250,8 @@ document.getElementById('btn-logout').onclick = () => {
 onAuthStateChanged(auth, (user) => {
     if (user) {
         const em = user.email.toLowerCase(); const isAdmin = em === "nattezava1996@gmail.com" || em.includes("admin");
-        if (isAdmin) { window.location.href = 'admin.html'; return; } // แอดมินหลงมาเตะกลับไปหน้าแอดมิน
+        if (isAdmin) { window.location.href = 'admin.html'; return; }
         document.getElementById('user-email').innerText = user.email; loadDashboardData();
-    } else { window.location.href = 'index.html'; } // ยังไม่ล็อกอิน เด้งกลับหน้า index
+    } else { window.location.href = 'index.html'; } 
     window.toggleLang(currentLang);
 });
