@@ -63,7 +63,7 @@ window.toggleLang = (lang) => {
     document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(dict[lang][k]) el.innerText = dict[lang][k]; });
     const optHw = document.getElementById('opt-hw'), optSw = document.getElementById('opt-sw'), optNw = document.getElementById('opt-nw');
     if(optHw) optHw.innerText = dict[lang].cat_hw; if(optSw) optSw.innerText = dict[lang].cat_sw; if(optNw) optNw.innerText = dict[lang].cat_nw;
-    window.updatePriorityDesc(); 
+    window.updatePriorityDesc(); window.updateDynamicDropdowns();
     ['app'].forEach(v => {
         const en = document.getElementById(`lang-en-${v}`), th = document.getElementById(`lang-th-${v}`);
         if(en && th) { en.className = (lang==='en') ? "px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold shadow-sm" : "px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold"; th.className = (lang==='th') ? "px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold shadow-sm" : "px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold"; }
@@ -80,29 +80,73 @@ window.updatePriorityDesc = () => {
 };
 
 window.switchTab = (tabName) => {
-    document.querySelectorAll('.tab-content').forEach(el => {
-        el.classList.remove('block');
-        el.classList.add('hidden');
-    });
-    
+    document.querySelectorAll('.tab-content').forEach(el => { el.classList.remove('block'); el.classList.add('hidden'); });
     document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
-    
-    const target = document.getElementById(`tab-${tabName}`); 
-    if(target) {
-        target.classList.remove('hidden');
-        target.classList.add('block');
-    }
-    
+    const target = document.getElementById(`tab-${tabName}`); if(target) { target.classList.remove('hidden'); target.classList.add('block'); }
     document.querySelector(`.menu-link[onclick*="'${tabName}'"]`)?.classList.add('active');
-    
     const pageTitle = document.getElementById('page-title');
-    if (pageTitle) {
-        const key = `menu_${tabName}`;
-        pageTitle.setAttribute('data-i18n', key);
-        pageTitle.innerText = dict[currentLang][key] || dict[currentLang].app_name;
-    }
-    
+    if (pageTitle) { const key = `menu_${tabName}`; pageTitle.setAttribute('data-i18n', key); pageTitle.innerText = dict[currentLang][key] || dict[currentLang].app_name; }
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
+};
+
+// 🔥 ระบบ Dynamic Dropdown (เปลี่ยน Item/Subject ตาม Category)
+const categoryData = {
+    "Hardware": {
+        items: [
+            { val: "PC / Desktop", text: "คอมพิวเตอร์ (PC / Desktop)" },
+            { val: "Laptop / Notebook", text: "โน้ตบุ๊ก (Laptop / Notebook)" },
+            { val: "Monitor", text: "หน้าจอ (Monitor)" },
+            { val: "Printer / Scanner", text: "เครื่องปริ้น / สแกนเนอร์" },
+            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
+        ],
+        subjects: [
+            { val: "Cannot power on / No display", text: "เปิดไม่ติด / ไม่มีภาพ" },
+            { val: "Cannot print / Paper jam", text: "ปริ้นไม่ออก / กระดาษติด" },
+            { val: "Hardware replacement / Upgrade", text: "ขอเบิกอุปกรณ์ / เปลี่ยนอะไหล่" },
+            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
+        ]
+    },
+    "Software": {
+        items: [
+            { val: "Software / System", text: "โปรแกรม / ระบบ ERP" },
+            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
+        ],
+        subjects: [
+            { val: "System Error / Software crashes", text: "ระบบค้าง / โปรแกรมมีปัญหา Error" },
+            { val: "Request for access / New Account", text: "ขอสิทธิ์เข้าใช้งาน / สร้าง User ใหม่" },
+            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
+        ]
+    },
+    "Network": {
+        items: [
+            { val: "Network / Wi-Fi", text: "อุปกรณ์เน็ตเวิร์ค / Wi-Fi" },
+            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
+        ],
+        subjects: [
+            { val: "No Internet / Network drops", text: "ไม่มีเน็ต / อินเทอร์เน็ตหลุด" },
+            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
+        ]
+    }
+};
+
+window.updateDynamicDropdowns = () => {
+    const catSelect = document.getElementById('tk-category');
+    const itemSelect = document.getElementById('tk-item');
+    const subSelect = document.getElementById('tk-subject');
+    if (!catSelect || !itemSelect || !subSelect) return;
+    const selectedCat = catSelect.value;
+    const data = categoryData[selectedCat];
+    
+    const chooseItemText = currentLang === 'th' ? "เลือกอุปกรณ์ที่เสีย..." : "Select broken item...";
+    const chooseSubText = currentLang === 'th' ? "เลือกหัวข้อปัญหา..." : "Select subject...";
+    
+    itemSelect.innerHTML = `<option value="" disabled selected>${chooseItemText}</option>`;
+    subSelect.innerHTML = `<option value="" disabled selected>${chooseSubText}</option>`;
+    
+    if (data) {
+        data.items.forEach(item => { itemSelect.innerHTML += `<option value="${item.val}">${currentLang==='th'?item.text:item.val}</option>`; });
+        data.subjects.forEach(sub => { subSelect.innerHTML += `<option value="${sub.val}">${currentLang==='th'?sub.text:sub.val}</option>`; });
+    }
 };
 
 window.openAIModal = () => { document.getElementById('ai-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ai-modal').style.opacity = '1'; document.getElementById('ai-box').classList.replace('scale-95', 'scale-100'); }, 10); };
@@ -144,43 +188,26 @@ window.sendAIMessage = async () => {
     }, 800); 
 };
 
-// 🔥 ระบบโหลด Live Chat ติดต่อไอที (ทำงานแบบ Real-time)
 function loadLiveChat() {
     onSnapshot(query(collection(db, "live_chat"), orderBy("createdAt", "asc")), (snap) => {
         let h = "";
         snap.forEach(doc => {
-            const d = doc.data();
-            const isMe = d.senderEmail === auth.currentUser.email;
-            const isAdmin = d.senderEmail.includes('admin') || d.senderEmail === 'nattezava1996@gmail.com';
-            const align = isMe ? 'items-end' : 'items-start';
-            const bg = isMe ? 'bg-slate-800 text-white' : (isAdmin ? 'bg-rose-50 border border-rose-100 text-slate-800' : 'bg-white border text-slate-700');
-            const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
-            const badge = isAdmin && !isMe ? '<i class="fas fa-shield-alt text-rose-500 ml-1"></i>' : '';
-            
+            const d = doc.data(); const isMe = d.senderEmail === auth.currentUser.email; const isAdmin = d.senderEmail.includes('admin') || d.senderEmail === 'nattezava1996@gmail.com';
+            const align = isMe ? 'items-end' : 'items-start'; const bg = isMe ? 'bg-slate-800 text-white' : (isAdmin ? 'bg-rose-50 border border-rose-100 text-slate-800' : 'bg-white border text-slate-700');
+            const senderName = isMe ? 'You' : d.senderEmail.split('@')[0]; const badge = isAdmin && !isMe ? '<i class="fas fa-shield-alt text-rose-500 ml-1"></i>' : '';
             h += `<div class="flex flex-col ${align} mb-4"><div class="${bg} p-3.5 rounded-2xl max-w-[85%] shadow-sm text-sm"><div class="text-[10px] font-bold opacity-70 mb-1 flex items-center gap-1">${senderName} ${badge}</div>${d.text}</div></div>`;
         });
         const chatBox = document.getElementById('live-chat-box');
-        if(chatBox) {
-            chatBox.innerHTML = h || '<div class="text-center text-slate-400 text-xs py-10">Start the conversation!</div>';
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
+        if(chatBox) { chatBox.innerHTML = h || '<div class="text-center text-slate-400 text-xs py-10">Start the conversation!</div>'; chatBox.scrollTop = chatBox.scrollHeight; }
     });
 
     const form = document.getElementById('live-chat-form');
     if(form) {
         form.onsubmit = async (e) => {
-            e.preventDefault();
-            const input = document.getElementById('live-chat-input');
-            const text = input.value.trim();
-            if(!text) return;
-            
-            const btn = document.getElementById('btn-live-chat');
-            btn.disabled = true;
-            
-            try {
-                await addDoc(collection(db, "live_chat"), { senderEmail: auth.currentUser.email, text: text, createdAt: new Date() });
-                input.value = '';
-            } catch(err) { console.error(err); } finally { btn.disabled = false; }
+            e.preventDefault(); const input = document.getElementById('live-chat-input'); const text = input.value.trim(); if(!text) return;
+            const btn = document.getElementById('btn-live-chat'); btn.disabled = true;
+            try { await addDoc(collection(db, "live_chat"), { senderEmail: auth.currentUser.email, text: text, createdAt: new Date() }); input.value = ''; } 
+            catch(err) { console.error(err); } finally { btn.disabled = false; }
         };
     }
 }
@@ -191,17 +218,11 @@ function loadDashboardData() {
         snapshot.forEach((docSnap) => {
             const t = docSnap.data(), id = docSnap.id; window.globalTickets[id] = t;
             if (t.callerEmail !== auth.currentUser.email) return;
-            
-            const safeStatus = t.status || 'New';
-            counts[safeStatus]++; counts.Total++;
-            
+            const safeStatus = t.status || 'New'; counts[safeStatus]++; counts.Total++;
             const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
-            let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_');
-            let displayStatus = dict[currentLang][statusKey] || safeStatus;
-            let badgeBgClass = bgColors[safeStatus] || bgColors['New'];
-            let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
+            let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); let displayStatus = dict[currentLang][statusKey] || safeStatus;
+            let badgeBgClass = bgColors[safeStatus] || bgColors['New']; let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
             let statusHtml = `<span class="${badgeBgClass} px-2.5 py-1 rounded-md text-[10px] uppercase font-black tracking-widest flex w-fit gap-1.5 items-center"><span class="w-1.5 h-1.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
-
             userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">TKT-${id.substring(0,4).toUpperCase()}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
             if(recentCount<5){ recentHtml+=`<div class="p-4 bg-white border rounded-xl mb-2 text-sm cursor-pointer hover:bg-slate-50 transition flex justify-between items-center" onclick="window.openModal('${id}')"><div><b class="text-slate-800">${t.subject}</b></div>${statusHtml}</div>`; recentCount++;}
         });
@@ -219,48 +240,24 @@ document.getElementById('create-ticket-form').onsubmit = async (e) => {
         let img = null; if(document.getElementById('tk-image').files[0]) img = await resizeAndConvertToBase64(document.getElementById('tk-image').files[0], 800, 800);
         const docRef = await addDoc(collection(db, "incidents"), { callerEmail: auth.currentUser.email, category: document.getElementById('tk-category').value, priority: document.getElementById('tk-priority').value, building: document.getElementById('tk-building').value, floor: document.getElementById('tk-floor').value, department: document.getElementById('tk-dept').value, line: document.getElementById('tk-line').value, brokenItem: document.getElementById('tk-item').value, subject: document.getElementById('tk-subject').value, description: document.getElementById('tk-desc').value, imageUrl: img, status: 'New', createdAt: new Date() });
         await addDoc(collection(db, "incidents", docRef.id, "comments"), { senderEmail: "system", text: "Ticket created.", createdAt: new Date() });
-        document.getElementById('create-ticket-form').reset(); window.clearCreateImage(); window.updatePriorityDesc(); Toast.fire({ icon: 'success', title: 'Success!' }); window.switchTab('incidents');
+        document.getElementById('create-ticket-form').reset(); window.clearCreateImage(); window.updatePriorityDesc(); window.updateDynamicDropdowns(); Toast.fire({ icon: 'success', title: 'Success!' }); window.switchTab('incidents');
     } catch (e) { Swal.fire({ icon: 'error', text: e.message }); } finally { b.disabled = false; }
 };
 
 window.openModal = (id) => {
-    currentTicketId = id; 
-    const t = window.globalTickets[id];
-    
-    document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); 
-    document.getElementById('modal-subject').innerText = t.subject || 'No Subject';
-    document.getElementById('modal-category').innerText = t.category || '-'; 
-    document.getElementById('modal-priority').innerText = t.priority || '-';
-    document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`;
-    document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; 
-    document.getElementById('modal-desc').innerText = t.description || '-';
-    document.getElementById('modal-caller').innerText = t.callerEmail || '-'; 
-    document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned';
-    document.getElementById('modal-date').innerText = t.createdAt ? t.createdAt.toDate().toLocaleString() : '';
-
-    const safeStatus = t.status || 'New'; 
-    const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
-    let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); 
-    let displayStatus = dict[currentLang][statusKey] || safeStatus;
-    let badgeBgClass = bgColors[safeStatus] || bgColors['New']; 
-    let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
+    currentTicketId = id; const t = window.globalTickets[id];
+    document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); document.getElementById('modal-subject').innerText = t.subject || 'No Subject'; document.getElementById('modal-category').innerText = t.category || '-'; document.getElementById('modal-priority').innerText = t.priority || '-'; document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`; document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; document.getElementById('modal-desc').innerText = t.description || '-'; document.getElementById('modal-caller').innerText = t.callerEmail || '-'; document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned'; document.getElementById('modal-date').innerText = t.createdAt ? t.createdAt.toDate().toLocaleString() : '';
+    const safeStatus = t.status || 'New'; const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
+    let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); let displayStatus = dict[currentLang][statusKey] || safeStatus; let badgeBgClass = bgColors[safeStatus] || bgColors['New']; let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
     document.getElementById('modal-status-badge').innerHTML = `<span class="${badgeBgClass} px-4 py-1.5 rounded-lg text-xs uppercase font-black tracking-widest flex items-center gap-2"><span class="w-2 h-2 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
-
     if(t.imageUrl) { document.getElementById('modal-image').src = t.imageUrl; document.getElementById('modal-image-container').classList.remove('hidden'); } else { document.getElementById('modal-image-container').classList.add('hidden'); }
-    
     document.getElementById('ticket-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ticket-modal').style.opacity = '1'; document.getElementById('modal-box').classList.replace('scale-95', 'scale-100'); }, 10);
-    
     if(chatUnsubscribe) chatUnsubscribe();
     chatUnsubscribe = onSnapshot(query(collection(db, "incidents", id, "comments"), orderBy("createdAt", "asc")), (snap) => {
         let h = ""; snap.forEach(doc => { 
             const d = doc.data(); const isMe = d.senderEmail === auth.currentUser.email;
             if(d.senderEmail === 'system') h += `<div class="flex justify-center my-4"><span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-[10px] font-bold">${d.text}</span></div>`; 
-            else { 
-                const bg = isMe ? 'bg-blue-600 text-white' : 'bg-white border text-slate-700';
-                const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
-                let cImg = d.imageUrl ? `<img src="${d.imageUrl}" class="mt-2 rounded-lg max-h-40 cursor-pointer border hover:opacity-90 transition" onclick="window.viewFullImage('${d.imageUrl}')">` : ''; 
-                h += `<div class="flex flex-col ${isMe?'items-end':'items-start'} mb-4"><div class="${bg} p-3 rounded-xl max-w-[85%] shadow-sm text-sm"><div class="text-[10px] font-bold opacity-70 mb-1">${senderName}</div>${d.text}${cImg}</div></div>`; 
-            }
+            else { const bg = isMe ? 'bg-blue-600 text-white' : 'bg-white border text-slate-700'; const senderName = isMe ? 'You' : d.senderEmail.split('@')[0]; let cImg = d.imageUrl ? `<img src="${d.imageUrl}" class="mt-2 rounded-lg max-h-40 cursor-pointer border hover:opacity-90 transition" onclick="window.viewFullImage('${d.imageUrl}')">` : ''; h += `<div class="flex flex-col ${isMe?'items-end':'items-start'} mb-4"><div class="${bg} p-3 rounded-xl max-w-[85%] shadow-sm text-sm"><div class="text-[10px] font-bold opacity-70 mb-1">${senderName}</div>${d.text}${cImg}</div></div>`; }
         });
         document.getElementById('chat-messages').innerHTML = h; document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
     });
@@ -292,8 +289,7 @@ onAuthStateChanged(auth, (user) => {
         const em = user.email.toLowerCase(); const isAdmin = em === "nattezava1996@gmail.com" || em.includes("admin");
         if (isAdmin) { window.location.href = 'admin.html'; return; } 
         document.getElementById('user-email').innerText = user.email; 
-        loadDashboardData();
-        loadLiveChat(); // 🔥 สั่งรัน Live Chat ตรงนี้
+        loadDashboardData(); loadLiveChat(); window.updateDynamicDropdowns();
     } else { window.location.href = 'index.html'; } 
     window.toggleLang(currentLang);
 });
