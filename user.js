@@ -61,7 +61,7 @@ async function resizeAndConvertToBase64(file, maxWidth, maxHeight) {
     });
 }
 
-// 🔥 ฟังก์ชันใหม่: แปลงวันที่ให้เป็น Format ชัดเจนเป๊ะๆ (เช่น 12 May 2026, 14:30)
+// 🔥 ระบบแปลงเวลาให้โชว์วันที่และเวลาเป๊ะๆ
 function formatDateTime(date) {
     if(!date) return '-'; 
     return date.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
@@ -192,13 +192,18 @@ function loadDashboardData() {
             let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
             let statusHtml = `<span class="${badgeBgClass} px-2.5 py-1 rounded-md text-[10px] uppercase font-black tracking-widest flex w-fit gap-1.5 items-center"><span class="w-1.5 h-1.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
-            // 🔥 เปลี่ยนการแสดงผลเวลาเป็นรูปแบบวันที่แบบเป๊ะๆ
+            // 🔥 จัดรูปแบบวันที่และเวลาชัดเจน
             const formattedDate = formatDateTime(t.createdAt?.toDate());
+            let displayId = "TKT-" + id.substring(0, 4).toUpperCase();
 
-            let displayId = "TKT-" + id.substring(0,4).toUpperCase();
-            userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">${displayId}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500 whitespace-nowrap font-medium">${formattedDate}</td></tr>`;
-            
-            if(recentCount<5){ recentHtml+=`<div class="p-4 bg-white border rounded-xl mb-2 text-sm cursor-pointer hover:bg-slate-50 transition flex justify-between items-center" onclick="window.openModal('${id}')"><div><b class="text-slate-800">${t.subject}</b></div>${statusHtml}</div>`; recentCount++;}
+            // 🔥 อัปเดตตาราง My Requests
+            userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">${displayId}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500 font-medium whitespace-nowrap">${formattedDate}</td></tr>`;
+
+            // 🔥 อัปเดต Dashboard Recent Activity
+            if (recentCount < 5) {
+                recentHtml += `<div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100 transition cursor-pointer" onclick="window.openModal('${id}')"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-500"><i class="fas fa-ticket-alt"></i></div><div><p class="text-sm font-bold text-slate-800">${t.subject}</p><p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">${displayId} <span class="mx-1">•</span> <i class="far fa-clock"></i> ${formattedDate}</p></div></div>${statusHtml}</div>`;
+                recentCount++;
+            }
         });
         document.getElementById('user-ticket-list').innerHTML = userHtml || '<tr><td colspan="4" class="p-16 text-center text-slate-400">No requests found</td></tr>';
         document.getElementById('stat-new').innerText = counts.New || 0; document.getElementById('stat-progress').innerText = counts["In Progress"] || 0;
@@ -224,7 +229,7 @@ document.getElementById('create-ticket-form').onsubmit = async (e) => {
 window.openModal = (id) => {
     currentTicketId = id; const t = window.globalTickets[id];
     document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); document.getElementById('modal-subject').innerText = t.subject || 'No Subject'; document.getElementById('modal-category').innerText = t.category || '-'; document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`; document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; document.getElementById('modal-desc').innerText = t.description || '-'; document.getElementById('modal-caller').innerText = t.callerEmail || '-'; document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned'; 
-    document.getElementById('modal-date').innerText = formatDateTime(t.createdAt?.toDate());
+    document.getElementById('modal-date').innerText = formatDateTime(t.createdAt?.toDate()); // แสดงวันที่เป๊ะๆ ใน Modal
 
     const safeStatus = t.status || 'New'; const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
     let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); let displayStatus = dict[currentLang][statusKey] || safeStatus; let badgeBgClass = bgColors[safeStatus] || bgColors['New']; let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
