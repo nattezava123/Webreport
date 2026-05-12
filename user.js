@@ -79,11 +79,26 @@ window.updatePriorityDesc = () => {
     const pDesc = document.getElementById('priority-desc'); if(pDesc) pDesc.className = `p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors ${descColors[val]}`;
 };
 
+// 🔥 อัปเดตคำสั่งเปลี่ยนหน้าแท็บ ใช้ hidden เข้ามาช่วยซ่อนแบบ 100% แน่นอน
 window.switchTab = (tabName) => {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    // 1. ซ่อนทุกหน้า
+    document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.remove('block');
+        el.classList.add('hidden');
+    });
+    // 2. ปิดไฟปุ่มเมนูทั้งหมด
     document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
-    const target = document.getElementById(`tab-${tabName}`); if(target) target.classList.add('active');
+    
+    // 3. โชว์หน้าที่เรากด
+    const target = document.getElementById(`tab-${tabName}`); 
+    if(target) {
+        target.classList.remove('hidden');
+        target.classList.add('block');
+    }
+    
+    // 4. เปิดไฟปุ่มเมนูที่เรากด
     document.querySelector(`.menu-link[onclick*="'${tabName}'"]`)?.classList.add('active');
+    
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
 };
 
@@ -168,7 +183,6 @@ window.openModal = (id) => {
     currentTicketId = id; 
     const t = window.globalTickets[id];
     
-    // 🔥 ข้อมูลทั้งหมดกลับมาแสดงผลแล้ว
     document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); 
     document.getElementById('modal-subject').innerText = t.subject || 'No Subject';
     document.getElementById('modal-category').innerText = t.category || '-'; 
