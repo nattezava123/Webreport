@@ -70,11 +70,15 @@
                     <div class="bg-white p-8 rounded-[2rem] border shadow-sm">
                         <h2 class="text-2xl font-black mb-6" data-i18n="form_title">How can we help?</h2>
                         <form id="create-ticket-form" class="space-y-6">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_cat">Category</label><select id="tk-category" onchange="window.updateDynamicDropdowns()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50"><option value="Hardware" id="opt-hw">❖ Hardware / PC Issue</option><option value="Software" id="opt-sw">❖ Software / Application</option><option value="Network" id="opt-nw">❖ Network / Internet</option></select></div>
-                                <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_pri">Priority</label><select id="tk-priority" onchange="window.updatePriorityDesc()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50"><option value="4 - Low">● Low (Minor issue)</option><option value="3 - Moderate" selected>● Moderate (Standard)</option><option value="2 - High">● High (Urgent)</option><option value="1 - Critical">● Critical (Emergency)</option></select></div>
+                            
+                            <div>
+                                <label class="block text-[10px] font-black uppercase text-slate-400" data-i18n="form_cat">Category</label>
+                                <select id="tk-category" onchange="window.updateDynamicDropdowns()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50">
+                                    <option value="Hardware" id="opt-hw">❖ Hardware / PC Issue</option>
+                                    <option value="Software" id="opt-sw">❖ Software / Application</option>
+                                    <option value="Network" id="opt-nw">❖ Network / Internet</option>
+                                </select>
                             </div>
-                            <div id="priority-desc" class="p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors"><i id="priority-icon" class="fas fa-info-circle mt-0.5"></i><span id="priority-text">...</span></div>
                             
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
                                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Building</label><select id="tk-building" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="Building A">Building A</option><option value="Building B">Building B</option><option value="Warehouse">Warehouse</option></select></div>
@@ -101,7 +105,10 @@
                         <div class="px-6 py-4 border-b bg-slate-50 flex justify-between items-center">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><i class="fas fa-headset"></i></div>
-                                <div><h3 class="font-black text-slate-800" data-i18n="chat_title">IT Support Chat</h3><p class="text-[10px] text-slate-400 font-bold uppercase" data-i18n="chat_sub">Real-time helpdesk room</p></div>
+                                <div>
+                                    <h3 class="font-black text-slate-800" data-i18n="chat_title">IT Support Chat</h3>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase" data-i18n="chat_sub">Real-time helpdesk room</p>
+                                </div>
                             </div>
                         </div>
                         <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/50" id="live-chat-box"></div>
@@ -178,7 +185,7 @@
                     <h4 class="text-2xl font-black text-slate-800" id="modal-subject">Subject</h4>
                     <p class="text-xs text-slate-400 font-bold uppercase mb-6"><i class="far fa-clock"></i> <span id="modal-date"></span></p>
                     <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4"><div class="bg-slate-50 p-3 rounded-xl border text-sm"><p class="text-[10px] text-slate-400">Category</p><p id="modal-category" class="font-bold">-</p></div><div class="bg-slate-50 p-3 rounded-xl border text-sm"><p class="text-[10px] text-slate-400">Priority</p><p id="modal-priority" class="font-bold">-</p></div></div>
+                        <div class="bg-slate-50 p-3 rounded-xl border text-sm mb-4"><p class="text-[10px] text-slate-400">Category</p><p id="modal-category" class="font-bold">-</p></div>
                         <div class="bg-rose-50 p-4 rounded-xl border border-rose-100 text-xs"><p id="modal-location">Loc</p><p id="modal-broken-item" class="font-bold text-rose-600">Item</p></div>
                         <div id="modal-image-container" class="hidden flex-wrap gap-2"></div>
                         <div class="p-4 bg-slate-50 rounded-xl border text-sm whitespace-pre-wrap" id="modal-desc">Desc</div>
