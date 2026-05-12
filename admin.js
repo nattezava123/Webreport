@@ -24,8 +24,8 @@ let chatUnsubscribe = null;
 let currentLang = localStorage.getItem('appLang') || 'en';
 
 const dict = {
-    en: { app_name: "Factory IT Service Center", title_register: "Create an Account", sub_register: "Fill in your details to get started.", name: "Full Name", email: "Email", password: "Password", confirm_password: "Confirm Password", btn_signin: "Sign In", no_account: "New here?", btn_register: "Create an account", auth_or: "OR", btn_google: "Continue with Google", menu_group_1: "Workspace", menu_group_2: "Admin", menu_dash: "Dashboard", menu_incidents: "My Requests", menu_create: "Create Ticket", menu_chat: "Live Chat", chat_title: "IT Support Chat", chat_sub: "Real-time helpdesk room", menu_admin: "Command Center", btn_logout: "Log Out", stat_open: "New Tickets", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", admin_my_resolved: "My Resolved Tickets", btn_export: "Export CSV", dash_welcome: "Welcome,", dash_recent: "Recent Activity", dash_status: "System Status", sys_net: "Network", sys_erp: "ERP System", filter_all: "All", filter_active: "Active", filter_resolved: "Resolved", empty_recent: "All caught up!", empty_tickets: "No tickets found", form_title: "How can we help?", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved" },
-    th: { app_name: "ศูนย์บริการไอทีโรงงาน", title_register: "สร้างบัญชีใหม่", sub_register: "กรอกข้อมูลด้านล่างเพื่อสมัครสมาชิก", name: "ชื่อ-นามสกุล", email: "อีเมล", password: "รหัสผ่าน", confirm_password: "ยืนยันรหัสผ่าน", btn_signin: "เข้าสู่ระบบ", no_account: "ยังไม่มีบัญชี?", btn_register: "สมัครสมาชิก", auth_or: "หรือ", btn_google: "ด้วย Google", menu_group_1: "พื้นที่ทำงาน", menu_group_2: "ผู้ดูแลระบบ", menu_dash: "ภาพรวมระบบ", menu_incidents: "รายการคำขอของฉัน", menu_create: "แจ้งปัญหาใหม่", menu_chat: "คุยกับไอที", chat_title: "ติดต่อสอบถามไอที", chat_sub: "ห้องแชทรวม (Live Chat)", menu_admin: "ศูนย์จัดการงาน", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "จำนวนทั้งหมด", admin_my_resolved: "งานที่ฉันปิดแล้ว", btn_export: "ดาวน์โหลด CSV", dash_welcome: "ยินดีต้อนรับ,", dash_recent: "รายการอัปเดตล่าสุด", dash_status: "สถานะระบบโรงงาน", sys_net: "ระบบเครือข่าย", sys_erp: "ระบบ ERP", filter_all: "ทั้งหมด", filter_active: "กำลังดำเนินการ", filter_resolved: "ปิดงานแล้ว", empty_recent: "จัดการครบหมดแล้ว!", empty_tickets: "ไม่พบข้อมูล", form_title: "มีอะไรให้ช่วยไหม?", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว" }
+    en: { app_name: "Factory IT Service Center", title_register: "Create an Account", sub_register: "Fill in your details to get started.", name: "Full Name", email: "Email", password: "Password", confirm_password: "Confirm Password", btn_signin: "Sign In", no_account: "New here?", btn_register: "Create an account", auth_or: "OR", btn_google: "Continue with Google", menu_group_1: "Workspace", menu_group_2: "Admin", menu_dash: "Dashboard", menu_incidents: "My Requests", menu_create: "Create Ticket", menu_chat: "Live Chat", chat_title: "IT Support Chat", chat_sub: "Real-time helpdesk room", menu_admin: "Command Center", btn_logout: "Log Out", stat_open: "New Tickets", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", admin_my_resolved: "My Resolved Tickets", btn_export: "Export CSV", dash_welcome: "Welcome,", dash_recent: "Recent Activity", dash_status: "System Status", sys_net: "Network", sys_erp: "ERP System", filter_all: "All", filter_active: "Active", filter_resolved: "Resolved", empty_recent: "All caught up!", empty_tickets: "No tickets found", form_title: "How can we help?", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", status_new: "Pending", status_in_progress: "In Progress", status_resolved: "Resolved" },
+    th: { app_name: "ศูนย์บริการไอทีโรงงาน", title_register: "สร้างบัญชีใหม่", sub_register: "กรอกข้อมูลด้านล่างเพื่อสมัครสมาชิก", name: "ชื่อ-นามสกุล", email: "อีเมล", password: "รหัสผ่าน", confirm_password: "ยืนยันรหัสผ่าน", btn_signin: "เข้าสู่ระบบ", no_account: "ยังไม่มีบัญชี?", btn_register: "สมัครสมาชิก", auth_or: "หรือ", btn_google: "ด้วย Google", menu_group_1: "พื้นที่ทำงาน", menu_group_2: "ผู้ดูแลระบบ", menu_dash: "ภาพรวมระบบ", menu_incidents: "รายการคำขอของฉัน", menu_create: "แจ้งปัญหาใหม่", menu_chat: "คุยกับไอที", chat_title: "ติดต่อสอบถามไอที", chat_sub: "ห้องแชทรวม (Live Chat)", menu_admin: "ศูนย์จัดการงาน", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "จำนวนทั้งหมด", admin_my_resolved: "งานที่ฉันปิดแล้ว", btn_export: "ดาวน์โหลด CSV", dash_welcome: "ยินดีต้อนรับ,", dash_recent: "รายการอัปเดตล่าสุด", dash_status: "สถานะระบบโรงงาน", sys_net: "ระบบเครือข่าย", sys_erp: "ระบบ ERP", filter_all: "ทั้งหมด", filter_active: "กำลังดำเนินการ", filter_resolved: "ปิดงานแล้ว", empty_recent: "จัดการครบหมดแล้ว!", empty_tickets: "ไม่พบข้อมูล", form_title: "มีอะไรให้ช่วยไหม?", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", status_new: "รอดำเนินการ", status_in_progress: "กำลังแก้ไข", status_resolved: "ปิดงานแล้ว" }
 };
 
 window.viewFullImage = (url) => { Swal.fire({ imageUrl: url, imageAlt: 'Attached Image', width: 'auto', padding: '1rem', showConfirmButton: false, showCloseButton: true, customClass: { image: 'rounded-xl max-h-[80vh] object-contain' } }); };
@@ -185,45 +185,60 @@ function loadDashboardData() {
             if(safeStatus === 'Resolved' && t.assignedTo === auth.currentUser.email) myResolved++;
             counts[safeStatus] = (counts[safeStatus] || 0) + 1; counts['Total']++;
             
-            const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
-            let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_');
-            let displayStatus = dict[currentLang][statusKey] || safeStatus;
-            let badgeBgClass = bgColors[safeStatus] || bgColors['New'];
-            let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
-            let statusHtml = `<span class="${badgeBgClass} px-2.5 py-1 rounded-md text-[10px] uppercase font-black tracking-widest flex w-fit gap-1.5 items-center"><span class="w-1.5 h-1.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
+            // เตรียมชื่อสถานะเพื่อใช้ใน Dropdown ให้ตรงภาษา
+            let labelNew = dict[currentLang]['status_new'] || 'Pending';
+            let labelInProgress = dict[currentLang]['status_in_progress'] || 'In Progress';
+            let labelResolved = dict[currentLang]['status_resolved'] || 'Resolved';
+
+            // สีของ Dropdown ให้ตรงกับสถานะ
+            let dropdownColors = '';
+            if (safeStatus === 'New') dropdownColors = 'border-blue-300 text-blue-700 bg-blue-50';
+            else if (safeStatus === 'In Progress') dropdownColors = 'border-amber-300 text-amber-700 bg-amber-50';
+            else if (safeStatus === 'Resolved') dropdownColors = 'border-emerald-300 text-emerald-700 bg-emerald-50';
+
+            // 🔥 แทนที่ป้ายสถานะเดิมด้วย Dropdown เปลี่ยนสถานะ (ไม่ซ้ำซ้อนแล้ว!)
+            let statusDropdown = `
+                <select onclick="event.stopPropagation()" onchange="window.updateTicket('${id}', this.value)" class="border ${dropdownColors} rounded-lg px-3 py-1.5 text-xs font-bold outline-none shadow-sm cursor-pointer hover:brightness-95 transition w-28 text-center appearance-none">
+                    <option value="New" ${safeStatus === 'New' ? 'selected' : ''} class="text-slate-700 bg-white">${labelNew}</option>
+                    <option value="In Progress" ${safeStatus === 'In Progress' ? 'selected' : ''} class="text-slate-700 bg-white">${labelInProgress}</option>
+                    <option value="Resolved" ${safeStatus === 'Resolved' ? 'selected' : ''} class="text-slate-700 bg-white">${labelResolved}</option>
+                </select>
+            `;
+
+            // ปุ่ม Action เหลือแค่ Edit และ Delete
+            let actionButtons = `
+                <div class="flex items-center justify-end gap-2">
+                    <button onclick="event.stopPropagation(); window.editTicket('${id}')" class="w-8 h-8 bg-white border border-blue-200 text-blue-500 rounded-lg shadow-sm hover:bg-blue-50 transition shrink-0"><i class="fas fa-edit text-xs"></i></button>
+                    <button onclick="event.stopPropagation(); window.deleteTicket('${id}')" class="w-8 h-8 bg-white border border-rose-200 text-rose-500 rounded-lg shadow-sm hover:bg-rose-50 transition shrink-0"><i class="fas fa-trash text-xs"></i></button>
+                </div>
+            `;
 
             let imgIcon = t.imageUrl || (t.imageUrls && t.imageUrls.length > 0) ? ' <i class="fas fa-image text-blue-400 ml-1 text-[10px]"></i>' : '';
             const formattedDate = formatDateTime(t.createdAt?.toDate());
 
-            // 🔥 เปลี่ยนปุ่มสถานะตรงนี้ให้เป็น Dropdown เลือกสถานะได้เลย
-            let actionButtons = `
-                <div class="flex items-center justify-end gap-2">
-                    <button onclick="event.stopPropagation(); window.editTicket('${id}')" class="w-8 h-8 bg-white border border-blue-200 text-blue-500 rounded-lg shadow-sm hover:bg-blue-50 transition"><i class="fas fa-edit text-xs"></i></button>
-                    
-                    <select onclick="event.stopPropagation()" onchange="window.updateTicket('${id}', this.value)" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold outline-none bg-white text-slate-700 shadow-sm cursor-pointer hover:bg-slate-50 transition">
-                        <option value="New" ${safeStatus === 'New' ? 'selected' : ''}>New</option>
-                        <option value="In Progress" ${safeStatus === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                        <option value="Resolved" ${safeStatus === 'Resolved' ? 'selected' : ''}>Resolved</option>
-                    </select>
-
-                    <button onclick="event.stopPropagation(); window.deleteTicket('${id}')" class="w-8 h-8 bg-white border border-rose-200 text-rose-500 rounded-lg shadow-sm hover:bg-rose-50 transition"><i class="fas fa-trash text-xs"></i></button>
-                </div>
-            `;
-
+            // ใส่ตัวแปร statusDropdown ลงไปใน Column สถานะเลย
             adminHtml += `<tr class="hover:bg-slate-50 transition group border-b border-slate-50 cursor-pointer" data-status="${safeStatus}" onclick="window.openModal('${id}')">
                 <td class="py-4 px-4 font-bold text-slate-500 text-xs">${displayId}</td>
                 <td class="py-4 px-4"><div class="font-bold text-slate-800 text-sm">${t.subject}${imgIcon}</div><div class="text-[10px] text-slate-400 mt-0.5">${t.callerEmail || '-'} <span class="mx-1">•</span> <i class="far fa-clock"></i> ${formattedDate}</div></td>
                 <td class="py-4 px-4 text-xs font-bold text-slate-600">${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : '-'}</td>
-                <td class="py-4 px-4">${statusHtml}</td>
+                <td class="py-4 px-4 whitespace-nowrap">${statusDropdown}</td>
                 <td class="py-4 px-4 text-right opacity-0 group-hover:opacity-100 transition whitespace-nowrap">${actionButtons}</td>
             </tr>`;
             
+            // สีสถานะแบบปกติ สำหรับหน้า User และ Dashboard
+            const bgColorsBadge = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
+            let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_');
+            let displayStatusText = dict[currentLang][statusKey] || safeStatus;
+            let badgeBgClass = bgColorsBadge[safeStatus] || bgColorsBadge['New'];
+            let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
+            let statusHtmlBadge = `<span class="${badgeBgClass} px-2.5 py-1 rounded-md text-[10px] uppercase font-black tracking-widest flex w-fit gap-1.5 items-center"><span class="w-1.5 h-1.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatusText}</span></span>`;
+
             if (t.callerEmail === auth.currentUser.email) {
-                userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">${displayId}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500 font-medium whitespace-nowrap">${formattedDate}</td></tr>`;
+                userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">${displayId}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtmlBadge}</td><td class="p-4 text-right text-xs text-slate-500 font-medium whitespace-nowrap">${formattedDate}</td></tr>`;
             }
 
             if (recentCount < 5) {
-                recentDashHtml += `<div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100 transition cursor-pointer" onclick="window.openModal('${id}')"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-500"><i class="fas fa-ticket-alt"></i></div><div><p class="text-sm font-bold text-slate-800">${t.subject}</p><p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">${displayId} <span class="mx-1">•</span> <i class="far fa-clock"></i> ${formattedDate}</p></div></div>${statusHtml}</div>`;
+                recentDashHtml += `<div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100 transition cursor-pointer" onclick="window.openModal('${id}')"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-500"><i class="fas fa-ticket-alt"></i></div><div><p class="text-sm font-bold text-slate-800">${t.subject}</p><p class="text-[10px] text-slate-400 font-bold uppercase mt-0.5">${displayId} <span class="mx-1">•</span> <i class="far fa-clock"></i> ${formattedDate}</p></div></div>${statusHtmlBadge}</div>`;
                 recentCount++;
             }
         });
@@ -338,7 +353,7 @@ document.getElementById('btn-logout').onclick = () => {
 onAuthStateChanged(auth, (user) => {
     if (user) {
         const em = user.email.toLowerCase(); const isAdmin = em === "nattezava1996@gmail.com" || em.includes("admin");
-        if (!isAdmin) { window.location.href = 'index.html'; return; } 
+        if (!isAdmin) { Swal.fire({ icon: 'error', title: 'Access Denied', text: 'เฉพาะแอดมินเท่านั้น' }).then(() => window.location.href = 'index.html'); return; }
         document.getElementById('user-email').innerText = user.email; loadDashboardData(); loadLiveChat(); window.updateDynamicDropdowns();
     } else { window.location.href = 'index.html'; } 
     window.toggleLang(currentLang);
