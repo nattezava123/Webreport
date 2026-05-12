@@ -63,7 +63,7 @@ window.toggleLang = (lang) => {
     document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(dict[lang][k]) el.innerText = dict[lang][k]; });
     const optHw = document.getElementById('opt-hw'), optSw = document.getElementById('opt-sw'), optNw = document.getElementById('opt-nw');
     if(optHw) optHw.innerText = dict[lang].cat_hw; if(optSw) optSw.innerText = dict[lang].cat_sw; if(optNw) optNw.innerText = dict[lang].cat_nw;
-    window.updatePriorityDesc(); 
+    window.updatePriorityDesc(); window.updateDynamicDropdowns();
     ['app'].forEach(v => {
         const en = document.getElementById(`lang-en-${v}`), th = document.getElementById(`lang-th-${v}`);
         if(en && th) { en.className = (lang==='en') ? "px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold shadow-sm" : "px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold"; th.className = (lang==='th') ? "px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold shadow-sm" : "px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold"; }
@@ -80,29 +80,73 @@ window.updatePriorityDesc = () => {
 };
 
 window.switchTab = (tabName) => {
-    document.querySelectorAll('.tab-content').forEach(el => {
-        el.classList.remove('block');
-        el.classList.add('hidden');
-    });
-    
+    document.querySelectorAll('.tab-content').forEach(el => { el.classList.remove('block'); el.classList.add('hidden'); });
     document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
-    
-    const target = document.getElementById(`tab-${tabName}`); 
-    if(target) {
-        target.classList.remove('hidden');
-        target.classList.add('block');
-    }
-    
+    const target = document.getElementById(`tab-${tabName}`); if(target) { target.classList.remove('hidden'); target.classList.add('block'); }
     document.querySelector(`.menu-link[onclick*="'${tabName}'"]`)?.classList.add('active');
-    
     const pageTitle = document.getElementById('page-title');
-    if (pageTitle) {
-        const key = `menu_${tabName}`;
-        pageTitle.setAttribute('data-i18n', key);
-        pageTitle.innerText = dict[currentLang][key] || dict[currentLang].app_name;
-    }
-    
+    if (pageTitle) { const key = `menu_${tabName}`; pageTitle.setAttribute('data-i18n', key); pageTitle.innerText = dict[currentLang][key] || dict[currentLang].app_name; }
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
+};
+
+// 🔥 ระบบ Dynamic Dropdown
+const categoryData = {
+    "Hardware": {
+        items: [
+            { val: "PC / Desktop", text: "คอมพิวเตอร์ (PC / Desktop)" },
+            { val: "Laptop / Notebook", text: "โน้ตบุ๊ก (Laptop / Notebook)" },
+            { val: "Monitor", text: "หน้าจอ (Monitor)" },
+            { val: "Printer / Scanner", text: "เครื่องปริ้น / สแกนเนอร์" },
+            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
+        ],
+        subjects: [
+            { val: "Cannot power on / No display", text: "เปิดไม่ติด / ไม่มีภาพ" },
+            { val: "Cannot print / Paper jam", text: "ปริ้นไม่ออก / กระดาษติด" },
+            { val: "Hardware replacement / Upgrade", text: "ขอเบิกอุปกรณ์ / เปลี่ยนอะไหล่" },
+            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
+        ]
+    },
+    "Software": {
+        items: [
+            { val: "Software / System", text: "โปรแกรม / ระบบ ERP" },
+            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
+        ],
+        subjects: [
+            { val: "System Error / Software crashes", text: "ระบบค้าง / โปรแกรมมีปัญหา Error" },
+            { val: "Request for access / New Account", text: "ขอสิทธิ์เข้าใช้งาน / สร้าง User ใหม่" },
+            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
+        ]
+    },
+    "Network": {
+        items: [
+            { val: "Network / Wi-Fi", text: "อุปกรณ์เน็ตเวิร์ค / Wi-Fi" },
+            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
+        ],
+        subjects: [
+            { val: "No Internet / Network drops", text: "ไม่มีเน็ต / อินเทอร์เน็ตหลุด" },
+            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
+        ]
+    }
+};
+
+window.updateDynamicDropdowns = () => {
+    const catSelect = document.getElementById('tk-category');
+    const itemSelect = document.getElementById('tk-item');
+    const subSelect = document.getElementById('tk-subject');
+    if (!catSelect || !itemSelect || !subSelect) return;
+    const selectedCat = catSelect.value;
+    const data = categoryData[selectedCat];
+    
+    const chooseItemText = currentLang === 'th' ? "เลือกอุปกรณ์ที่เสีย..." : "Select broken item...";
+    const chooseSubText = currentLang === 'th' ? "เลือกหัวข้อปัญหา..." : "Select subject...";
+    
+    itemSelect.innerHTML = `<option value="" disabled selected>${chooseItemText}</option>`;
+    subSelect.innerHTML = `<option value="" disabled selected>${chooseSubText}</option>`;
+    
+    if (data) {
+        data.items.forEach(item => { itemSelect.innerHTML += `<option value="${item.val}">${currentLang==='th'?item.text:item.val}</option>`; });
+        data.subjects.forEach(sub => { subSelect.innerHTML += `<option value="${sub.val}">${currentLang==='th'?sub.text:sub.val}</option>`; });
+    }
 };
 
 window.openAIModal = () => { document.getElementById('ai-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ai-modal').style.opacity = '1'; document.getElementById('ai-box').classList.replace('scale-95', 'scale-100'); }, 10); };
@@ -123,7 +167,6 @@ const botDatabase = [
 window.sendAIMessage = async () => {
     const input = document.getElementById('ai-input'); const rawText = input.value.trim(); if (!rawText) return;
     const consoleBox = document.getElementById('ai-chat-box');
-    
     consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 flex-row-reverse chat-user-bubble"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0"><i class="fas fa-user text-[10px]"></i></div><div class="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-sm shadow-md text-sm leading-relaxed max-w-[85%]">${rawText}</div></div>`);
     input.value = ''; consoleBox.scrollTop = consoleBox.scrollHeight;
     
@@ -133,62 +176,38 @@ window.sendAIMessage = async () => {
 
     setTimeout(() => {
         document.getElementById(thinkingId)?.remove();
-        let botReply = ""; 
-        const cleanText = rawText.toLowerCase().replace(/\s+/g, '');
-
-        for (let entry of botDatabase) { 
-            if (entry.keywords.some(k => cleanText.includes(k) || rawText.toLowerCase().includes(k))) { 
-                botReply = entry.answer; break; 
-            } 
-        }
+        const cleanText = rawText.toLowerCase().replace(/\s+/g, ''); let botReply = "";
+        for (let entry of botDatabase) { if (entry.keywords.some(k => cleanText.includes(k) || rawText.toLowerCase().includes(k))) { botReply = entry.answer; break; } }
 
         if (botReply === "") {
             botReply = `ขออภัยครับ อาการนี้อาจจะต้องให้ช่างตรวจเช็คเชิงลึก 😅 แนะนำให้กดเมนู **Create Ticket** เพื่อแจ้งเรื่องครับ<br><br>หรือเลือกด้านล่าง 👇<br><div class="flex flex-wrap gap-2 mt-2"><button onclick="window.sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">💻 คอมเปิดไม่ติด</button><button onclick="window.sendQuickReply('ปริ้นไม่ออก')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">🖨️ เครื่องปริ้น</button><button onclick="window.sendQuickReply('เน็ตหลุด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">📡 อินเทอร์เน็ต</button></div>`;
         }
-
         botReply = botReply.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-600">$1</strong>').replace(/\n/g, '<br>');
         consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 chat-ai-bubble"><div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0 shadow-md"><i class="fas fa-robot text-[10px]"></i></div><div class="bg-slate-50 border border-slate-100 p-5 rounded-2xl text-sm text-slate-700 leading-relaxed max-w-[85%]">${botReply}</div></div>`);
         consoleBox.scrollTop = consoleBox.scrollHeight;
     }, 800); 
 };
 
-// 🔥 ระบบโหลด Live Chat ติดต่อไอที (ทำงานแบบ Real-time)
 function loadLiveChat() {
     onSnapshot(query(collection(db, "live_chat"), orderBy("createdAt", "asc")), (snap) => {
         let h = "";
         snap.forEach(doc => {
-            const d = doc.data();
-            const isMe = d.senderEmail === auth.currentUser.email;
-            const isAdmin = d.senderEmail.includes('admin') || d.senderEmail === 'nattezava1996@gmail.com';
-            const align = isMe ? 'items-end' : 'items-start';
-            const bg = isMe ? 'bg-slate-800 text-white' : (isAdmin ? 'bg-rose-50 border border-rose-100 text-slate-800' : 'bg-white border text-slate-700');
-            const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
-            const badge = isAdmin && !isMe ? '<i class="fas fa-shield-alt text-rose-500 ml-1"></i>' : '';
-            
+            const d = doc.data(); const isMe = d.senderEmail === auth.currentUser.email; const isAdmin = d.senderEmail.includes('admin') || d.senderEmail === 'nattezava1996@gmail.com';
+            const align = isMe ? 'items-end' : 'items-start'; const bg = isMe ? 'bg-slate-800 text-white' : (isAdmin ? 'bg-rose-50 border border-rose-100 text-slate-800' : 'bg-white border text-slate-700');
+            const senderName = isMe ? 'You' : d.senderEmail.split('@')[0]; const badge = isAdmin && !isMe ? '<i class="fas fa-shield-alt text-rose-500 ml-1"></i>' : '';
             h += `<div class="flex flex-col ${align} mb-4"><div class="${bg} p-3.5 rounded-2xl max-w-[85%] shadow-sm text-sm"><div class="text-[10px] font-bold opacity-70 mb-1 flex items-center gap-1">${senderName} ${badge}</div>${d.text}</div></div>`;
         });
         const chatBox = document.getElementById('live-chat-box');
-        if(chatBox) {
-            chatBox.innerHTML = h || '<div class="text-center text-slate-400 text-xs py-10">Start the conversation!</div>';
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
+        if(chatBox) { chatBox.innerHTML = h || '<div class="text-center text-slate-400 text-xs py-10">Start the conversation!</div>'; chatBox.scrollTop = chatBox.scrollHeight; }
     });
 
     const form = document.getElementById('live-chat-form');
     if(form) {
         form.onsubmit = async (e) => {
-            e.preventDefault();
-            const input = document.getElementById('live-chat-input');
-            const text = input.value.trim();
-            if(!text) return;
-            
-            const btn = document.getElementById('btn-live-chat');
-            btn.disabled = true;
-            
-            try {
-                await addDoc(collection(db, "live_chat"), { senderEmail: auth.currentUser.email, text: text, createdAt: new Date() });
-                input.value = '';
-            } catch(err) { console.error(err); } finally { btn.disabled = false; }
+            e.preventDefault(); const input = document.getElementById('live-chat-input'); const text = input.value.trim(); if(!text) return;
+            const btn = document.getElementById('btn-live-chat'); btn.disabled = true;
+            try { await addDoc(collection(db, "live_chat"), { senderEmail: auth.currentUser.email, text: text, createdAt: new Date() }); input.value = ''; } 
+            catch(err) { console.error(err); } finally { btn.disabled = false; }
         };
     }
 }
@@ -203,8 +222,8 @@ function loadDashboardData() {
             const safeStatus = t.status || 'New';
             if(safeStatus === 'Resolved' && t.assignedTo === auth.currentUser.email) myResolved++;
             counts[safeStatus] = (counts[safeStatus] || 0) + 1; counts['Total']++;
-            const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
             
+            const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
             let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_');
             let displayStatus = dict[currentLang][statusKey] || safeStatus;
             let badgeBgClass = bgColors[safeStatus] || bgColors['New'];
@@ -217,7 +236,7 @@ function loadDashboardData() {
             adminHtml += `<tr class="hover:bg-slate-50 transition group border-b border-slate-50 cursor-pointer" data-status="${safeStatus}" onclick="window.openModal('${id}')"><td class="py-4 px-4 font-bold text-slate-500 text-xs">${displayId}</td><td class="py-4 px-4"><div class="font-bold text-slate-800 text-sm">${priIndicator}${t.subject}${imgIcon}</div><div class="text-[10px] text-slate-400 mt-0.5">${t.callerEmail || '-'}</div></td><td class="py-4 px-4 text-xs font-bold text-slate-600">${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : '-'}</td><td class="py-4 px-4">${statusHtml}</td><td class="py-4 px-4 text-right opacity-0 group-hover:opacity-100 transition whitespace-nowrap"><button onclick="event.stopPropagation(); window.editTicket('${id}')" class="w-8 h-8 bg-white border border-blue-200 text-blue-500 rounded-lg shadow-sm mr-1"><i class="fas fa-edit text-xs"></i></button><button onclick="event.stopPropagation(); window.updateTicket('${id}', 'In Progress')" class="w-8 h-8 bg-white border border-amber-200 text-amber-500 rounded-lg shadow-sm mr-1"><i class="fas fa-play text-xs"></i></button><button onclick="event.stopPropagation(); window.updateTicket('${id}', 'Resolved')" class="w-8 h-8 bg-white border border-emerald-200 text-emerald-500 rounded-lg shadow-sm mr-2"><i class="fas fa-check text-xs"></i></button><button onclick="event.stopPropagation(); window.deleteTicket('${id}')" class="w-8 h-8 bg-white border border-rose-200 text-rose-500 rounded-lg shadow-sm"><i class="fas fa-trash text-xs"></i></button></td></tr>`;
             
             if (t.callerEmail === auth.currentUser.email) {
-                userHtml += `<tr class="border-b" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs">${displayId}</td><td class="p-4 font-bold text-sm">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
+                userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">${displayId}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
             }
 
             if (recentCount < 5) {
@@ -238,7 +257,7 @@ document.getElementById('create-ticket-form').onsubmit = async (e) => {
         let img = null; if(document.getElementById('tk-image').files[0]) img = await resizeAndConvertToBase64(document.getElementById('tk-image').files[0], 800, 800);
         const docRef = await addDoc(collection(db, "incidents"), { callerEmail: auth.currentUser.email, category: document.getElementById('tk-category').value, priority: document.getElementById('tk-priority').value, building: document.getElementById('tk-building').value, floor: document.getElementById('tk-floor').value, department: document.getElementById('tk-dept').value, line: document.getElementById('tk-line').value, brokenItem: document.getElementById('tk-item').value, subject: document.getElementById('tk-subject').value, description: document.getElementById('tk-desc').value, imageUrl: img, status: 'New', createdAt: new Date() });
         await addDoc(collection(db, "incidents", docRef.id, "comments"), { senderEmail: "system", text: "Ticket created.", createdAt: new Date() });
-        document.getElementById('create-ticket-form').reset(); window.clearCreateImage(); window.updatePriorityDesc(); Toast.fire({ icon: 'success', title: 'Success!' }); window.switchTab('incidents');
+        document.getElementById('create-ticket-form').reset(); window.clearCreateImage(); window.updatePriorityDesc(); window.updateDynamicDropdowns(); Toast.fire({ icon: 'success', title: 'Success!' }); window.switchTab('incidents');
     } catch (e) { Swal.fire({ icon: 'error', text: e.message }); } finally { b.disabled = false; }
 };
 
@@ -340,8 +359,7 @@ onAuthStateChanged(auth, (user) => {
         const em = user.email.toLowerCase(); const isAdmin = em === "nattezava1996@gmail.com" || em.includes("admin");
         if (!isAdmin) { window.location.href = 'index.html'; return; } 
         document.getElementById('user-email').innerText = user.email; 
-        loadDashboardData();
-        loadLiveChat(); // 🔥 โหลด Live Chat ตอนล็อกอิน
+        loadDashboardData(); loadLiveChat(); window.updateDynamicDropdowns();
     } else { window.location.href = 'index.html'; } 
     window.toggleLang(currentLang);
 });
