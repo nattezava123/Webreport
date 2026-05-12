@@ -23,8 +23,8 @@ let chatUnsubscribe = null;
 let currentLang = localStorage.getItem('appLang') || 'en';
 
 const dict = {
-    en: { page_title: "Factory IT Service Center", app_name: "Factory IT Service Center", app_name_short: "Factory IT", role_user: "User", menu_group_1: "Workspace", menu_dash: "Dashboard", menu_incidents: "My Requests", menu_create: "Create Ticket", btn_logout: "Log Out", stat_open: "New Tickets", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", th_subject: "Subject", th_status: "Status", th_date: "Timeline", btn_submit: "Submit Request", search_placeholder: "Search...", btn_new_ticket: "Create", form_title: "How can we help?", form_cat: "Category", form_pri: "Priority", form_short: "Subject", form_desc: "Description", form_loc_head: "Location", form_bldg: "Bldg", form_floor: "Floor", form_dept: "Dept", form_line: "Line", form_item: "Item", dash_welcome: "Welcome,", dash_sub: "IT support summary.", dash_recent: "Activity", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", empty_tickets: "None", empty_recent: "Clear!", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved" },
-    th: { page_title: "ศูนย์บริการไอทีโรงงาน", app_name: "ศูนย์บริการไอทีโรงงาน", app_name_short: "ศูนย์บริการไอที", role_user: "ผู้แจ้ง", menu_group_1: "พื้นที่ทำงาน", menu_dash: "ภาพรวมระบบ", menu_incidents: "รายการคำขอของฉัน", menu_create: "แจ้งปัญหาใหม่", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "ทั้งหมด", th_subject: "หัวข้อ", th_status: "สถานะ", th_date: "ล่าสุด", btn_submit: "ส่งเรื่องแจ้งซ่อม", search_placeholder: "ค้นหา...", btn_new_ticket: "สร้างใหม่", form_title: "มีอะไรให้ช่วยไหม?", form_cat: "หมวดหมู่", form_pri: "ความเร่งด่วน", form_short: "หัวข้อ", form_desc: "รายละเอียด", form_loc_head: "สถานที่", form_bldg: "ตึก", form_floor: "ชั้น", form_dept: "แผนก", form_line: "ไลน์", form_item: "ของที่เสีย", dash_welcome: "ยินดีต้อนรับ,", dash_sub: "สรุปภาพรวมวันนี้", dash_recent: "อัปเดตล่าสุด", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", empty_tickets: "ไม่พบข้อมูล", empty_recent: "จัดการครบแล้ว!", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว" }
+    en: { page_title: "Factory IT Service Center", app_name: "Factory IT Service Center", app_name_short: "Factory IT", role_user: "User", menu_group_1: "Workspace", menu_dash: "Dashboard", menu_incidents: "My Requests", menu_create: "Create Ticket", menu_chat: "Live Chat", chat_title: "IT Support Chat", chat_sub: "Real-time helpdesk room", btn_logout: "Log Out", stat_open: "New Tickets", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", th_subject: "Subject", th_status: "Status", th_date: "Timeline", btn_submit: "Submit Request", search_placeholder: "Search...", btn_new_ticket: "Create", form_title: "How can we help?", form_cat: "Category", form_pri: "Priority", form_short: "Subject", form_desc: "Description", form_loc_head: "Location", form_bldg: "Bldg", form_floor: "Floor", form_dept: "Dept", form_line: "Line", form_item: "Item", dash_welcome: "Welcome,", dash_sub: "IT support summary.", dash_recent: "Activity", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", empty_tickets: "None", empty_recent: "Clear!", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved" },
+    th: { page_title: "ศูนย์บริการไอทีโรงงาน", app_name: "ศูนย์บริการไอทีโรงงาน", app_name_short: "ศูนย์บริการไอที", role_user: "ผู้แจ้ง", menu_group_1: "พื้นที่ทำงาน", menu_dash: "ภาพรวมระบบ", menu_incidents: "รายการคำขอของฉัน", menu_create: "แจ้งปัญหาใหม่", menu_chat: "คุยกับไอที", chat_title: "ติดต่อสอบถามไอที", chat_sub: "ห้องแชทรวม (Live Chat)", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "ทั้งหมด", th_subject: "หัวข้อ", th_status: "สถานะ", th_date: "ล่าสุด", btn_submit: "ส่งเรื่องแจ้งซ่อม", search_placeholder: "ค้นหา...", btn_new_ticket: "สร้างใหม่", form_title: "มีอะไรให้ช่วยไหม?", form_cat: "หมวดหมู่", form_pri: "ความเร่งด่วน", form_short: "หัวข้อ", form_desc: "รายละเอียด", form_loc_head: "สถานที่", form_bldg: "ตึก", form_floor: "ชั้น", form_dept: "แผนก", form_line: "ไลน์", form_item: "ของที่เสีย", dash_welcome: "ยินดีต้อนรับ,", dash_sub: "สรุปภาพรวมวันนี้", dash_recent: "อัปเดตล่าสุด", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", empty_tickets: "ไม่พบข้อมูล", empty_recent: "จัดการครบแล้ว!", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว" }
 };
 
 window.viewFullImage = (url) => { Swal.fire({ imageUrl: url, imageAlt: 'Attached Image', width: 'auto', padding: '1rem', showConfirmButton: false, showCloseButton: true, customClass: { image: 'rounded-xl max-h-[80vh] object-contain' } }); };
@@ -95,7 +95,6 @@ window.switchTab = (tabName) => {
     
     document.querySelector(`.menu-link[onclick*="'${tabName}'"]`)?.classList.add('active');
     
-    // เปลี่ยนชื่อหัวข้อ
     const pageTitle = document.getElementById('page-title');
     if (pageTitle) {
         const key = `menu_${tabName}`;
@@ -137,13 +136,54 @@ window.sendAIMessage = async () => {
         for (let entry of botDatabase) { if (entry.keywords.some(k => cleanText.includes(k) || rawText.toLowerCase().includes(k))) { botReply = entry.answer; break; } }
 
         if (botReply === "") {
-            botReply = `ขออภัยครับ อาการนี้อาจจะต้องให้ช่างตรวจเช็คเชิงลึก 😅 แนะนำให้กดเมนู **Create Ticket** เพื่อแจ้งเรื่องครับ<br><br>หรือเลือกด้านล่าง 👇<br><div class="flex flex-wrap gap-2 mt-2"><button onclick="window.sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">💻 คอมเปิดไม่ติด</button><button onclick="window.sendQuickReply('ปริ้นไม่ออก')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">🖨️ เครื่องปริ้น</button><button onclick="window.sendQuickReply('เน็ตหลุด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">📡 อินเทอร์เน็ต</button></div>`;
+            botReply = `ขออภัยครับ อาการนี้อาจจะต้องให้ช่างตรวจเช็คเชิงลึก 😅 แนะนำให้กดเมนู **Create Ticket** เพื่อแจ้งเรื่องครับ<br><br>หรือเลือกด้านล่าง 👇<br><div class="flex flex-wrap gap-2 mt-2"><button onclick="window.sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">💻 คอมเสีย</button><button onclick="window.sendQuickReply('ปริ้นไม่ออก')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">🖨️ เครื่องปริ้น</button><button onclick="window.sendQuickReply('เน็ตหลุด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">📡 เน็ตหลุด</button></div>`;
         }
         botReply = botReply.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-600">$1</strong>').replace(/\n/g, '<br>');
         consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 chat-ai-bubble"><div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0 shadow-md"><i class="fas fa-robot text-[10px]"></i></div><div class="bg-slate-50 border border-slate-100 p-5 rounded-2xl text-sm text-slate-700 leading-relaxed max-w-[85%]">${botReply}</div></div>`);
         consoleBox.scrollTop = consoleBox.scrollHeight;
     }, 800); 
 };
+
+// 🔥 ระบบโหลด Live Chat ติดต่อไอที (ทำงานแบบ Real-time)
+function loadLiveChat() {
+    onSnapshot(query(collection(db, "live_chat"), orderBy("createdAt", "asc")), (snap) => {
+        let h = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            const isMe = d.senderEmail === auth.currentUser.email;
+            const isAdmin = d.senderEmail.includes('admin') || d.senderEmail === 'nattezava1996@gmail.com';
+            const align = isMe ? 'items-end' : 'items-start';
+            const bg = isMe ? 'bg-slate-800 text-white' : (isAdmin ? 'bg-rose-50 border border-rose-100 text-slate-800' : 'bg-white border text-slate-700');
+            const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
+            const badge = isAdmin && !isMe ? '<i class="fas fa-shield-alt text-rose-500 ml-1"></i>' : '';
+            
+            h += `<div class="flex flex-col ${align} mb-4"><div class="${bg} p-3.5 rounded-2xl max-w-[85%] shadow-sm text-sm"><div class="text-[10px] font-bold opacity-70 mb-1 flex items-center gap-1">${senderName} ${badge}</div>${d.text}</div></div>`;
+        });
+        const chatBox = document.getElementById('live-chat-box');
+        if(chatBox) {
+            chatBox.innerHTML = h || '<div class="text-center text-slate-400 text-xs py-10">Start the conversation!</div>';
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    });
+
+    const form = document.getElementById('live-chat-form');
+    if(form) {
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('live-chat-input');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            const btn = document.getElementById('btn-live-chat');
+            btn.disabled = true;
+            
+            try {
+                await addDoc(collection(db, "live_chat"), { senderEmail: auth.currentUser.email, text: text, createdAt: new Date() });
+                input.value = '';
+            } catch(err) { console.error(err); } finally { btn.disabled = false; }
+        };
+    }
+}
 
 function loadDashboardData() {
     onSnapshot(query(collection(db, "incidents"), orderBy("createdAt", "desc")), (snapshot) => {
@@ -250,8 +290,10 @@ document.getElementById('btn-logout').onclick = () => {
 onAuthStateChanged(auth, (user) => {
     if (user) {
         const em = user.email.toLowerCase(); const isAdmin = em === "nattezava1996@gmail.com" || em.includes("admin");
-        if (isAdmin) { window.location.href = 'admin.html'; return; }
-        document.getElementById('user-email').innerText = user.email; loadDashboardData();
+        if (isAdmin) { window.location.href = 'admin.html'; return; } 
+        document.getElementById('user-email').innerText = user.email; 
+        loadDashboardData();
+        loadLiveChat(); // 🔥 สั่งรัน Live Chat ตรงนี้
     } else { window.location.href = 'index.html'; } 
     window.toggleLang(currentLang);
 });
