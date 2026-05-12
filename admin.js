@@ -62,12 +62,10 @@ async function resizeAndConvertToBase64(file, maxWidth, maxHeight) {
     });
 }
 
-function timeAgo(date) {
-    if(!date) return '-'; const seconds = Math.floor((new Date() - date) / 1000);
-    if (seconds < 60) return "Just now";
-    if (seconds < 3600) return Math.floor(seconds/60) + "m ago";
-    if (seconds < 86400) return Math.floor(seconds/3600) + "h ago";
-    return Math.floor(seconds/86400) + "d ago";
+// 🔥 ฟังก์ชันใหม่: แปลงวันที่ให้เป็น Format ชัดเจนเป๊ะๆ
+function formatDateTime(date) {
+    if(!date) return '-'; 
+    return date.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
 }
 
 window.toggleMobileMenu = () => { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('open'); };
@@ -134,13 +132,16 @@ window.sendAIMessage = async () => {
     const consoleBox = document.getElementById('ai-chat-box');
     consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 flex-row-reverse chat-user-bubble"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0 shadow-sm"><i class="fas fa-user text-[10px]"></i></div><div class="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-sm shadow-md text-sm leading-relaxed max-w-[85%]">${rawText}</div></div>`);
     input.value = ''; consoleBox.scrollTop = consoleBox.scrollHeight;
+    
     const thinkingId = 'think-' + Date.now();
     consoleBox.insertAdjacentHTML('beforeend', `<div id="${thinkingId}" class="flex items-start gap-4 mb-6 chat-ai-bubble"><div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0"><i class="fas fa-robot text-[10px]"></i></div><div class="bg-white border p-4 rounded-2xl text-sm text-slate-400">กำลังค้นหา...</div></div>`);
     consoleBox.scrollTop = consoleBox.scrollHeight;
+
     setTimeout(() => {
         document.getElementById(thinkingId)?.remove();
         const cleanText = rawText.toLowerCase().replace(/\s+/g, ''); let botReply = "";
         for (let entry of botDatabase) { if (entry.keywords.some(k => cleanText.includes(k) || rawText.toLowerCase().includes(k))) { botReply = entry.answer; break; } }
+
         if (botReply === "") {
             botReply = `ขออภัยครับ อาการนี้อาจจะต้องให้ช่างตรวจเช็คเชิงลึก 😅 แนะนำให้กดเมนู **Create Ticket** เพื่อแจ้งเรื่องครับ<br><br>หรือเลือกด้านล่าง 👇<br><div class="flex flex-wrap gap-2 mt-2"><button onclick="window.sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">💻 คอมเสีย</button><button onclick="window.sendQuickReply('ปริ้นไม่ออก')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">🖨️ เครื่องปริ้น</button><button onclick="window.sendQuickReply('เน็ตหลุด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">📡 เน็ตหลุด</button></div>`;
         }
@@ -194,10 +195,13 @@ function loadDashboardData() {
 
             let imgIcon = t.imageUrl || (t.imageUrls && t.imageUrls.length > 0) ? ' <i class="fas fa-image text-blue-400 ml-1 text-[10px]"></i>' : '';
 
+            // 🔥 เปลี่ยนการแสดงผลเวลาเป็นรูปแบบวันที่แบบเป๊ะๆ สำหรับตารางแอดมิน
+            const formattedDate = formatDateTime(t.createdAt?.toDate());
+
             adminHtml += `<tr class="hover:bg-slate-50 transition group border-b border-slate-50 cursor-pointer" data-status="${safeStatus}" onclick="window.openModal('${id}')"><td class="py-4 px-4 font-bold text-slate-500 text-xs">${displayId}</td><td class="py-4 px-4"><div class="font-bold text-slate-800 text-sm">${t.subject}${imgIcon}</div><div class="text-[10px] text-slate-400 mt-0.5">${t.callerEmail || '-'}</div></td><td class="py-4 px-4 text-xs font-bold text-slate-600">${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : '-'}</td><td class="py-4 px-4">${statusHtml}</td><td class="py-4 px-4 text-right opacity-0 group-hover:opacity-100 transition whitespace-nowrap"><button onclick="event.stopPropagation(); window.editTicket('${id}')" class="w-8 h-8 bg-white border border-blue-200 text-blue-500 rounded-lg shadow-sm mr-1"><i class="fas fa-edit text-xs"></i></button><button onclick="event.stopPropagation(); window.updateTicket('${id}', 'In Progress')" class="w-8 h-8 bg-white border border-amber-200 text-amber-500 rounded-lg shadow-sm mr-1"><i class="fas fa-play text-xs"></i></button><button onclick="event.stopPropagation(); window.updateTicket('${id}', 'Resolved')" class="w-8 h-8 bg-white border border-emerald-200 text-emerald-500 rounded-lg shadow-sm mr-2"><i class="fas fa-check text-xs"></i></button><button onclick="event.stopPropagation(); window.deleteTicket('${id}')" class="w-8 h-8 bg-white border border-rose-200 text-rose-500 rounded-lg shadow-sm"><i class="fas fa-trash text-xs"></i></button></td></tr>`;
             
             if (t.callerEmail === auth.currentUser.email) {
-                userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">${displayId}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
+                userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">${displayId}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500 font-medium whitespace-nowrap">${formattedDate}</td></tr>`;
             }
 
             if (recentCount < 5) {
@@ -228,7 +232,6 @@ document.getElementById('create-ticket-form').onsubmit = async (e) => {
 window.updateTicket = (id, newStatus) => { updateDoc(doc(db, "incidents", id), { status: newStatus, assignedTo: auth.currentUser.email }).then(() => { addDoc(collection(db, "incidents", id, "comments"), { senderEmail: "system", text: `Status updated to ${newStatus} by ${auth.currentUser.email.split('@')[0]}`, createdAt: new Date() }); Toast.fire({ icon: 'success', title: 'Status Updated' }); }); };
 window.deleteTicket = (id) => { Swal.fire({ title: 'Delete Ticket?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#e11d48' }).then((result) => { if (result.isConfirmed) { deleteDoc(doc(db, "incidents", id)); Toast.fire({ icon: 'success', title: 'Deleted' }); } }); };
 
-// 🔥 ลบ Priority ออกจาก Modal สำหรับ Edit ด้วยครับ
 window.editTicket = (id) => {
     const t = window.globalTickets[id];
     Swal.fire({
@@ -254,7 +257,8 @@ window.setAdminFilter = (f) => { currentAdminFilter = f; const act = "px-5 py-2 
 
 window.openModal = (id) => {
     currentTicketId = id; const t = window.globalTickets[id];
-    document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); document.getElementById('modal-subject').innerText = t.subject || 'No Subject'; document.getElementById('modal-category').innerText = t.category || '-'; document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`; document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; document.getElementById('modal-desc').innerText = t.description || '-'; document.getElementById('modal-caller').innerText = t.callerEmail || '-'; document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned'; document.getElementById('modal-date').innerText = t.createdAt ? t.createdAt.toDate().toLocaleString() : '';
+    document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); document.getElementById('modal-subject').innerText = t.subject || 'No Subject'; document.getElementById('modal-category').innerText = t.category || '-'; document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`; document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; document.getElementById('modal-desc').innerText = t.description || '-'; document.getElementById('modal-caller').innerText = t.callerEmail || '-'; document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned'; 
+    document.getElementById('modal-date').innerText = formatDateTime(t.createdAt?.toDate());
 
     const safeStatus = t.status || 'New'; const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
     let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); let displayStatus = dict[currentLang][statusKey] || safeStatus; let badgeBgClass = bgColors[safeStatus] || bgColors['New']; let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
@@ -316,7 +320,7 @@ document.getElementById('btn-logout').onclick = () => {
 onAuthStateChanged(auth, (user) => {
     if (user) {
         const em = user.email.toLowerCase(); const isAdmin = em === "nattezava1996@gmail.com" || em.includes("admin");
-        if (!isAdmin) { Swal.fire({ icon: 'error', title: 'Access Denied', text: 'เฉพาะแอดมินเท่านั้น' }).then(() => window.location.href = 'index.html'); return; }
+        if (!isAdmin) { window.location.href = 'index.html'; return; } 
         document.getElementById('user-email').innerText = user.email; loadDashboardData(); loadLiveChat(); window.updateDynamicDropdowns();
     } else { window.location.href = 'index.html'; } 
     window.toggleLang(currentLang);
