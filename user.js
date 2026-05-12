@@ -61,12 +61,10 @@ async function resizeAndConvertToBase64(file, maxWidth, maxHeight) {
     });
 }
 
-function timeAgo(date) {
-    if(!date) return '-'; const seconds = Math.floor((new Date() - date) / 1000);
-    if (seconds < 60) return "Just now";
-    if (seconds < 3600) return Math.floor(seconds/60) + "m ago";
-    if (seconds < 86400) return Math.floor(seconds/3600) + "h ago";
-    return Math.floor(seconds/86400) + "d ago";
+// 🔥 ฟังก์ชันใหม่: แปลงวันที่ให้เป็น Format ชัดเจนเป๊ะๆ (เช่น 12 May 2026, 14:30)
+function formatDateTime(date) {
+    if(!date) return '-'; 
+    return date.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
 }
 
 window.toggleMobileMenu = () => { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('open'); };
@@ -134,13 +132,16 @@ window.sendAIMessage = async () => {
     const consoleBox = document.getElementById('ai-chat-box');
     consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 flex-row-reverse chat-user-bubble"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0 shadow-sm"><i class="fas fa-user text-[10px]"></i></div><div class="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-sm shadow-md text-sm leading-relaxed max-w-[85%]">${rawText}</div></div>`);
     input.value = ''; consoleBox.scrollTop = consoleBox.scrollHeight;
+    
     const thinkingId = 'think-' + Date.now();
     consoleBox.insertAdjacentHTML('beforeend', `<div id="${thinkingId}" class="flex items-start gap-4 mb-6 chat-ai-bubble"><div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0"><i class="fas fa-robot text-[10px]"></i></div><div class="bg-white border p-4 rounded-2xl text-sm text-slate-400">กำลังค้นหา...</div></div>`);
     consoleBox.scrollTop = consoleBox.scrollHeight;
+
     setTimeout(() => {
         document.getElementById(thinkingId)?.remove();
         const cleanText = rawText.toLowerCase().replace(/\s+/g, ''); let botReply = "";
         for (let entry of botDatabase) { if (entry.keywords.some(k => cleanText.includes(k) || rawText.toLowerCase().includes(k))) { botReply = entry.answer; break; } }
+
         if (botReply === "") {
             botReply = `ขออภัยครับ อาการนี้อาจจะต้องให้ช่างตรวจเช็คเชิงลึก 😅 แนะนำให้กดเมนู **Create Ticket** เพื่อแจ้งเรื่องครับ<br><br>หรือเลือกด้านล่าง 👇<br><div class="flex flex-wrap gap-2 mt-2"><button onclick="window.sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">💻 คอมเสีย</button><button onclick="window.sendQuickReply('ปริ้นไม่ออก')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">🖨️ เครื่องปริ้น</button><button onclick="window.sendQuickReply('เน็ตหลุด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">📡 เน็ตหลุด</button></div>`;
         }
@@ -180,15 +181,26 @@ function loadDashboardData() {
         snapshot.forEach((docSnap) => {
             const t = docSnap.data(), id = docSnap.id; window.globalTickets[id] = t;
             if (t.callerEmail !== auth.currentUser.email) return;
-            const safeStatus = t.status || 'New'; counts[safeStatus]++; counts.Total++;
+            
+            const safeStatus = t.status || 'New';
+            counts[safeStatus]++; counts.Total++;
+            
             const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
-            let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); let displayStatus = dict[currentLang][statusKey] || safeStatus;
-            let badgeBgClass = bgColors[safeStatus] || bgColors['New']; let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
+            let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_');
+            let displayStatus = dict[currentLang][statusKey] || safeStatus;
+            let badgeBgClass = bgColors[safeStatus] || bgColors['New'];
+            let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
             let statusHtml = `<span class="${badgeBgClass} px-2.5 py-1 rounded-md text-[10px] uppercase font-black tracking-widest flex w-fit gap-1.5 items-center"><span class="w-1.5 h-1.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
-            userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">TKT-${id.substring(0,4).toUpperCase()}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
+
+            // 🔥 เปลี่ยนการแสดงผลเวลาเป็นรูปแบบวันที่แบบเป๊ะๆ
+            const formattedDate = formatDateTime(t.createdAt?.toDate());
+
+            let displayId = "TKT-" + id.substring(0,4).toUpperCase();
+            userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">${displayId}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500 whitespace-nowrap font-medium">${formattedDate}</td></tr>`;
+            
             if(recentCount<5){ recentHtml+=`<div class="p-4 bg-white border rounded-xl mb-2 text-sm cursor-pointer hover:bg-slate-50 transition flex justify-between items-center" onclick="window.openModal('${id}')"><div><b class="text-slate-800">${t.subject}</b></div>${statusHtml}</div>`; recentCount++;}
         });
-        document.getElementById('user-ticket-list').innerHTML = userHtml || '<tr><td colspan="4" class="p-8 text-center text-slate-400">No requests found</td></tr>';
+        document.getElementById('user-ticket-list').innerHTML = userHtml || '<tr><td colspan="4" class="p-16 text-center text-slate-400">No requests found</td></tr>';
         document.getElementById('stat-new').innerText = counts.New || 0; document.getElementById('stat-progress').innerText = counts["In Progress"] || 0;
         document.getElementById('stat-resolved').innerText = counts.Resolved || 0; document.getElementById('stat-total').innerText = counts.Total || 0;
         document.getElementById('dash-recent-list').innerHTML = recentHtml || '<p class="text-center text-slate-400 text-xs py-10">Clear!</p>';
@@ -202,7 +214,6 @@ document.getElementById('create-ticket-form').onsubmit = async (e) => {
         let imgUrls = []; const files = document.getElementById('tk-image').files;
         if(files.length > 0) { for(let file of files) { imgUrls.push(await resizeAndConvertToBase64(file, 800, 800)); } }
         
-        // Priority ถูกล็อกเป็น "3 - Moderate" ทุกบิล
         const docRef = await addDoc(collection(db, "incidents"), { callerEmail: auth.currentUser.email, category: document.getElementById('tk-category').value, priority: "3 - Moderate", building: document.getElementById('tk-building').value, floor: document.getElementById('tk-floor').value, department: document.getElementById('tk-dept').value, line: document.getElementById('tk-line').value, brokenItem: document.getElementById('tk-item').value, subject: document.getElementById('tk-subject').value, description: document.getElementById('tk-desc').value, imageUrl: imgUrls.length > 0 ? imgUrls[0] : null, imageUrls: imgUrls, status: 'New', createdAt: new Date() });
         await addDoc(collection(db, "incidents", docRef.id, "comments"), { senderEmail: "system", text: "Ticket created.", createdAt: new Date() });
         
@@ -212,7 +223,8 @@ document.getElementById('create-ticket-form').onsubmit = async (e) => {
 
 window.openModal = (id) => {
     currentTicketId = id; const t = window.globalTickets[id];
-    document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); document.getElementById('modal-subject').innerText = t.subject || 'No Subject'; document.getElementById('modal-category').innerText = t.category || '-'; document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`; document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; document.getElementById('modal-desc').innerText = t.description || '-'; document.getElementById('modal-caller').innerText = t.callerEmail || '-'; document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned'; document.getElementById('modal-date').innerText = t.createdAt ? t.createdAt.toDate().toLocaleString() : '';
+    document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); document.getElementById('modal-subject').innerText = t.subject || 'No Subject'; document.getElementById('modal-category').innerText = t.category || '-'; document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`; document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; document.getElementById('modal-desc').innerText = t.description || '-'; document.getElementById('modal-caller').innerText = t.callerEmail || '-'; document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned'; 
+    document.getElementById('modal-date').innerText = formatDateTime(t.createdAt?.toDate());
 
     const safeStatus = t.status || 'New'; const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
     let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); let displayStatus = dict[currentLang][statusKey] || safeStatus; let badgeBgClass = bgColors[safeStatus] || bgColors['New']; let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
