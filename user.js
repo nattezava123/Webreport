@@ -80,12 +80,14 @@ window.updatePriorityDesc = () => {
 };
 
 // 🔥 อัปเดตคำสั่งเปลี่ยนหน้าแท็บ ใช้ hidden เข้ามาช่วยซ่อนแบบ 100% แน่นอน
+// 🔥 อัปเดตคำสั่งเปลี่ยนหน้าแท็บ (แก้หัวข้อค้างให้แล้วครับ!)
 window.switchTab = (tabName) => {
     // 1. ซ่อนทุกหน้า
     document.querySelectorAll('.tab-content').forEach(el => {
         el.classList.remove('block');
         el.classList.add('hidden');
     });
+    
     // 2. ปิดไฟปุ่มเมนูทั้งหมด
     document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
     
@@ -99,6 +101,15 @@ window.switchTab = (tabName) => {
     // 4. เปิดไฟปุ่มเมนูที่เรากด
     document.querySelector(`.menu-link[onclick*="'${tabName}'"]`)?.classList.add('active');
     
+    // 5. เปลี่ยนชื่อหัวขอด้านบน (ตรงนี้ที่หายไปครับ!)
+    const pageTitle = document.getElementById('page-title');
+    if (pageTitle) {
+        const key = `menu_${tabName}`;
+        pageTitle.setAttribute('data-i18n', key); // เซ็ตค่าเผื่อสลับภาษา EN/TH
+        pageTitle.innerText = dict[currentLang][key] || dict[currentLang].app_name;
+    }
+    
+    // ปิดเมนูบนมือถือถ้าเปิดอยู่
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
 };
 
