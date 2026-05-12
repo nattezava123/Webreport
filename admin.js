@@ -30,35 +30,21 @@ const dict = {
 
 window.viewFullImage = (url) => { Swal.fire({ imageUrl: url, imageAlt: 'Attached Image', width: 'auto', padding: '1rem', showConfirmButton: false, showCloseButton: true, customClass: { image: 'rounded-xl max-h-[80vh] object-contain' } }); };
 
-// 🔥 ระบบพรีวิวรูปหลายรูป (จำกัด 3 รูป)
 window.previewCreateImage = (input) => { 
     const container = document.getElementById('create-image-preview-container');
     container.innerHTML = '<button type="button" onclick="window.clearCreateImage()" class="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md z-10">×</button>';
-    
     if (input.files && input.files.length > 0) { 
-        if(input.files.length > 3) {
-            Swal.fire({icon: 'warning', text: currentLang === 'th' ? 'อัปโหลดได้สูงสุด 3 รูปครับ' : 'Maximum 3 images allowed'});
-            input.value = ''; container.classList.add('hidden'); return;
-        }
+        if(input.files.length > 3) { Swal.fire({icon: 'warning', text: currentLang === 'th' ? 'อัปโหลดได้สูงสุด 3 รูปครับ' : 'Maximum 3 images allowed'}); input.value = ''; container.classList.add('hidden'); return; }
         Array.from(input.files).forEach(file => {
             const reader = new FileReader(); 
-            reader.onload = (e) => { 
-                container.innerHTML += `<img src="${e.target.result}" class="h-20 w-20 object-cover rounded-xl border shadow-sm">`; 
-            }; 
+            reader.onload = (e) => { container.innerHTML += `<img src="${e.target.result}" class="h-20 w-20 object-cover rounded-xl border shadow-sm">`; }; 
             reader.readAsDataURL(file); 
         });
         container.classList.remove('hidden'); 
-    } else { 
-        container.classList.add('hidden'); 
-    } 
+    } else { container.classList.add('hidden'); } 
 };
 
-window.clearCreateImage = () => { 
-    document.getElementById('tk-image').value = ''; 
-    const container = document.getElementById('create-image-preview-container');
-    container.classList.add('hidden');
-    container.innerHTML = '<button type="button" onclick="window.clearCreateImage()" class="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md z-10">×</button>';
-};
+window.clearCreateImage = () => { document.getElementById('tk-image').value = ''; const container = document.getElementById('create-image-preview-container'); container.classList.add('hidden'); container.innerHTML = '<button type="button" onclick="window.clearCreateImage()" class="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md z-10">×</button>'; };
 
 async function resizeAndConvertToBase64(file, maxWidth, maxHeight) {
     return new Promise((resolve) => {
@@ -91,20 +77,11 @@ window.toggleLang = (lang) => {
     document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(dict[lang][k]) el.innerText = dict[lang][k]; });
     const optHw = document.getElementById('opt-hw'), optSw = document.getElementById('opt-sw'), optNw = document.getElementById('opt-nw');
     if(optHw) optHw.innerText = dict[lang].cat_hw; if(optSw) optSw.innerText = dict[lang].cat_sw; if(optNw) optNw.innerText = dict[lang].cat_nw;
-    window.updatePriorityDesc(); window.updateDynamicDropdowns();
+    window.updateDynamicDropdowns();
     ['app'].forEach(v => {
         const en = document.getElementById(`lang-en-${v}`), th = document.getElementById(`lang-th-${v}`);
         if(en && th) { en.className = (lang==='en') ? "px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold shadow-sm" : "px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold"; th.className = (lang==='th') ? "px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold shadow-sm" : "px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold"; }
     });
-};
-
-window.updatePriorityDesc = () => {
-    const s = document.getElementById('tk-priority'); if(!s) return; const val = s.value;
-    const thTexts = { "4 - Low": "● กระทบรายบุคคล - SLA: แก้ไขภายใน 3 วัน", "3 - Moderate": "● กระทบระดับแผนก - SLA: แก้ไขภายใน 24 ชม.", "2 - High": "● กระทบวงกว้าง - SLA: แก้ไขภายใน 4 ชม.", "1 - Critical": "● ระบบหลักล่ม - SLA: แก้ไขภายใน 1 ชม." };
-    const enTexts = { "4 - Low": "● Individual impact - SLA: 3 Days", "3 - Moderate": "● Department impact - SLA: 24 Hours", "2 - High": "● Business degraded - SLA: 4 Hours", "1 - Critical": "● Total failure - SLA: 1 Hour" };
-    const descColors = { "4 - Low": "bg-emerald-50/50 border-emerald-100 text-emerald-800", "3 - Moderate": "bg-amber-50/50 border-amber-100 text-amber-800", "2 - High": "bg-orange-50/50 border-orange-100 text-orange-800", "1 - Critical": "bg-rose-50/50 border-rose-100 text-rose-800" };
-    const pText = document.getElementById('priority-text'); if(pText) pText.innerText = currentLang === 'th' ? thTexts[val] : enTexts[val];
-    const pDesc = document.getElementById('priority-desc'); if(pDesc) pDesc.className = `p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors ${descColors[val]}`;
 };
 
 window.switchTab = (tabName) => {
@@ -157,16 +134,13 @@ window.sendAIMessage = async () => {
     const consoleBox = document.getElementById('ai-chat-box');
     consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 flex-row-reverse chat-user-bubble"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0 shadow-sm"><i class="fas fa-user text-[10px]"></i></div><div class="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-sm shadow-md text-sm leading-relaxed max-w-[85%]">${rawText}</div></div>`);
     input.value = ''; consoleBox.scrollTop = consoleBox.scrollHeight;
-    
     const thinkingId = 'think-' + Date.now();
     consoleBox.insertAdjacentHTML('beforeend', `<div id="${thinkingId}" class="flex items-start gap-4 mb-6 chat-ai-bubble"><div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0"><i class="fas fa-robot text-[10px]"></i></div><div class="bg-white border p-4 rounded-2xl text-sm text-slate-400">กำลังค้นหา...</div></div>`);
     consoleBox.scrollTop = consoleBox.scrollHeight;
-
     setTimeout(() => {
         document.getElementById(thinkingId)?.remove();
         const cleanText = rawText.toLowerCase().replace(/\s+/g, ''); let botReply = "";
         for (let entry of botDatabase) { if (entry.keywords.some(k => cleanText.includes(k) || rawText.toLowerCase().includes(k))) { botReply = entry.answer; break; } }
-
         if (botReply === "") {
             botReply = `ขออภัยครับ อาการนี้อาจจะต้องให้ช่างตรวจเช็คเชิงลึก 😅 แนะนำให้กดเมนู **Create Ticket** เพื่อแจ้งเรื่องครับ<br><br>หรือเลือกด้านล่าง 👇<br><div class="flex flex-wrap gap-2 mt-2"><button onclick="window.sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">💻 คอมเสีย</button><button onclick="window.sendQuickReply('ปริ้นไม่ออก')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">🖨️ เครื่องปริ้น</button><button onclick="window.sendQuickReply('เน็ตหลุด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">📡 เน็ตหลุด</button></div>`;
         }
@@ -218,10 +192,9 @@ function loadDashboardData() {
             let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
             let statusHtml = `<span class="${badgeBgClass} px-2.5 py-1 rounded-md text-[10px] uppercase font-black tracking-widest flex w-fit gap-1.5 items-center"><span class="w-1.5 h-1.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
-            let priIndicator = t.priority?.includes('1') ? '<i class="fas fa-fire text-rose-500 mr-2"></i>' : (t.priority?.includes('2') ? '<i class="fas fa-exclamation-circle text-orange-500 mr-2"></i>' : '');
             let imgIcon = t.imageUrl || (t.imageUrls && t.imageUrls.length > 0) ? ' <i class="fas fa-image text-blue-400 ml-1 text-[10px]"></i>' : '';
 
-            adminHtml += `<tr class="hover:bg-slate-50 transition group border-b border-slate-50 cursor-pointer" data-status="${safeStatus}" onclick="window.openModal('${id}')"><td class="py-4 px-4 font-bold text-slate-500 text-xs">${displayId}</td><td class="py-4 px-4"><div class="font-bold text-slate-800 text-sm">${priIndicator}${t.subject}${imgIcon}</div><div class="text-[10px] text-slate-400 mt-0.5">${t.callerEmail || '-'}</div></td><td class="py-4 px-4 text-xs font-bold text-slate-600">${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : '-'}</td><td class="py-4 px-4">${statusHtml}</td><td class="py-4 px-4 text-right opacity-0 group-hover:opacity-100 transition whitespace-nowrap"><button onclick="event.stopPropagation(); window.editTicket('${id}')" class="w-8 h-8 bg-white border border-blue-200 text-blue-500 rounded-lg shadow-sm mr-1"><i class="fas fa-edit text-xs"></i></button><button onclick="event.stopPropagation(); window.updateTicket('${id}', 'In Progress')" class="w-8 h-8 bg-white border border-amber-200 text-amber-500 rounded-lg shadow-sm mr-1"><i class="fas fa-play text-xs"></i></button><button onclick="event.stopPropagation(); window.updateTicket('${id}', 'Resolved')" class="w-8 h-8 bg-white border border-emerald-200 text-emerald-500 rounded-lg shadow-sm mr-2"><i class="fas fa-check text-xs"></i></button><button onclick="event.stopPropagation(); window.deleteTicket('${id}')" class="w-8 h-8 bg-white border border-rose-200 text-rose-500 rounded-lg shadow-sm"><i class="fas fa-trash text-xs"></i></button></td></tr>`;
+            adminHtml += `<tr class="hover:bg-slate-50 transition group border-b border-slate-50 cursor-pointer" data-status="${safeStatus}" onclick="window.openModal('${id}')"><td class="py-4 px-4 font-bold text-slate-500 text-xs">${displayId}</td><td class="py-4 px-4"><div class="font-bold text-slate-800 text-sm">${t.subject}${imgIcon}</div><div class="text-[10px] text-slate-400 mt-0.5">${t.callerEmail || '-'}</div></td><td class="py-4 px-4 text-xs font-bold text-slate-600">${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : '-'}</td><td class="py-4 px-4">${statusHtml}</td><td class="py-4 px-4 text-right opacity-0 group-hover:opacity-100 transition whitespace-nowrap"><button onclick="event.stopPropagation(); window.editTicket('${id}')" class="w-8 h-8 bg-white border border-blue-200 text-blue-500 rounded-lg shadow-sm mr-1"><i class="fas fa-edit text-xs"></i></button><button onclick="event.stopPropagation(); window.updateTicket('${id}', 'In Progress')" class="w-8 h-8 bg-white border border-amber-200 text-amber-500 rounded-lg shadow-sm mr-1"><i class="fas fa-play text-xs"></i></button><button onclick="event.stopPropagation(); window.updateTicket('${id}', 'Resolved')" class="w-8 h-8 bg-white border border-emerald-200 text-emerald-500 rounded-lg shadow-sm mr-2"><i class="fas fa-check text-xs"></i></button><button onclick="event.stopPropagation(); window.deleteTicket('${id}')" class="w-8 h-8 bg-white border border-rose-200 text-rose-500 rounded-lg shadow-sm"><i class="fas fa-trash text-xs"></i></button></td></tr>`;
             
             if (t.callerEmail === auth.currentUser.email) {
                 userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">${displayId}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
@@ -245,26 +218,24 @@ document.getElementById('create-ticket-form').onsubmit = async (e) => {
         let imgUrls = []; const files = document.getElementById('tk-image').files;
         if(files.length > 0) { for(let file of files) { imgUrls.push(await resizeAndConvertToBase64(file, 800, 800)); } }
         
-        const docRef = await addDoc(collection(db, "incidents"), { callerEmail: auth.currentUser.email, category: document.getElementById('tk-category').value, priority: document.getElementById('tk-priority').value, building: document.getElementById('tk-building').value, floor: document.getElementById('tk-floor').value, department: document.getElementById('tk-dept').value, line: document.getElementById('tk-line').value, brokenItem: document.getElementById('tk-item').value, subject: document.getElementById('tk-subject').value, description: document.getElementById('tk-desc').value, imageUrl: imgUrls.length > 0 ? imgUrls[0] : null, imageUrls: imgUrls, status: 'New', createdAt: new Date() });
+        const docRef = await addDoc(collection(db, "incidents"), { callerEmail: auth.currentUser.email, category: document.getElementById('tk-category').value, priority: "3 - Moderate", building: document.getElementById('tk-building').value, floor: document.getElementById('tk-floor').value, department: document.getElementById('tk-dept').value, line: document.getElementById('tk-line').value, brokenItem: document.getElementById('tk-item').value, subject: document.getElementById('tk-subject').value, description: document.getElementById('tk-desc').value, imageUrl: imgUrls.length > 0 ? imgUrls[0] : null, imageUrls: imgUrls, status: 'New', createdAt: new Date() });
         await addDoc(collection(db, "incidents", docRef.id, "comments"), { senderEmail: "system", text: "Ticket created.", createdAt: new Date() });
         
-        document.getElementById('create-ticket-form').reset(); window.clearCreateImage(); window.updatePriorityDesc(); window.updateDynamicDropdowns(); Toast.fire({ icon: 'success', title: 'Success!' }); window.switchTab('incidents');
+        document.getElementById('create-ticket-form').reset(); window.clearCreateImage(); window.updateDynamicDropdowns(); Toast.fire({ icon: 'success', title: 'Success!' }); window.switchTab('incidents');
     } catch (e) { Swal.fire({ icon: 'error', text: e.message }); } finally { b.disabled = false; }
 };
 
 window.updateTicket = (id, newStatus) => { updateDoc(doc(db, "incidents", id), { status: newStatus, assignedTo: auth.currentUser.email }).then(() => { addDoc(collection(db, "incidents", id, "comments"), { senderEmail: "system", text: `Status updated to ${newStatus} by ${auth.currentUser.email.split('@')[0]}`, createdAt: new Date() }); Toast.fire({ icon: 'success', title: 'Status Updated' }); }); };
 window.deleteTicket = (id) => { Swal.fire({ title: 'Delete Ticket?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#e11d48' }).then((result) => { if (result.isConfirmed) { deleteDoc(doc(db, "incidents", id)); Toast.fire({ icon: 'success', title: 'Deleted' }); } }); };
 
+// 🔥 ลบ Priority ออกจาก Modal สำหรับ Edit ด้วยครับ
 window.editTicket = (id) => {
     const t = window.globalTickets[id];
     Swal.fire({
         title: 'Edit Ticket Details', width: '600px',
         html: `<div class="space-y-4 text-left mt-4">
             <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Subject</label><input id="edit-sub" class="w-full border rounded-xl px-4 py-3 text-sm" value="${t.subject || ''}"></div>
-            <div class="grid grid-cols-2 gap-4">
-                <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Category</label><select id="edit-cat" class="w-full border rounded-xl px-4 py-3 text-sm"><option value="Hardware" ${t.category==='Hardware'?'selected':''}>Hardware</option><option value="Software" ${t.category==='Software'?'selected':''}>Software</option><option value="Network" ${t.category==='Network'?'selected':''}>Network</option></select></div>
-                <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Priority</label><select id="edit-pri" class="w-full border rounded-xl px-4 py-3 text-sm"><option value="4 - Low" ${t.priority==='4 - Low'?'selected':''}>Low</option><option value="3 - Moderate" ${t.priority==='3 - Moderate'?'selected':''}>Moderate</option><option value="2 - High" ${t.priority==='2 - High'?'selected':''}>High</option><option value="1 - Critical" ${t.priority==='1 - Critical'?'selected':''}>Critical</option></select></div>
-            </div>
+            <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Category</label><select id="edit-cat" class="w-full border rounded-xl px-4 py-3 text-sm"><option value="Hardware" ${t.category==='Hardware'?'selected':''}>Hardware</option><option value="Software" ${t.category==='Software'?'selected':''}>Software</option><option value="Network" ${t.category==='Network'?'selected':''}>Network</option></select></div>
             <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border">
                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Building</label><input id="edit-bldg" class="w-full border rounded-lg px-3 py-2 text-sm" value="${t.building || ''}"></div>
                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Department</label><input id="edit-dept" class="w-full border rounded-lg px-3 py-2 text-sm" value="${t.department || ''}"></div>
@@ -273,17 +244,17 @@ window.editTicket = (id) => {
             <div><label class="block text-[10px] font-bold text-slate-500 uppercase">Description</label><textarea id="edit-desc" rows="4" class="w-full border rounded-xl px-4 py-3 text-sm resize-none">${t.description || ''}</textarea></div>
         </div>`,
         showCancelButton: true, confirmButtonColor: '#3b82f6',
-        preConfirm: () => ({ subject: document.getElementById('edit-sub').value, category: document.getElementById('edit-cat').value, priority: document.getElementById('edit-pri').value, building: document.getElementById('edit-bldg').value, department: document.getElementById('edit-dept').value, brokenItem: document.getElementById('edit-item').value, description: document.getElementById('edit-desc').value })
+        preConfirm: () => ({ subject: document.getElementById('edit-sub').value, category: document.getElementById('edit-cat').value, building: document.getElementById('edit-bldg').value, department: document.getElementById('edit-dept').value, brokenItem: document.getElementById('edit-item').value, description: document.getElementById('edit-desc').value })
     }).then((result) => { if (result.isConfirmed) { updateDoc(doc(db, "incidents", id), result.value); Toast.fire({ icon: 'success', title: 'Updated' }); } });
 };
 
-window.exportCSV = () => { let c = "ID,Subject,Status,Priority,Category,Building,Floor,Department,Line,BrokenItem,Caller,AssignedTo,Date\n"; for(let i in window.globalTickets){ let t = window.globalTickets[i]; c += `${i},"${t.subject}",${t.status},"${t.priority}",${t.category},"${t.building||'-'}","${t.floor||'-'}","${t.department||'-'}","${t.line||'-'}","${t.brokenItem||'-'}",${t.callerEmail},${t.assignedTo||''},${t.createdAt ? t.createdAt.toDate().toISOString() : ""}\n`; } let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([c],{type:'text/csv'})); a.download='Tickets.csv'; a.click(); };
+window.exportCSV = () => { let c = "ID,Subject,Status,Category,Building,Floor,Department,Line,BrokenItem,Caller,AssignedTo,Date\n"; for(let i in window.globalTickets){ let t = window.globalTickets[i]; c += `${i},"${t.subject}",${t.status},${t.category},"${t.building||'-'}","${t.floor||'-'}","${t.department||'-'}","${t.line||'-'}","${t.brokenItem||'-'}",${t.callerEmail},${t.assignedTo||''},${t.createdAt ? t.createdAt.toDate().toISOString() : ""}\n`; } let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([c],{type:'text/csv'})); a.download='Tickets.csv'; a.click(); };
 window.filterTickets = (tId, iId) => { let i = document.getElementById(iId).value.toUpperCase(), tr = document.getElementById(tId).getElementsByTagName("tr"); for(let x=0; x<tr.length; x++) { if(tr[x].innerText) { tr[x].style.display = tr[x].innerText.toUpperCase().includes(i) ? "" : "none"; } } };
 window.setAdminFilter = (f) => { currentAdminFilter = f; const act = "px-5 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm", inact = "px-5 py-2 rounded-lg text-xs font-bold text-slate-500"; ['All', 'Active', 'Resolved'].forEach(btn => { const b = document.getElementById(`btn-filter-${btn}`); if(b) b.className = btn === f ? act : inact; }); let tr = document.getElementById('admin-ticket-list').getElementsByTagName('tr'); for(let t of tr){ let s = t.getAttribute('data-status'); t.style.display = (f==='All'||(f==='Active'&&s!=='Resolved')||(f==='Resolved'&&s==='Resolved')) ? '' : 'none'; } };
 
 window.openModal = (id) => {
     currentTicketId = id; const t = window.globalTickets[id];
-    document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); document.getElementById('modal-subject').innerText = t.subject || 'No Subject'; document.getElementById('modal-category').innerText = t.category || '-'; document.getElementById('modal-priority').innerText = t.priority || '-'; document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`; document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; document.getElementById('modal-desc').innerText = t.description || '-'; document.getElementById('modal-caller').innerText = t.callerEmail || '-'; document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned'; document.getElementById('modal-date').innerText = t.createdAt ? t.createdAt.toDate().toLocaleString() : '';
+    document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); document.getElementById('modal-subject').innerText = t.subject || 'No Subject'; document.getElementById('modal-category').innerText = t.category || '-'; document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`; document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; document.getElementById('modal-desc').innerText = t.description || '-'; document.getElementById('modal-caller').innerText = t.callerEmail || '-'; document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned'; document.getElementById('modal-date').innerText = t.createdAt ? t.createdAt.toDate().toLocaleString() : '';
 
     const safeStatus = t.status || 'New'; const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
     let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); let displayStatus = dict[currentLang][statusKey] || safeStatus; let badgeBgClass = bgColors[safeStatus] || bgColors['New']; let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
@@ -292,7 +263,6 @@ window.openModal = (id) => {
     let imgHtml = '';
     if(t.imageUrls && t.imageUrls.length > 0) { t.imageUrls.forEach(url => { imgHtml += `<img src="${url}" class="w-full rounded-xl border object-cover max-h-48 cursor-pointer mb-2" onclick="window.viewFullImage('${url}')">`; }); } 
     else if(t.imageUrl) { imgHtml = `<img src="${t.imageUrl}" class="w-full rounded-xl border object-cover max-h-48 cursor-pointer" onclick="window.viewFullImage('${t.imageUrl}')">`; }
-    
     const imgContainer = document.getElementById('modal-image-container');
     if(imgHtml) { imgContainer.innerHTML = imgHtml; imgContainer.classList.remove('hidden'); imgContainer.classList.add('flex'); } 
     else { imgContainer.classList.add('hidden'); imgContainer.classList.remove('flex'); }
