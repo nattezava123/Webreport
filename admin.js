@@ -29,8 +29,36 @@ const dict = {
 };
 
 window.viewFullImage = (url) => { Swal.fire({ imageUrl: url, imageAlt: 'Attached Image', width: 'auto', padding: '1rem', showConfirmButton: false, showCloseButton: true, customClass: { image: 'rounded-xl max-h-[80vh] object-contain' } }); };
-window.previewCreateImage = (input) => { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = (e) => { document.getElementById('create-image-preview').src = e.target.result; document.getElementById('create-image-preview-container').classList.remove('hidden'); }; reader.readAsDataURL(input.files[0]); } };
-window.clearCreateImage = () => { document.getElementById('tk-image').value = ''; document.getElementById('create-image-preview').src = ''; document.getElementById('create-image-preview-container').classList.add('hidden'); };
+
+// 🔥 ระบบพรีวิวรูปหลายรูป (จำกัด 3 รูป)
+window.previewCreateImage = (input) => { 
+    const container = document.getElementById('create-image-preview-container');
+    container.innerHTML = '<button type="button" onclick="window.clearCreateImage()" class="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md z-10">×</button>';
+    
+    if (input.files && input.files.length > 0) { 
+        if(input.files.length > 3) {
+            Swal.fire({icon: 'warning', text: currentLang === 'th' ? 'อัปโหลดได้สูงสุด 3 รูปครับ' : 'Maximum 3 images allowed'});
+            input.value = ''; container.classList.add('hidden'); return;
+        }
+        Array.from(input.files).forEach(file => {
+            const reader = new FileReader(); 
+            reader.onload = (e) => { 
+                container.innerHTML += `<img src="${e.target.result}" class="h-20 w-20 object-cover rounded-xl border shadow-sm">`; 
+            }; 
+            reader.readAsDataURL(file); 
+        });
+        container.classList.remove('hidden'); 
+    } else { 
+        container.classList.add('hidden'); 
+    } 
+};
+
+window.clearCreateImage = () => { 
+    document.getElementById('tk-image').value = ''; 
+    const container = document.getElementById('create-image-preview-container');
+    container.classList.add('hidden');
+    container.innerHTML = '<button type="button" onclick="window.clearCreateImage()" class="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md z-10">×</button>';
+};
 
 async function resizeAndConvertToBase64(file, maxWidth, maxHeight) {
     return new Promise((resolve) => {
@@ -89,60 +117,20 @@ window.switchTab = (tabName) => {
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
 };
 
-// 🔥 ระบบ Dynamic Dropdown
 const categoryData = {
-    "Hardware": {
-        items: [
-            { val: "PC / Desktop", text: "คอมพิวเตอร์ (PC / Desktop)" },
-            { val: "Laptop / Notebook", text: "โน้ตบุ๊ก (Laptop / Notebook)" },
-            { val: "Monitor", text: "หน้าจอ (Monitor)" },
-            { val: "Printer / Scanner", text: "เครื่องปริ้น / สแกนเนอร์" },
-            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
-        ],
-        subjects: [
-            { val: "Cannot power on / No display", text: "เปิดไม่ติด / ไม่มีภาพ" },
-            { val: "Cannot print / Paper jam", text: "ปริ้นไม่ออก / กระดาษติด" },
-            { val: "Hardware replacement / Upgrade", text: "ขอเบิกอุปกรณ์ / เปลี่ยนอะไหล่" },
-            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
-        ]
-    },
-    "Software": {
-        items: [
-            { val: "Software / System", text: "โปรแกรม / ระบบ ERP" },
-            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
-        ],
-        subjects: [
-            { val: "System Error / Software crashes", text: "ระบบค้าง / โปรแกรมมีปัญหา Error" },
-            { val: "Request for access / New Account", text: "ขอสิทธิ์เข้าใช้งาน / สร้าง User ใหม่" },
-            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
-        ]
-    },
-    "Network": {
-        items: [
-            { val: "Network / Wi-Fi", text: "อุปกรณ์เน็ตเวิร์ค / Wi-Fi" },
-            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
-        ],
-        subjects: [
-            { val: "No Internet / Network drops", text: "ไม่มีเน็ต / อินเทอร์เน็ตหลุด" },
-            { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }
-        ]
-    }
+    "Hardware": { items: [{ val: "PC / Desktop", text: "คอมพิวเตอร์ (PC / Desktop)" }, { val: "Laptop / Notebook", text: "โน้ตบุ๊ก (Laptop / Notebook)" }, { val: "Monitor", text: "หน้าจอ (Monitor)" }, { val: "Printer / Scanner", text: "เครื่องปริ้น / สแกนเนอร์" }, { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }], subjects: [{ val: "Cannot power on / No display", text: "เปิดไม่ติด / ไม่มีภาพ" }, { val: "Cannot print / Paper jam", text: "ปริ้นไม่ออก / กระดาษติด" }, { val: "Hardware replacement / Upgrade", text: "ขอเบิกอุปกรณ์ / เปลี่ยนอะไหล่" }, { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }] },
+    "Software": { items: [{ val: "Software / System", text: "โปรแกรม / ระบบ ERP" }, { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }], subjects: [{ val: "System Error / Software crashes", text: "ระบบค้าง / โปรแกรมมีปัญหา Error" }, { val: "Request for access / New Account", text: "ขอสิทธิ์เข้าใช้งาน / สร้าง User ใหม่" }, { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }] },
+    "Network": { items: [{ val: "Network / Wi-Fi", text: "อุปกรณ์เน็ตเวิร์ค / Wi-Fi" }, { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }], subjects: [{ val: "No Internet / Network drops", text: "ไม่มีเน็ต / อินเทอร์เน็ตหลุด" }, { val: "Other", text: "อื่นๆ (ระบุในรายละเอียด)" }] }
 };
 
 window.updateDynamicDropdowns = () => {
-    const catSelect = document.getElementById('tk-category');
-    const itemSelect = document.getElementById('tk-item');
-    const subSelect = document.getElementById('tk-subject');
+    const catSelect = document.getElementById('tk-category'), itemSelect = document.getElementById('tk-item'), subSelect = document.getElementById('tk-subject');
     if (!catSelect || !itemSelect || !subSelect) return;
-    const selectedCat = catSelect.value;
-    const data = categoryData[selectedCat];
-    
+    const selectedCat = catSelect.value, data = categoryData[selectedCat];
     const chooseItemText = currentLang === 'th' ? "เลือกอุปกรณ์ที่เสีย..." : "Select broken item...";
     const chooseSubText = currentLang === 'th' ? "เลือกหัวข้อปัญหา..." : "Select subject...";
-    
     itemSelect.innerHTML = `<option value="" disabled selected>${chooseItemText}</option>`;
     subSelect.innerHTML = `<option value="" disabled selected>${chooseSubText}</option>`;
-    
     if (data) {
         data.items.forEach(item => { itemSelect.innerHTML += `<option value="${item.val}">${currentLang==='th'?item.text:item.val}</option>`; });
         data.subjects.forEach(sub => { subSelect.innerHTML += `<option value="${sub.val}">${currentLang==='th'?sub.text:sub.val}</option>`; });
@@ -167,7 +155,7 @@ const botDatabase = [
 window.sendAIMessage = async () => {
     const input = document.getElementById('ai-input'); const rawText = input.value.trim(); if (!rawText) return;
     const consoleBox = document.getElementById('ai-chat-box');
-    consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 flex-row-reverse chat-user-bubble"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0"><i class="fas fa-user text-[10px]"></i></div><div class="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-sm shadow-md text-sm leading-relaxed max-w-[85%]">${rawText}</div></div>`);
+    consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 flex-row-reverse chat-user-bubble"><div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0 shadow-sm"><i class="fas fa-user text-[10px]"></i></div><div class="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-sm shadow-md text-sm leading-relaxed max-w-[85%]">${rawText}</div></div>`);
     input.value = ''; consoleBox.scrollTop = consoleBox.scrollHeight;
     
     const thinkingId = 'think-' + Date.now();
@@ -180,7 +168,7 @@ window.sendAIMessage = async () => {
         for (let entry of botDatabase) { if (entry.keywords.some(k => cleanText.includes(k) || rawText.toLowerCase().includes(k))) { botReply = entry.answer; break; } }
 
         if (botReply === "") {
-            botReply = `ขออภัยครับ อาการนี้อาจจะต้องให้ช่างตรวจเช็คเชิงลึก 😅 แนะนำให้กดเมนู **Create Ticket** เพื่อแจ้งเรื่องครับ<br><br>หรือเลือกด้านล่าง 👇<br><div class="flex flex-wrap gap-2 mt-2"><button onclick="window.sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">💻 คอมเปิดไม่ติด</button><button onclick="window.sendQuickReply('ปริ้นไม่ออก')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">🖨️ เครื่องปริ้น</button><button onclick="window.sendQuickReply('เน็ตหลุด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">📡 อินเทอร์เน็ต</button></div>`;
+            botReply = `ขออภัยครับ อาการนี้อาจจะต้องให้ช่างตรวจเช็คเชิงลึก 😅 แนะนำให้กดเมนู **Create Ticket** เพื่อแจ้งเรื่องครับ<br><br>หรือเลือกด้านล่าง 👇<br><div class="flex flex-wrap gap-2 mt-2"><button onclick="window.sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">💻 คอมเสีย</button><button onclick="window.sendQuickReply('ปริ้นไม่ออก')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">🖨️ เครื่องปริ้น</button><button onclick="window.sendQuickReply('เน็ตหลุด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 border rounded-full text-xs font-bold hover:bg-indigo-100 transition-colors">📡 เน็ตหลุด</button></div>`;
         }
         botReply = botReply.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-600">$1</strong>').replace(/\n/g, '<br>');
         consoleBox.insertAdjacentHTML('beforeend', `<div class="flex items-start gap-4 mb-6 chat-ai-bubble"><div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0 shadow-md"><i class="fas fa-robot text-[10px]"></i></div><div class="bg-slate-50 border border-slate-100 p-5 rounded-2xl text-sm text-slate-700 leading-relaxed max-w-[85%]">${botReply}</div></div>`);
@@ -231,7 +219,7 @@ function loadDashboardData() {
             let statusHtml = `<span class="${badgeBgClass} px-2.5 py-1 rounded-md text-[10px] uppercase font-black tracking-widest flex w-fit gap-1.5 items-center"><span class="w-1.5 h-1.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
             let priIndicator = t.priority?.includes('1') ? '<i class="fas fa-fire text-rose-500 mr-2"></i>' : (t.priority?.includes('2') ? '<i class="fas fa-exclamation-circle text-orange-500 mr-2"></i>' : '');
-            let imgIcon = t.imageUrl ? ' <i class="fas fa-image text-blue-400 ml-1 text-[10px]"></i>' : '';
+            let imgIcon = t.imageUrl || (t.imageUrls && t.imageUrls.length > 0) ? ' <i class="fas fa-image text-blue-400 ml-1 text-[10px]"></i>' : '';
 
             adminHtml += `<tr class="hover:bg-slate-50 transition group border-b border-slate-50 cursor-pointer" data-status="${safeStatus}" onclick="window.openModal('${id}')"><td class="py-4 px-4 font-bold text-slate-500 text-xs">${displayId}</td><td class="py-4 px-4"><div class="font-bold text-slate-800 text-sm">${priIndicator}${t.subject}${imgIcon}</div><div class="text-[10px] text-slate-400 mt-0.5">${t.callerEmail || '-'}</div></td><td class="py-4 px-4 text-xs font-bold text-slate-600">${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : '-'}</td><td class="py-4 px-4">${statusHtml}</td><td class="py-4 px-4 text-right opacity-0 group-hover:opacity-100 transition whitespace-nowrap"><button onclick="event.stopPropagation(); window.editTicket('${id}')" class="w-8 h-8 bg-white border border-blue-200 text-blue-500 rounded-lg shadow-sm mr-1"><i class="fas fa-edit text-xs"></i></button><button onclick="event.stopPropagation(); window.updateTicket('${id}', 'In Progress')" class="w-8 h-8 bg-white border border-amber-200 text-amber-500 rounded-lg shadow-sm mr-1"><i class="fas fa-play text-xs"></i></button><button onclick="event.stopPropagation(); window.updateTicket('${id}', 'Resolved')" class="w-8 h-8 bg-white border border-emerald-200 text-emerald-500 rounded-lg shadow-sm mr-2"><i class="fas fa-check text-xs"></i></button><button onclick="event.stopPropagation(); window.deleteTicket('${id}')" class="w-8 h-8 bg-white border border-rose-200 text-rose-500 rounded-lg shadow-sm"><i class="fas fa-trash text-xs"></i></button></td></tr>`;
             
@@ -254,9 +242,12 @@ function loadDashboardData() {
 document.getElementById('create-ticket-form').onsubmit = async (e) => {
     e.preventDefault(); const b = document.getElementById('btn-create-submit'); b.disabled = true;
     try {
-        let img = null; if(document.getElementById('tk-image').files[0]) img = await resizeAndConvertToBase64(document.getElementById('tk-image').files[0], 800, 800);
-        const docRef = await addDoc(collection(db, "incidents"), { callerEmail: auth.currentUser.email, category: document.getElementById('tk-category').value, priority: document.getElementById('tk-priority').value, building: document.getElementById('tk-building').value, floor: document.getElementById('tk-floor').value, department: document.getElementById('tk-dept').value, line: document.getElementById('tk-line').value, brokenItem: document.getElementById('tk-item').value, subject: document.getElementById('tk-subject').value, description: document.getElementById('tk-desc').value, imageUrl: img, status: 'New', createdAt: new Date() });
+        let imgUrls = []; const files = document.getElementById('tk-image').files;
+        if(files.length > 0) { for(let file of files) { imgUrls.push(await resizeAndConvertToBase64(file, 800, 800)); } }
+        
+        const docRef = await addDoc(collection(db, "incidents"), { callerEmail: auth.currentUser.email, category: document.getElementById('tk-category').value, priority: document.getElementById('tk-priority').value, building: document.getElementById('tk-building').value, floor: document.getElementById('tk-floor').value, department: document.getElementById('tk-dept').value, line: document.getElementById('tk-line').value, brokenItem: document.getElementById('tk-item').value, subject: document.getElementById('tk-subject').value, description: document.getElementById('tk-desc').value, imageUrl: imgUrls.length > 0 ? imgUrls[0] : null, imageUrls: imgUrls, status: 'New', createdAt: new Date() });
         await addDoc(collection(db, "incidents", docRef.id, "comments"), { senderEmail: "system", text: "Ticket created.", createdAt: new Date() });
+        
         document.getElementById('create-ticket-form').reset(); window.clearCreateImage(); window.updatePriorityDesc(); window.updateDynamicDropdowns(); Toast.fire({ icon: 'success', title: 'Success!' }); window.switchTab('incidents');
     } catch (e) { Swal.fire({ icon: 'error', text: e.message }); } finally { b.disabled = false; }
 };
@@ -291,29 +282,20 @@ window.filterTickets = (tId, iId) => { let i = document.getElementById(iId).valu
 window.setAdminFilter = (f) => { currentAdminFilter = f; const act = "px-5 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm", inact = "px-5 py-2 rounded-lg text-xs font-bold text-slate-500"; ['All', 'Active', 'Resolved'].forEach(btn => { const b = document.getElementById(`btn-filter-${btn}`); if(b) b.className = btn === f ? act : inact; }); let tr = document.getElementById('admin-ticket-list').getElementsByTagName('tr'); for(let t of tr){ let s = t.getAttribute('data-status'); t.style.display = (f==='All'||(f==='Active'&&s!=='Resolved')||(f==='Resolved'&&s==='Resolved')) ? '' : 'none'; } };
 
 window.openModal = (id) => {
-    currentTicketId = id; 
-    const t = window.globalTickets[id];
-    
-    document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); 
-    document.getElementById('modal-subject').innerText = t.subject || 'No Subject';
-    document.getElementById('modal-category').innerText = t.category || '-'; 
-    document.getElementById('modal-priority').innerText = t.priority || '-';
-    document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`;
-    document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; 
-    document.getElementById('modal-desc').innerText = t.description || '-';
-    document.getElementById('modal-caller').innerText = t.callerEmail || '-'; 
-    document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned';
-    document.getElementById('modal-date').innerText = t.createdAt ? t.createdAt.toDate().toLocaleString() : '';
+    currentTicketId = id; const t = window.globalTickets[id];
+    document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); document.getElementById('modal-subject').innerText = t.subject || 'No Subject'; document.getElementById('modal-category').innerText = t.category || '-'; document.getElementById('modal-priority').innerText = t.priority || '-'; document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`; document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; document.getElementById('modal-desc').innerText = t.description || '-'; document.getElementById('modal-caller').innerText = t.callerEmail || '-'; document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned'; document.getElementById('modal-date').innerText = t.createdAt ? t.createdAt.toDate().toLocaleString() : '';
 
-    const safeStatus = t.status || 'New'; 
-    const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
-    let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); 
-    let displayStatus = dict[currentLang][statusKey] || safeStatus;
-    let badgeBgClass = bgColors[safeStatus] || bgColors['New']; 
-    let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
+    const safeStatus = t.status || 'New'; const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
+    let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); let displayStatus = dict[currentLang][statusKey] || safeStatus; let badgeBgClass = bgColors[safeStatus] || bgColors['New']; let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
     document.getElementById('modal-status-badge').innerHTML = `<span class="${badgeBgClass} px-4 py-1.5 rounded-lg text-xs uppercase font-black tracking-widest flex items-center gap-2"><span class="w-2 h-2 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
-    if(t.imageUrl) { document.getElementById('modal-image').src = t.imageUrl; document.getElementById('modal-image-container').classList.remove('hidden'); } else { document.getElementById('modal-image-container').classList.add('hidden'); }
+    let imgHtml = '';
+    if(t.imageUrls && t.imageUrls.length > 0) { t.imageUrls.forEach(url => { imgHtml += `<img src="${url}" class="w-full rounded-xl border object-cover max-h-48 cursor-pointer mb-2" onclick="window.viewFullImage('${url}')">`; }); } 
+    else if(t.imageUrl) { imgHtml = `<img src="${t.imageUrl}" class="w-full rounded-xl border object-cover max-h-48 cursor-pointer" onclick="window.viewFullImage('${t.imageUrl}')">`; }
+    
+    const imgContainer = document.getElementById('modal-image-container');
+    if(imgHtml) { imgContainer.innerHTML = imgHtml; imgContainer.classList.remove('hidden'); imgContainer.classList.add('flex'); } 
+    else { imgContainer.classList.add('hidden'); imgContainer.classList.remove('flex'); }
     
     document.getElementById('ticket-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ticket-modal').style.opacity = '1'; document.getElementById('modal-box').classList.replace('scale-95', 'scale-100'); }, 10);
     
@@ -323,9 +305,10 @@ window.openModal = (id) => {
             const d = doc.data(); const isMe = d.senderEmail === auth.currentUser.email;
             if(d.senderEmail === 'system') h += `<div class="flex justify-center my-4"><span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-[10px] font-bold">${d.text}</span></div>`; 
             else { 
-                const bg = isMe ? 'bg-blue-600 text-white' : 'bg-white border text-slate-700';
-                const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
-                let cImg = d.imageUrl ? `<img src="${d.imageUrl}" class="mt-2 rounded-lg max-h-40 cursor-pointer border hover:opacity-90 transition" onclick="window.viewFullImage('${d.imageUrl}')">` : ''; 
+                const bg = isMe ? 'bg-blue-600 text-white' : 'bg-white border text-slate-700'; const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
+                let cImg = '';
+                if(d.imageUrls && d.imageUrls.length > 0) { d.imageUrls.forEach(url => { cImg += `<img src="${url}" class="mt-2 rounded-lg max-h-40 cursor-pointer border hover:opacity-90 transition inline-block mr-2" onclick="window.viewFullImage('${url}')">`; }); } 
+                else if (d.imageUrl) { cImg = `<img src="${d.imageUrl}" class="mt-2 rounded-lg max-h-40 cursor-pointer border hover:opacity-90 transition" onclick="window.viewFullImage('${d.imageUrl}')">`; }
                 h += `<div class="flex flex-col ${isMe?'items-end':'items-start'} mb-4"><div class="${bg} p-3 rounded-xl max-w-[85%] shadow-sm text-sm"><div class="text-[10px] font-bold opacity-70 mb-1">${senderName}</div>${d.text}${cImg}</div></div>`; 
             }
         });
@@ -336,15 +319,21 @@ window.openModal = (id) => {
 window.closeModal = () => { document.getElementById('ticket-modal').style.opacity = '0'; document.getElementById('modal-box').classList.replace('scale-100', 'scale-95'); setTimeout(() => { document.getElementById('ticket-modal').classList.replace('flex', 'hidden'); if(chatUnsubscribe) chatUnsubscribe(); }, 300); };
 
 document.getElementById('comment-text').addEventListener('paste', function(e) {
-    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    for (let i of items) { if (i.kind === 'file' && i.type.includes('image')) { const dt = new DataTransfer(); dt.items.add(i.getAsFile()); document.getElementById('comment-image').files = dt.files; document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500'); Toast.fire({ icon: 'success', title: 'Image attached' }); e.preventDefault(); } }
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items; const dt = new DataTransfer(); let hasImage = false;
+    for (let i of items) { if (i.kind === 'file' && i.type.includes('image')) { dt.items.add(i.getAsFile()); hasImage = true; } }
+    if(hasImage) { document.getElementById('comment-image').files = dt.files; document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500'); Toast.fire({ icon: 'success', title: 'Images attached' }); e.preventDefault(); }
 });
 
 document.getElementById('comment-form').onsubmit = async (e) => {
     e.preventDefault(); const txt = document.getElementById('comment-text'), imgIn = document.getElementById('comment-image'), btn = document.getElementById('btn-comment-submit');
     if(!txt.value.trim() && imgIn.files.length === 0) return; btn.disabled = true;
-    try { let uImg = null; if (imgIn.files.length > 0) uImg = await resizeAndConvertToBase64(imgIn.files[0], 800, 800);
-        await addDoc(collection(db, "incidents", currentTicketId, "comments"), { senderEmail: auth.currentUser.email, text: txt.value, imageUrl: uImg, createdAt: new Date() });
+    try { 
+        let uImgs = []; 
+        if (imgIn.files.length > 0) { 
+            if(imgIn.files.length > 3) { Swal.fire({icon:'warning', text:'Max 3 images'}); btn.disabled = false; return; }
+            for(let file of imgIn.files) { uImgs.push(await resizeAndConvertToBase64(file, 800, 800)); }
+        }
+        await addDoc(collection(db, "incidents", currentTicketId, "comments"), { senderEmail: auth.currentUser.email, text: txt.value, imageUrl: uImgs.length > 0 ? uImgs[0] : null, imageUrls: uImgs, createdAt: new Date() });
         document.getElementById('comment-form').reset(); document.getElementById('comment-img-label').classList.replace('text-blue-500', 'text-slate-500');
     } catch (e) { Swal.fire({ icon: 'error', text: e.message }); } finally { btn.disabled = false; }
 };
@@ -357,9 +346,8 @@ document.getElementById('btn-logout').onclick = () => {
 onAuthStateChanged(auth, (user) => {
     if (user) {
         const em = user.email.toLowerCase(); const isAdmin = em === "nattezava1996@gmail.com" || em.includes("admin");
-        if (!isAdmin) { window.location.href = 'index.html'; return; } 
-        document.getElementById('user-email').innerText = user.email; 
-        loadDashboardData(); loadLiveChat(); window.updateDynamicDropdowns();
+        if (!isAdmin) { Swal.fire({ icon: 'error', title: 'Access Denied', text: 'เฉพาะแอดมินเท่านั้น' }).then(() => window.location.href = 'index.html'); return; }
+        document.getElementById('user-email').innerText = user.email; loadDashboardData(); loadLiveChat(); window.updateDynamicDropdowns();
     } else { window.location.href = 'index.html'; } 
     window.toggleLang(currentLang);
 });
