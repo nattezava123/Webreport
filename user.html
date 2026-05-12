@@ -61,23 +61,9 @@
                     <div class="bg-white p-8 rounded-[2rem] border shadow-sm">
                         <h2 class="text-2xl font-black mb-6" data-i18n="form_title">How can we help?</h2>
                         <form id="create-ticket-form" class="space-y-6">
-                            
                             <div class="grid grid-cols-2 gap-4">
-                                <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_cat">Category</label>
-                                    <select id="tk-category" onchange="window.updateDynamicDropdowns()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50">
-                                        <option value="Hardware" id="opt-hw">❖ Hardware / PC Issue</option>
-                                        <option value="Software" id="opt-sw">❖ Software / Application</option>
-                                        <option value="Network" id="opt-nw">❖ Network / Internet</option>
-                                    </select>
-                                </div>
-                                <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_pri">Priority</label>
-                                    <select id="tk-priority" onchange="window.updatePriorityDesc()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50">
-                                        <option value="4 - Low">● Low (Minor issue)</option>
-                                        <option value="3 - Moderate" selected>● Moderate (Standard)</option>
-                                        <option value="2 - High">● High (Urgent)</option>
-                                        <option value="1 - Critical">● Critical (Emergency)</option>
-                                    </select>
-                                </div>
+                                <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_cat">Category</label><select id="tk-category" onchange="window.updateDynamicDropdowns()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50"><option value="Hardware" id="opt-hw">❖ Hardware / PC Issue</option><option value="Software" id="opt-sw">❖ Software / Application</option><option value="Network" id="opt-nw">❖ Network / Internet</option></select></div>
+                                <div><label class="text-[10px] font-black uppercase text-slate-400" data-i18n="form_pri">Priority</label><select id="tk-priority" onchange="window.updatePriorityDesc()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50"><option value="4 - Low">● Low (Minor issue)</option><option value="3 - Moderate" selected>● Moderate (Standard)</option><option value="2 - High">● High (Urgent)</option><option value="1 - Critical">● Critical (Emergency)</option></select></div>
                             </div>
                             <div id="priority-desc" class="p-4 rounded-xl border text-xs flex gap-3 items-start transition-colors"><i id="priority-icon" class="fas fa-info-circle mt-0.5"></i><span id="priority-text">...</span></div>
                             
@@ -88,21 +74,15 @@
                                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Line</label><select id="tk-line" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="N/A">N/A</option><option value="Line 1">Line 1</option><option value="Line 2">Line 2</option></select></div>
                             </div>
                             
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="form_item">Broken Part / Item</label>
-                                <select id="tk-item" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50" required>
-                                    <option value="" disabled selected>เลือกอุปกรณ์ที่เสีย...</option>
-                                </select>
-                            </div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="form_short">Subject</label>
-                                <select id="tk-subject" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50" required>
-                                    <option value="" disabled selected>เลือกหัวข้อปัญหา...</option>
-                                </select>
-                            </div>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="form_item">Broken Part / Item</label><select id="tk-item" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50" required><option value="" disabled selected>เลือกอุปกรณ์ที่เสีย...</option></select></div>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="form_short">Subject</label><select id="tk-subject" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50" required><option value="" disabled selected>เลือกหัวข้อปัญหา...</option></select></div>
 
                             <textarea id="tk-desc" rows="4" placeholder="Description (ระบุรายละเอียดเพิ่มเติม หรืออาการเสียให้ชัดเจน)" class="w-full border rounded-xl px-4 py-3 text-sm resize-none" required></textarea>
                             
-                            <input type="file" id="tk-image" accept="image/*" onchange="window.previewCreateImage(this)" class="text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition border border-slate-200 rounded-xl px-2 py-2 w-full">
-                            <div id="create-image-preview-container" class="hidden relative mt-2"><img id="create-image-preview" src="" class="h-32 rounded-xl border object-cover shadow-sm"><button type="button" onclick="window.clearCreateImage()" class="absolute -top-2 -left-2 bg-rose-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md">×</button></div>
+                            <input type="file" id="tk-image" accept="image/*" multiple onchange="window.previewCreateImage(this)" class="text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition border border-slate-200 rounded-xl px-2 py-2 w-full">
+                            
+                            <div id="create-image-preview-container" class="hidden relative mt-2 flex flex-wrap gap-2 p-3 border rounded-xl bg-slate-50 border-slate-200">
+                                </div>
                             
                             <button type="submit" id="btn-create-submit" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold shadow-lg mt-4">Submit Request</button>
                         </form>
@@ -173,7 +153,7 @@
                     <div class="space-y-4">
                         <div class="grid grid-cols-2 gap-4"><div class="bg-slate-50 p-3 rounded-xl border text-sm"><p class="text-[10px] text-slate-400">Category</p><p id="modal-category" class="font-bold">-</p></div><div class="bg-slate-50 p-3 rounded-xl border text-sm"><p class="text-[10px] text-slate-400">Priority</p><p id="modal-priority" class="font-bold">-</p></div></div>
                         <div class="bg-rose-50 p-4 rounded-xl border border-rose-100 text-xs"><p id="modal-location">Loc</p><p id="modal-broken-item" class="font-bold text-rose-600">Item</p></div>
-                        <div id="modal-image-container" class="hidden"><img id="modal-image" src="" class="w-full rounded-xl border object-cover max-h-48 cursor-pointer" onclick="window.viewFullImage(this.src)"></div>
+                        <div id="modal-image-container" class="hidden flex-wrap gap-2"></div>
                         <div class="p-4 bg-slate-50 rounded-xl border text-sm whitespace-pre-wrap" id="modal-desc">Desc</div>
                         <div class="pt-4 border-t text-[10px] text-slate-400">REPORTED BY: <span id="modal-caller" class="font-bold text-slate-700"></span></div>
                         <div class="text-[10px] text-slate-400">ASSIGNED IT: <span id="modal-assignee" class="font-bold text-indigo-700"></span></div>
@@ -185,7 +165,7 @@
                         <form id="comment-form" class="flex gap-2">
                             <label class="w-12 flex items-center justify-center bg-slate-100 text-slate-500 rounded-xl cursor-pointer border" id="comment-img-label">
                                 <i class="fas fa-image"></i>
-                                <input type="file" id="comment-image" accept="image/*" class="hidden" onchange="document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500')">
+                                <input type="file" id="comment-image" accept="image/*" multiple class="hidden" onchange="document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500')">
                             </label>
                             <input type="text" id="comment-text" class="flex-1 bg-slate-50 border rounded-xl px-4 py-3 text-sm outline-none" placeholder="Type a reply or paste image..." autocomplete="off">
                             <button type="submit" id="btn-comment-submit" class="w-12 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg"><i class="fas fa-paper-plane text-xs"></i></button>
