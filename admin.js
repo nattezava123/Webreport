@@ -185,27 +185,26 @@ function loadDashboardData() {
             if(safeStatus === 'Resolved' && t.assignedTo === auth.currentUser.email) myResolved++;
             counts[safeStatus] = (counts[safeStatus] || 0) + 1; counts['Total']++;
             
-            // เตรียมชื่อสถานะเพื่อใช้ใน Dropdown ให้ตรงภาษา
-            let labelNew = dict[currentLang]['status_new'] || 'Pending';
-            let labelInProgress = dict[currentLang]['status_in_progress'] || 'In Progress';
-            let labelResolved = dict[currentLang]['status_resolved'] || 'Resolved';
-
+            const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
+            let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_');
+            let displayStatus = dict[currentLang][statusKey] || safeStatus;
+            
             // สีของ Dropdown ให้ตรงกับสถานะ
             let dropdownColors = '';
             if (safeStatus === 'New') dropdownColors = 'border-blue-300 text-blue-700 bg-blue-50';
             else if (safeStatus === 'In Progress') dropdownColors = 'border-amber-300 text-amber-700 bg-amber-50';
             else if (safeStatus === 'Resolved') dropdownColors = 'border-emerald-300 text-emerald-700 bg-emerald-50';
 
-            // 🔥 แทนที่ป้ายสถานะเดิมด้วย Dropdown เปลี่ยนสถานะ (ไม่ซ้ำซ้อนแล้ว!)
+            // Dropdown เปลี่ยนสถานะ
             let statusDropdown = `
                 <select onclick="event.stopPropagation()" onchange="window.updateTicket('${id}', this.value)" class="border ${dropdownColors} rounded-lg px-3 py-1.5 text-xs font-bold outline-none shadow-sm cursor-pointer hover:brightness-95 transition w-28 text-center appearance-none">
-                    <option value="New" ${safeStatus === 'New' ? 'selected' : ''} class="text-slate-700 bg-white">${labelNew}</option>
-                    <option value="In Progress" ${safeStatus === 'In Progress' ? 'selected' : ''} class="text-slate-700 bg-white">${labelInProgress}</option>
-                    <option value="Resolved" ${safeStatus === 'Resolved' ? 'selected' : ''} class="text-slate-700 bg-white">${labelResolved}</option>
+                    <option value="New" ${safeStatus === 'New' ? 'selected' : ''} class="text-slate-700 bg-white">${dict[currentLang]['status_new'] || 'Pending'}</option>
+                    <option value="In Progress" ${safeStatus === 'In Progress' ? 'selected' : ''} class="text-slate-700 bg-white">${dict[currentLang]['status_in_progress'] || 'In Progress'}</option>
+                    <option value="Resolved" ${safeStatus === 'Resolved' ? 'selected' : ''} class="text-slate-700 bg-white">${dict[currentLang]['status_resolved'] || 'Resolved'}</option>
                 </select>
             `;
 
-            // ปุ่ม Action เหลือแค่ Edit และ Delete
+            // 🔥 เอา opacity-0 group-hover:opacity-100 ออกแล้วครับ ปุ่มโชว์ตลอดเวลาเลย
             let actionButtons = `
                 <div class="flex items-center justify-end gap-2">
                     <button onclick="event.stopPropagation(); window.editTicket('${id}')" class="w-8 h-8 bg-white border border-blue-200 text-blue-500 rounded-lg shadow-sm hover:bg-blue-50 transition shrink-0"><i class="fas fa-edit text-xs"></i></button>
@@ -216,22 +215,19 @@ function loadDashboardData() {
             let imgIcon = t.imageUrl || (t.imageUrls && t.imageUrls.length > 0) ? ' <i class="fas fa-image text-blue-400 ml-1 text-[10px]"></i>' : '';
             const formattedDate = formatDateTime(t.createdAt?.toDate());
 
-            // ใส่ตัวแปร statusDropdown ลงไปใน Column สถานะเลย
-            adminHtml += `<tr class="hover:bg-slate-50 transition group border-b border-slate-50 cursor-pointer" data-status="${safeStatus}" onclick="window.openModal('${id}')">
+            // เอาคำว่า group ตรง tr ออกด้วยเพื่อความคลีน
+            adminHtml += `<tr class="hover:bg-slate-50 transition border-b border-slate-50 cursor-pointer" data-status="${safeStatus}" onclick="window.openModal('${id}')">
                 <td class="py-4 px-4 font-bold text-slate-500 text-xs">${displayId}</td>
                 <td class="py-4 px-4"><div class="font-bold text-slate-800 text-sm">${t.subject}${imgIcon}</div><div class="text-[10px] text-slate-400 mt-0.5">${t.callerEmail || '-'} <span class="mx-1">•</span> <i class="far fa-clock"></i> ${formattedDate}</div></td>
                 <td class="py-4 px-4 text-xs font-bold text-slate-600">${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : '-'}</td>
                 <td class="py-4 px-4 whitespace-nowrap">${statusDropdown}</td>
-                <td class="py-4 px-4 text-right opacity-0 group-hover:opacity-100 transition whitespace-nowrap">${actionButtons}</td>
+                <td class="py-4 px-4 text-right whitespace-nowrap">${actionButtons}</td>
             </tr>`;
             
-            // สีสถานะแบบปกติ สำหรับหน้า User และ Dashboard
-            const bgColorsBadge = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
-            let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_');
-            let displayStatusText = dict[currentLang][statusKey] || safeStatus;
-            let badgeBgClass = bgColorsBadge[safeStatus] || bgColorsBadge['New'];
+            // ของหน้า Dashboard User คงเดิมไว้เป็นป้าย
+            let badgeBgClass = bgColors[safeStatus] || bgColors['New'];
             let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
-            let statusHtmlBadge = `<span class="${badgeBgClass} px-2.5 py-1 rounded-md text-[10px] uppercase font-black tracking-widest flex w-fit gap-1.5 items-center"><span class="w-1.5 h-1.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatusText}</span></span>`;
+            let statusHtmlBadge = `<span class="${badgeBgClass} px-2.5 py-1 rounded-md text-[10px] uppercase font-black tracking-widest flex w-fit gap-1.5 items-center"><span class="w-1.5 h-1.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
             if (t.callerEmail === auth.currentUser.email) {
                 userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">${displayId}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtmlBadge}</td><td class="p-4 text-right text-xs text-slate-500 font-medium whitespace-nowrap">${formattedDate}</td></tr>`;
@@ -353,7 +349,7 @@ document.getElementById('btn-logout').onclick = () => {
 onAuthStateChanged(auth, (user) => {
     if (user) {
         const em = user.email.toLowerCase(); const isAdmin = em === "nattezava1996@gmail.com" || em.includes("admin");
-        if (!isAdmin) { Swal.fire({ icon: 'error', title: 'Access Denied', text: 'เฉพาะแอดมินเท่านั้น' }).then(() => window.location.href = 'index.html'); return; }
+        if (!isAdmin) { window.location.href = 'index.html'; return; } 
         document.getElementById('user-email').innerText = user.email; loadDashboardData(); loadLiveChat(); window.updateDynamicDropdowns();
     } else { window.location.href = 'index.html'; } 
     window.toggleLang(currentLang);
