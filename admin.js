@@ -24,8 +24,8 @@ let chatUnsubscribe = null;
 let currentLang = localStorage.getItem('appLang') || 'en';
 
 const dict = {
-    en: { app_name: "Factory IT Service Center", title_register: "Create an Account", sub_register: "Fill in your details to get started.", name: "Full Name", email: "Email", password: "Password", confirm_password: "Confirm Password", btn_signin: "Sign In", no_account: "New here?", btn_register: "Create an account", auth_or: "OR", btn_google: "Continue with Google", menu_group_1: "Workspace", menu_group_2: "Admin", menu_dash: "Dashboard", menu_incidents: "My Tickets", menu_create: "Create Ticket", menu_admin: "Command Center", btn_logout: "Log Out", stat_open: "New Tickets", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", admin_my_resolved: "My Resolved Tickets", btn_export: "Export CSV", dash_welcome: "Welcome,", dash_recent: "Recent Activity", dash_status: "System Status", sys_net: "Network", sys_erp: "ERP System", filter_all: "All", filter_active: "Active", filter_resolved: "Resolved", empty_recent: "All caught up!", empty_tickets: "No tickets found", form_title: "How can we help?", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved" },
-    th: { app_name: "ศูนย์บริการไอทีโรงงาน", title_register: "สร้างบัญชีใหม่", sub_register: "กรอกข้อมูลด้านล่างเพื่อสมัครสมาชิก", name: "ชื่อ-นามสกุล", email: "อีเมล", password: "รหัสผ่าน", confirm_password: "ยืนยันรหัสผ่าน", btn_signin: "เข้าสู่ระบบ", no_account: "ยังไม่มีบัญชี?", btn_register: "สมัครสมาชิก", auth_or: "หรือ", btn_google: "ด้วย Google", menu_group_1: "พื้นที่ทำงาน", menu_group_2: "ผู้ดูแลระบบ", menu_dash: "ภาพรวมระบบ", menu_incidents: "ตั๋วของฉัน", menu_create: "แจ้งปัญหาใหม่", menu_admin: "ศูนย์จัดการงาน", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "จำนวนทั้งหมด", admin_my_resolved: "งานที่ฉันปิดแล้ว", btn_export: "ดาวน์โหลด CSV", dash_welcome: "ยินดีต้อนรับ,", dash_recent: "รายการอัปเดตล่าสุด", dash_status: "สถานะระบบโรงงาน", sys_net: "ระบบเครือข่าย", sys_erp: "ระบบ ERP", filter_all: "ทั้งหมด", filter_active: "กำลังดำเนินการ", filter_resolved: "ปิดงานแล้ว", empty_recent: "จัดการครบหมดแล้ว!", empty_tickets: "ไม่พบข้อมูล", form_title: "มีอะไรให้ช่วยไหม?", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว" }
+    en: { app_name: "Factory IT Service Center", title_register: "Create an Account", sub_register: "Fill in your details to get started.", name: "Full Name", email: "Email", password: "Password", confirm_password: "Confirm Password", btn_signin: "Sign In", no_account: "New here?", btn_register: "Create an account", auth_or: "OR", btn_google: "Continue with Google", menu_group_1: "Workspace", menu_group_2: "Admin", menu_dash: "Dashboard", menu_incidents: "My Requests", menu_create: "Create Ticket", menu_admin: "Command Center", btn_logout: "Log Out", stat_open: "New Tickets", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", admin_my_resolved: "My Resolved Tickets", btn_export: "Export CSV", dash_welcome: "Welcome,", dash_recent: "Recent Activity", dash_status: "System Status", sys_net: "Network", sys_erp: "ERP System", filter_all: "All", filter_active: "Active", filter_resolved: "Resolved", empty_recent: "All caught up!", empty_tickets: "No tickets found", form_title: "How can we help?", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved" },
+    th: { app_name: "ศูนย์บริการไอทีโรงงาน", title_register: "สร้างบัญชีใหม่", sub_register: "กรอกข้อมูลด้านล่างเพื่อสมัครสมาชิก", name: "ชื่อ-นามสกุล", email: "อีเมล", password: "รหัสผ่าน", confirm_password: "ยืนยันรหัสผ่าน", btn_signin: "เข้าสู่ระบบ", no_account: "ยังไม่มีบัญชี?", btn_register: "สมัครสมาชิก", auth_or: "หรือ", btn_google: "ด้วย Google", menu_group_1: "พื้นที่ทำงาน", menu_group_2: "ผู้ดูแลระบบ", menu_dash: "ภาพรวมระบบ", menu_incidents: "รายการคำขอของฉัน", menu_create: "แจ้งปัญหาใหม่", menu_admin: "ศูนย์จัดการงาน", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "จำนวนทั้งหมด", admin_my_resolved: "งานที่ฉันปิดแล้ว", btn_export: "ดาวน์โหลด CSV", dash_welcome: "ยินดีต้อนรับ,", dash_recent: "รายการอัปเดตล่าสุด", dash_status: "สถานะระบบโรงงาน", sys_net: "ระบบเครือข่าย", sys_erp: "ระบบ ERP", filter_all: "ทั้งหมด", filter_active: "กำลังดำเนินการ", filter_resolved: "ปิดงานแล้ว", empty_recent: "จัดการครบหมดแล้ว!", empty_tickets: "ไม่พบข้อมูล", form_title: "มีอะไรให้ช่วยไหม?", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว" }
 };
 
 window.viewFullImage = (url) => { Swal.fire({ imageUrl: url, imageAlt: 'Attached Image', width: 'auto', padding: '1rem', showConfirmButton: false, showCloseButton: true, customClass: { image: 'rounded-xl max-h-[80vh] object-contain' } }); };
@@ -80,11 +80,29 @@ window.updatePriorityDesc = () => {
 };
 
 window.switchTab = (tabName) => {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.remove('block');
+        el.classList.add('hidden');
+    });
+    
     document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
-    const target = document.getElementById(`tab-${tabName}`); if(target) target.classList.add('active');
+    
+    const target = document.getElementById(`tab-${tabName}`); 
+    if(target) {
+        target.classList.remove('hidden');
+        target.classList.add('block');
+    }
+    
     document.querySelector(`.menu-link[onclick*="'${tabName}'"]`)?.classList.add('active');
-    document.getElementById('page-title').innerText = dict[currentLang][`menu_${tabName}`] || dict[currentLang].app_name;
+    
+    // เปลี่ยนชื่อหัวข้อ
+    const pageTitle = document.getElementById('page-title');
+    if (pageTitle) {
+        const key = `menu_${tabName}`;
+        pageTitle.setAttribute('data-i18n', key);
+        pageTitle.innerText = dict[currentLang][key] || dict[currentLang].app_name;
+    }
+    
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
 };
 
@@ -145,8 +163,8 @@ function loadDashboardData() {
             const safeStatus = t.status || 'New';
             if(safeStatus === 'Resolved' && t.assignedTo === auth.currentUser.email) myResolved++;
             counts[safeStatus] = (counts[safeStatus] || 0) + 1; counts['Total']++;
-            
             const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
+            
             let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_');
             let displayStatus = dict[currentLang][statusKey] || safeStatus;
             let badgeBgClass = bgColors[safeStatus] || bgColors['New'];
@@ -161,16 +179,10 @@ function loadDashboardData() {
             if (t.callerEmail === auth.currentUser.email) {
                 userHtml += `<tr class="border-b" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs">${displayId}</td><td class="p-4 font-bold text-sm">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500">${timeAgo(t.createdAt?.toDate())}</td></tr>`;
             }
-
-            if (recentCount < 5) {
-                recentDashHtml += `<div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100 transition cursor-pointer" onclick="window.openModal('${id}')"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-slate-500"><i class="fas fa-ticket-alt"></i></div><div><p class="text-sm font-bold text-slate-800">${t.subject}</p><p class="text-[10px] text-slate-400 font-bold uppercase">${displayId}</p></div></div>${statusHtml}</div>`;
-                recentCount++;
-            }
         });
-        document.getElementById('admin-ticket-list').innerHTML = adminHtml || '<tr><td colspan="5" class="p-16 text-center text-slate-400">No tickets found</td></tr>';
-        document.getElementById('user-ticket-list').innerHTML = userHtml || '<tr><td colspan="4" class="p-16 text-center text-slate-400">No tickets found</td></tr>';
+        document.getElementById('admin-ticket-list').innerHTML = adminHtml || '<tr><td colspan="5" class="p-16 text-center text-slate-400">No requests found</td></tr>';
+        document.getElementById('user-ticket-list').innerHTML = userHtml || '<tr><td colspan="4" class="p-16 text-center text-slate-400">No requests found</td></tr>';
         document.getElementById('stat-new').innerText = counts['New'] || 0; document.getElementById('stat-progress').innerText = counts['In Progress'] || 0; document.getElementById('stat-resolved').innerText = counts['Resolved'] || 0; document.getElementById('stat-total').innerText = counts['Total'] || 0; document.getElementById('stat-admin-my-resolved').innerText = myResolved;
-        document.getElementById('dash-recent-list').innerHTML = recentDashHtml || `<div class="p-8 text-center text-slate-400 border-2 border-dashed border-slate-100 rounded-xl"><p class="text-xs font-bold uppercase">Clear!</p></div>`;
     });
 }
 
@@ -213,7 +225,6 @@ window.exportCSV = () => { let c = "ID,Subject,Status,Priority,Category,Building
 window.filterTickets = (tId, iId) => { let i = document.getElementById(iId).value.toUpperCase(), tr = document.getElementById(tId).getElementsByTagName("tr"); for(let x=0; x<tr.length; x++) { if(tr[x].innerText) { tr[x].style.display = tr[x].innerText.toUpperCase().includes(i) ? "" : "none"; } } };
 window.setAdminFilter = (f) => { currentAdminFilter = f; const act = "px-5 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm", inact = "px-5 py-2 rounded-lg text-xs font-bold text-slate-500"; ['All', 'Active', 'Resolved'].forEach(btn => { const b = document.getElementById(`btn-filter-${btn}`); if(b) b.className = btn === f ? act : inact; }); let tr = document.getElementById('admin-ticket-list').getElementsByTagName('tr'); for(let t of tr){ let s = t.getAttribute('data-status'); t.style.display = (f==='All'||(f==='Active'&&s!=='Resolved')||(f==='Resolved'&&s==='Resolved')) ? '' : 'none'; } };
 
-// 🔥 ข้อมูลทั้งหมดใน POP-UP นำกลับมาแสดงผลแล้ว!
 window.openModal = (id) => {
     currentTicketId = id; 
     const t = window.globalTickets[id];
@@ -281,10 +292,10 @@ document.getElementById('btn-logout').onclick = () => {
 onAuthStateChanged(auth, (user) => {
     if (user) {
         const em = user.email.toLowerCase(); const isAdmin = em === "nattezava1996@gmail.com" || em.includes("admin");
-        if (!isAdmin) { window.location.href = 'index.html'; return; } // ถ้า User หลงมา ให้เตะกลับไปหน้าแรก
+        if (!isAdmin) { window.location.href = 'index.html'; return; } 
         document.getElementById('app-view').classList.add('active'); 
         document.getElementById('user-email').innerText = user.email; 
         loadDashboardData();
-    } else { window.location.href = 'index.html'; } // ถ้ายังไม่ล็อกอิน ให้กลับไปหน้าแรก
+    } else { window.location.href = 'index.html'; } 
     window.toggleLang(currentLang);
 });
