@@ -204,7 +204,7 @@ function loadDashboardData() {
                 </select>
             `;
 
-            // 🔥 เอา opacity-0 group-hover:opacity-100 ออกแล้วครับ ปุ่มโชว์ตลอดเวลาเลย
+          
             let actionButtons = `
                 <div class="flex items-center justify-end gap-2">
                     <button onclick="event.stopPropagation(); window.editTicket('${id}')" class="w-8 h-8 bg-white border border-blue-200 text-blue-500 rounded-lg shadow-sm hover:bg-blue-50 transition shrink-0"><i class="fas fa-edit text-xs"></i></button>
