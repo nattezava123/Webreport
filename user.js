@@ -256,15 +256,18 @@ function loadDashboardData() {
             
             userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition flex flex-col md:table-row" onclick="window.openModal('${id}')">
                 <td class="p-5 font-bold text-sm text-slate-500 hidden md:table-cell align-middle">${displayId}</td>
-                <td class="p-5 block md:table-cell border-b md:border-none">
-                    <div class="md:hidden text-xs text-slate-400 font-bold mb-2 flex justify-between"><span>${displayId}</span><span><i class="far fa-clock"></i> ${formattedDate}</span></div>
+                <td class="p-4 md:p-5">
+                    <div class="md:hidden text-xs text-slate-400 font-bold mb-1">${displayId}</div>
                     <div class="font-bold text-base text-slate-800 leading-tight">${t.subject}</div>
-                    <div class="md:hidden mt-3">${statusHtml}</div>
+                    <div class="md:hidden text-xs text-slate-500 mt-2"><i class="far fa-clock"></i> ${formattedDate}</div>
                 </td>
-                <td class="p-5 hidden md:table-cell align-middle">${statusHtml}</td>
-                <td class="p-5 hidden md:table-cell align-middle text-right text-sm text-slate-500 font-medium whitespace-nowrap">${formattedDate}</td>
-                <td class="md:hidden p-4 bg-slate-50 border-t flex justify-end items-center w-full" onclick="event.stopPropagation()">${actionBtn}</td>
-                <td class="hidden md:table-cell p-5 align-middle text-right" onclick="event.stopPropagation()">${actionBtn}</td>
+                <td class="p-4 md:p-5">${statusHtml}</td>
+                <td class="p-4 md:p-5 text-right whitespace-nowrap">
+                    <div class="flex items-center justify-end">
+                        <span class="hidden md:inline-block text-sm text-slate-500 font-medium mr-2">${formattedDate}</span>
+                        ${actionBtn}
+                    </div>
+                </td>
             </tr>`;
             
             if(recentCount<5){ recentHtml+=`<div class="p-5 bg-white border rounded-xl mb-3 text-base cursor-pointer hover:bg-slate-50 transition flex justify-between items-center" onclick="window.openModal('${id}')"><div><b class="text-slate-800">${t.subject}</b></div>${statusHtml}</div>`; recentCount++;}
@@ -306,9 +309,18 @@ window.openModal = (id) => {
         'Resolved': 'bg-emerald-100 text-emerald-700', 
         'Cancelled': 'bg-slate-200 text-slate-600' 
     };
-    let statusKey = 'status_' + safeStatus.toLowerCase().replace(/ /g, '_'); let displayStatus = dict[currentLang][statusKey] || safeStatus; 
+    let statusKey = 'status_' + safeStatus.toLowerCase().replace(/ /g, '_'); 
+    let displayStatus = dict[currentLang][statusKey] || safeStatus; 
     let badgeBgClass = bgColors[safeStatus] || bgColors['New']; 
-    let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : (safeStatus === 'Resolved' ? 'bg-emerald-500' : 'bg-slate-500'));
+    
+    let dotBgClass = 'bg-slate-500';
+    if (safeStatus === 'New') dotBgClass = 'bg-blue-500';
+    else if (safeStatus === 'In Progress') dotBgClass = 'bg-amber-500';
+    else if (safeStatus === 'Waiting for Parts') dotBgClass = 'bg-orange-500';
+    else if (safeStatus === 'Waiting for Approval') dotBgClass = 'bg-purple-500';
+    else if (safeStatus === 'Waiting for User') dotBgClass = 'bg-pink-500';
+    else if (safeStatus === 'Testing') dotBgClass = 'bg-cyan-500';
+    else if (safeStatus === 'Resolved') dotBgClass = 'bg-emerald-500';
     
     document.getElementById('modal-status-badge').innerHTML = `<span class="${badgeBgClass} px-4 py-2 rounded-lg text-xs uppercase font-black tracking-wider flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
@@ -364,8 +376,7 @@ window.openModal = (id) => {
                 </div>`; 
             }
         });
-        document.getElementById('chat-messages').innerHTML = h; 
-        document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+        document.getElementById('chat-messages').innerHTML = h; document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
     });
 };
 
