@@ -263,29 +263,19 @@ function loadDashboardData() {
 
             let statusHtmlBadge = `<span class="${badgeBgClass} px-3 py-1.5 rounded-md text-xs uppercase font-black tracking-wider flex w-fit gap-2 items-center"><span class="w-2 h-2 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
-            // HTML สำหรับหน้า Admin (Responsive แบบ Card ในมือถือ)
             adminHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition flex flex-col md:table-row" data-status="${safeStatus}" onclick="window.openModal('${id}')">
                 <td class="p-5 font-bold text-sm text-slate-500 hidden md:table-cell align-middle">${displayId}</td>
-                
                 <td class="p-5 block md:table-cell border-b md:border-none">
-                    <div class="md:hidden flex justify-between items-center text-xs text-slate-400 font-bold mb-2">
-                        <span>${displayId}</span>
-                        <span><i class="far fa-clock"></i> ${formattedDate}</span>
-                    </div>
+                    <div class="md:hidden flex justify-between items-center text-xs text-slate-400 font-bold mb-2"><span>${displayId}</span><span><i class="far fa-clock"></i> ${formattedDate}</span></div>
                     <div class="font-bold text-base text-slate-800 leading-tight">${t.subject}${imgIcon}</div>
                     <div class="text-xs text-slate-500 mt-2 hidden md:block">${t.callerEmail || '-'} <span class="mx-1">•</span> <i class="far fa-clock"></i> ${formattedDate}</div>
                     <div class="text-xs text-slate-500 mt-2 md:hidden">By: ${t.callerEmail || '-'}</div>
                     <div class="md:hidden text-xs text-indigo-500 font-bold mt-1.5"><i class="fas fa-user-shield"></i> ${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : 'Unassigned'}</div>
                 </td>
-                
                 <td class="p-5 text-sm font-bold text-slate-600 hidden md:table-cell align-middle">${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : '-'}</td>
                 <td class="p-5 hidden md:table-cell align-middle whitespace-nowrap" onclick="event.stopPropagation()">${statusDropdown}</td>
                 <td class="p-5 hidden md:table-cell align-middle text-right whitespace-nowrap" onclick="event.stopPropagation()">${actionButtons}</td>
-                
-                <td class="md:hidden flex items-center justify-between p-4 bg-slate-50 w-full" onclick="event.stopPropagation()">
-                    ${statusDropdown}
-                    ${actionButtons}
-                </td>
+                <td class="md:hidden flex items-center justify-between p-4 bg-slate-50 w-full border-t" onclick="event.stopPropagation()">${statusDropdown}${actionButtons}</td>
             </tr>`;
 
             if (t.callerEmail === auth.currentUser.email) {
@@ -297,7 +287,7 @@ function loadDashboardData() {
                         <div class="md:hidden mt-3">${statusHtmlBadge}</div>
                     </td>
                     <td class="p-5 hidden md:table-cell align-middle">${statusHtmlBadge}</td>
-                    <td class="p-5 hidden md:table-cell align-middle text-right text-sm text-slate-500 font-medium whitespace-nowrap">${formattedDate}</td>
+                    <td class="p-5 hidden md:table-cell align-middle text-right text-sm text-slate-500 font-medium whitespace-nowrap"><span class="hidden md:inline">${formattedDate}</span></td>
                 </tr>`;
             }
 
@@ -408,8 +398,10 @@ window.openModal = (id) => {
     
     if(chatUnsubscribe) chatUnsubscribe();
     chatUnsubscribe = onSnapshot(query(collection(db, "incidents", id, "comments"), orderBy("createdAt", "asc")), (snap) => {
-        let h = ""; snap.forEach(doc => { 
-            const d = doc.data(); const isMe = d.senderEmail === auth.currentUser.email;
+        let h = ""; 
+        snap.forEach(doc => { 
+            const d = doc.data(); 
+            const isMe = d.senderEmail === auth.currentUser.email;
             const timeStr = d.createdAt ? formatDateTime(d.createdAt.toDate()) : 'Just now';
 
             if(d.senderEmail === 'system') {
