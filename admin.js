@@ -84,8 +84,19 @@ window.toggleLang = (lang) => {
 window.switchTab = (tabName) => {
     document.querySelectorAll('.tab-content').forEach(el => { el.classList.remove('block'); el.classList.add('hidden'); });
     document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active'));
+    
+    // อัปเดตสี Bottom Navigation ในมือถือ
+    document.querySelectorAll('.bottom-nav-link').forEach(el => { 
+        el.classList.remove('text-blue-600', 'active'); 
+        if(!el.classList.contains('text-indigo-400')) el.classList.add('text-slate-400'); 
+    });
+
     const target = document.getElementById(`tab-${tabName}`); if(target) { target.classList.remove('hidden'); target.classList.add('block'); }
     document.querySelector(`.menu-link[onclick*="'${tabName}'"]`)?.classList.add('active');
+    
+    const bottomNav = document.querySelector(`.bottom-nav-link[onclick*="'${tabName}'"]`);
+    if(bottomNav) { bottomNav.classList.remove('text-slate-400'); bottomNav.classList.add('text-blue-600', 'active'); }
+
     const pageTitle = document.getElementById('page-title');
     if (pageTitle) { const key = `menu_${tabName}`; pageTitle.setAttribute('data-i18n', key); pageTitle.innerText = dict[currentLang][key] || dict[currentLang].app_name; }
     if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) window.toggleMobileMenu();
@@ -122,7 +133,7 @@ const botDatabase = [
     { keywords: ["เน็ต", "internet", "wifi", "ไวไฟ", "เน็ตหลุด", "ต่อเน็ตไม่ได้"], answer: "ปัญหาอินเทอร์เน็ต/Wi-Fi 📡 ลองปิด-เปิด Wi-Fi ดูสักรอบนะครับ หากไม่หาย รบกวนเปิดตั๋วแจ้งซ่อมเลยครับช่างจะได้เข้าไปดูให้" },
     { keywords: ["เปิดไม่ติด", "ดับ", "ไฟไม่เข้า"], answer: "คอมเปิดไม่ติด 🔌 รบกวนเช็คปลั๊กไฟใต้โต๊ะดูครับ หากไฟเข้าแต่เครื่องเงียบ รบกวนเปิดตั๋วแจ้งซ่อมด่วนเลยครับ!" },
     { keywords: ["จอฟ้า", "blue screen", "ค้าง", "แฮงค์"], answer: "คอมจอฟ้า/ค้าง 💻 รบกวน **ถ่ายรูปหน้าจอ Error (รูปจอฟ้า)** แนบรูปตอนเปิดตั๋วแจ้งซ่อมด้วยนะครับ ทีมไอทีจะได้วิเคราะห์ถูกจุด" },
-    { keywords: ["ปริ้น", "printer", "เครื่องปริ้น", "print", "ไม่ออก"], answer: "ปัญหาเครื่องพิมพ์ (Printer) 🖨️ ลองรีสตาร์ทคอม 1รอบดูก่อนครับ ถ้ายังพิมพ์ไม่ได้ เปิดตั๋วแจ้งซ่อมแล้วระบุชื่อเครื่องพิมพ์มาได้เลย" },
+    { keywords: ["ปริ้น", "printer", "เครื่องปริ้น", "print", "ไม่ออก"], answer: "ปัญหาเครื่องพิมพ์ (Printer) 🖨️ ลองรีสตาร์ทคอม 1 รอบดูก่อนครับ ถ้ายังพิมพ์ไม่ได้ เปิดตั๋วแจ้งซ่อมแล้วระบุชื่อเครื่องพิมพ์มาได้เลย" },
     { keywords: ["สร้างตั๋ว", "เปิดตั๋ว", "แจ้งซ่อมยังไง", "วิธีแจ้งซ่อม"], answer: "การแจ้งปัญหา 📝 ให้กดที่เมนู **Create Ticket** ทางซ้ายมือ เลือกหมวดหมู่, ระบุสถานที่ และเขียนรายละเอียดอาการให้ครบถ้วน แล้วกด Submit ครับ" }
 ];
 
@@ -231,7 +242,7 @@ function loadDashboardData() {
             `;
 
             let actionButtons = `
-                <div class="flex items-center justify-end gap-2">
+                <div class="flex items-center justify-end gap-2 shrink-0">
                     <button onclick="event.stopPropagation(); window.editTicket('${id}')" class="w-10 h-10 bg-white border border-blue-200 text-blue-500 rounded-lg shadow-sm hover:bg-blue-50 transition shrink-0 text-sm"><i class="fas fa-edit"></i></button>
                     <button onclick="event.stopPropagation(); window.deleteTicket('${id}')" class="w-10 h-10 bg-white border border-rose-200 text-rose-500 rounded-lg shadow-sm hover:bg-rose-50 transition shrink-0 text-sm"><i class="fas fa-trash"></i></button>
                 </div>
@@ -239,14 +250,6 @@ function loadDashboardData() {
 
             let imgIcon = t.imageUrl || (t.imageUrls && t.imageUrls.length > 0) ? ' <i class="fas fa-image text-blue-400 ml-1 text-xs"></i>' : '';
             const formattedDate = formatDateTime(t.createdAt?.toDate());
-
-            adminHtml += `<tr class="hover:bg-slate-50 transition border-b border-slate-50 cursor-pointer" data-status="${safeStatus}" onclick="window.openModal('${id}')">
-                <td class="py-5 px-5 font-bold text-slate-500 text-sm">${displayId}</td>
-                <td class="py-5 px-5"><div class="font-bold text-slate-800 text-base">${t.subject}${imgIcon}</div><div class="text-xs text-slate-500 mt-1">${t.callerEmail || '-'} <span class="mx-1">•</span> <i class="far fa-clock"></i> ${formattedDate}</div></td>
-                <td class="py-5 px-5 text-sm font-bold text-slate-600">${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : '-'}</td>
-                <td class="py-5 px-5 whitespace-nowrap">${statusDropdown}</td>
-                <td class="py-5 px-5 text-right whitespace-nowrap">${actionButtons}</td>
-            </tr>`;
             
             let badgeBgClass = bgColors[safeStatus] || bgColors['New'];
             let dotBgClass = 'bg-slate-500';
@@ -260,16 +263,41 @@ function loadDashboardData() {
 
             let statusHtmlBadge = `<span class="${badgeBgClass} px-3 py-1.5 rounded-md text-xs uppercase font-black tracking-wider flex w-fit gap-2 items-center"><span class="w-2 h-2 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
+            // HTML สำหรับหน้า Admin (Responsive แบบ Card ในมือถือ)
+            adminHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition flex flex-col md:table-row" data-status="${safeStatus}" onclick="window.openModal('${id}')">
+                <td class="p-5 font-bold text-sm text-slate-500 hidden md:table-cell align-middle">${displayId}</td>
+                
+                <td class="p-5 block md:table-cell border-b md:border-none">
+                    <div class="md:hidden flex justify-between items-center text-xs text-slate-400 font-bold mb-2">
+                        <span>${displayId}</span>
+                        <span><i class="far fa-clock"></i> ${formattedDate}</span>
+                    </div>
+                    <div class="font-bold text-base text-slate-800 leading-tight">${t.subject}${imgIcon}</div>
+                    <div class="text-xs text-slate-500 mt-2 hidden md:block">${t.callerEmail || '-'} <span class="mx-1">•</span> <i class="far fa-clock"></i> ${formattedDate}</div>
+                    <div class="text-xs text-slate-500 mt-2 md:hidden">By: ${t.callerEmail || '-'}</div>
+                    <div class="md:hidden text-xs text-indigo-500 font-bold mt-1.5"><i class="fas fa-user-shield"></i> ${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : 'Unassigned'}</div>
+                </td>
+                
+                <td class="p-5 text-sm font-bold text-slate-600 hidden md:table-cell align-middle">${t.assignedTo ? t.assignedTo.split('@')[0].toUpperCase() : '-'}</td>
+                <td class="p-5 hidden md:table-cell align-middle whitespace-nowrap" onclick="event.stopPropagation()">${statusDropdown}</td>
+                <td class="p-5 hidden md:table-cell align-middle text-right whitespace-nowrap" onclick="event.stopPropagation()">${actionButtons}</td>
+                
+                <td class="md:hidden flex items-center justify-between p-4 bg-slate-50 w-full" onclick="event.stopPropagation()">
+                    ${statusDropdown}
+                    ${actionButtons}
+                </td>
+            </tr>`;
+
             if (t.callerEmail === auth.currentUser.email) {
-                userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')">
-                    <td class="p-5 font-bold text-sm text-slate-500 hidden md:table-cell">${displayId}</td>
-                    <td class="p-4 md:p-5">
-                        <div class="md:hidden text-xs text-slate-400 font-bold mb-1">${displayId}</div>
+                userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition flex flex-col md:table-row" onclick="window.openModal('${id}')">
+                    <td class="p-5 font-bold text-sm text-slate-500 hidden md:table-cell align-middle">${displayId}</td>
+                    <td class="p-5 block md:table-cell border-b md:border-none">
+                        <div class="md:hidden text-xs text-slate-400 font-bold mb-2 flex justify-between"><span>${displayId}</span><span><i class="far fa-clock"></i> ${formattedDate}</span></div>
                         <div class="font-bold text-base text-slate-800 leading-tight">${t.subject}</div>
-                        <div class="md:hidden text-xs text-slate-500 mt-2"><i class="far fa-clock"></i> ${formattedDate}</div>
+                        <div class="md:hidden mt-3">${statusHtmlBadge}</div>
                     </td>
-                    <td class="p-4 md:p-5">${statusHtmlBadge}</td>
-                    <td class="p-4 md:p-5 text-right text-sm text-slate-500 font-medium whitespace-nowrap"><span class="hidden md:inline">${formattedDate}</span></td>
+                    <td class="p-5 hidden md:table-cell align-middle">${statusHtmlBadge}</td>
+                    <td class="p-5 hidden md:table-cell align-middle text-right text-sm text-slate-500 font-medium whitespace-nowrap">${formattedDate}</td>
                 </tr>`;
             }
 
@@ -378,17 +406,13 @@ window.openModal = (id) => {
     
     document.getElementById('ticket-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ticket-modal').style.opacity = '1'; document.getElementById('modal-box').classList.replace('scale-95', 'scale-100'); }, 10);
     
-if(chatUnsubscribe) chatUnsubscribe();
+    if(chatUnsubscribe) chatUnsubscribe();
     chatUnsubscribe = onSnapshot(query(collection(db, "incidents", id, "comments"), orderBy("createdAt", "asc")), (snap) => {
-        let h = ""; 
-        snap.forEach(doc => { 
-            const d = doc.data(); 
-            const isMe = d.senderEmail === auth.currentUser.email;
-            // ดึงเวลาออกมาแสดง ถ้าเพิ่งส่งจะขึ้นว่า Just now
+        let h = ""; snap.forEach(doc => { 
+            const d = doc.data(); const isMe = d.senderEmail === auth.currentUser.email;
             const timeStr = d.createdAt ? formatDateTime(d.createdAt.toDate()) : 'Just now';
 
             if(d.senderEmail === 'system') {
-                // อัปเดต UI ของข้อความระบบให้ดูเป็น Timeline และมีเวลาบอก
                 h += `
                 <div class="flex justify-center my-6">
                     <div class="flex flex-col items-center max-w-[85%]">
@@ -400,7 +424,6 @@ if(chatUnsubscribe) chatUnsubscribe();
                 </div>`; 
             } 
             else { 
-                // อัปเดต UI ของคนคุยแชท ให้มีเวลาบอกตรงมุมของกล่องแชท
                 const bg = isMe ? 'bg-blue-600 text-white' : 'bg-white border text-slate-700'; 
                 const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
                 let cImg = '';
@@ -424,8 +447,7 @@ if(chatUnsubscribe) chatUnsubscribe();
                 </div>`; 
             }
         });
-        document.getElementById('chat-messages').innerHTML = h; 
-        document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+        document.getElementById('chat-messages').innerHTML = h; document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
     });
 };
 
