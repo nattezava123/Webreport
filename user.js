@@ -324,20 +324,54 @@ window.openModal = (id) => {
     
     document.getElementById('ticket-modal').classList.replace('hidden', 'flex'); setTimeout(() => { document.getElementById('ticket-modal').style.opacity = '1'; document.getElementById('modal-box').classList.replace('scale-95', 'scale-100'); }, 10);
     
-    if(chatUnsubscribe) chatUnsubscribe();
+if(chatUnsubscribe) chatUnsubscribe();
     chatUnsubscribe = onSnapshot(query(collection(db, "incidents", id, "comments"), orderBy("createdAt", "asc")), (snap) => {
-        let h = ""; snap.forEach(doc => { 
-            const d = doc.data(); const isMe = d.senderEmail === auth.currentUser.email;
-            if(d.senderEmail === 'system') h += `<div class="flex justify-center my-4"><span class="bg-slate-100 text-slate-500 px-4 py-1.5 rounded-full text-xs font-bold">${d.text}</span></div>`; 
+        let h = ""; 
+        snap.forEach(doc => { 
+            const d = doc.data(); 
+            const isMe = d.senderEmail === auth.currentUser.email;
+            // ดึงเวลาออกมาแสดง ถ้าเพิ่งส่งจะขึ้นว่า Just now
+            const timeStr = d.createdAt ? formatDateTime(d.createdAt.toDate()) : 'Just now';
+
+            if(d.senderEmail === 'system') {
+                // อัปเดต UI ของข้อความระบบให้ดูเป็น Timeline และมีเวลาบอก
+                h += `
+                <div class="flex justify-center my-6">
+                    <div class="flex flex-col items-center max-w-[85%]">
+                        <span class="bg-slate-200 text-slate-600 px-4 py-2 rounded-full text-xs font-bold text-center shadow-sm border border-slate-300">
+                            <i class="fas fa-info-circle mr-1 opacity-50"></i> ${d.text}
+                        </span>
+                        <span class="text-[10px] text-slate-400 mt-1.5 font-medium">${timeStr}</span>
+                    </div>
+                </div>`; 
+            } 
             else { 
-                const bg = isMe ? 'bg-blue-600 text-white' : 'bg-white border text-slate-700'; const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
+                // อัปเดต UI ของคนคุยแชท ให้มีเวลาบอกตรงมุมของกล่องแชท
+                const bg = isMe ? 'bg-blue-600 text-white' : 'bg-white border text-slate-700'; 
+                const senderName = isMe ? 'You' : d.senderEmail.split('@')[0];
                 let cImg = '';
-                if(d.imageUrls && d.imageUrls.length > 0) { d.imageUrls.forEach(url => { cImg += `<img src="${url}" class="mt-2 rounded-lg max-h-40 cursor-pointer border hover:opacity-90 transition inline-block mr-2" onclick="window.viewFullImage('${url}')">`; }); } 
-                else if (d.imageUrl) { cImg = `<img src="${d.imageUrl}" class="mt-2 rounded-lg max-h-40 cursor-pointer border hover:opacity-90 transition" onclick="window.viewFullImage('${d.imageUrl}')">`; }
-                h += `<div class="flex flex-col ${isMe?'items-end':'items-start'} mb-4"><div class="${bg} p-4 rounded-2xl max-w-[85%] shadow-sm text-base"><div class="text-xs font-bold opacity-70 mb-1">${senderName}</div>${d.text}${cImg}</div></div>`; 
+                if(d.imageUrls && d.imageUrls.length > 0) { 
+                    d.imageUrls.forEach(url => { cImg += `<img src="${url}" class="mt-3 rounded-lg max-h-48 w-full object-cover cursor-pointer border hover:opacity-90 transition block" onclick="window.viewFullImage('${url}')">`; }); 
+                } 
+                else if (d.imageUrl) { 
+                    cImg = `<img src="${d.imageUrl}" class="mt-3 rounded-lg max-h-48 w-full object-cover cursor-pointer border hover:opacity-90 transition block" onclick="window.viewFullImage('${d.imageUrl}')">`; 
+                }
+
+                h += `
+                <div class="flex flex-col ${isMe?'items-end':'items-start'} mb-5">
+                    <div class="${bg} p-4 rounded-2xl max-w-[85%] shadow-sm text-sm">
+                        <div class="flex justify-between items-center gap-4 mb-1">
+                            <span class="text-xs font-black opacity-80">${senderName}</span>
+                            <span class="text-[9px] opacity-60">${timeStr}</span>
+                        </div>
+                        <div class="leading-relaxed mt-1">${d.text}</div>
+                        ${cImg}
+                    </div>
+                </div>`; 
             }
         });
-        document.getElementById('chat-messages').innerHTML = h; document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+        document.getElementById('chat-messages').innerHTML = h; 
+        document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
     });
 };
 
