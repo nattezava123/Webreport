@@ -132,8 +132,7 @@
                 <div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md text-xl"><i class="fas fa-robot"></i></div><div><h3 class="font-black text-xl leading-tight">Serviceman AI</h3><p class="text-xs text-indigo-200 font-bold uppercase tracking-wider">Factory IT Assistant</p></div></div>
                 <button onclick="window.closeAIModal()" class="w-10 h-10 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition text-lg"><i class="fas fa-times"></i></button>
             </div>
-            <div class="flex-1 overflow-y-auto p-6 space-y-5 bg-slate-50" id="ai-chat-box">
-                </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-5 bg-slate-50" id="ai-chat-box"></div>
             <div class="p-5 bg-white border-t flex gap-3">
                 <input type="text" id="ai-input" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-base outline-none focus:ring-2 focus:ring-indigo-500/20" placeholder="พิมพ์บอกอาการเสียได้เลย..." onkeypress="if(event.key === 'Enter') window.sendAIMessage()">
                 <button onclick="window.sendAIMessage()" class="bg-indigo-600 text-white w-14 rounded-xl flex items-center justify-center hover:bg-indigo-700 transition shadow-md text-lg"><i class="fas fa-paper-plane"></i></button>
