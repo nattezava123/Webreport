@@ -122,7 +122,7 @@ const botDatabase = [
     { keywords: ["เน็ต", "internet", "wifi", "ไวไฟ", "เน็ตหลุด", "ต่อเน็ตไม่ได้"], answer: "ปัญหาอินเทอร์เน็ต/Wi-Fi 📡 ลองปิด-เปิด Wi-Fi ดูสักรอบนะครับ หากไม่หาย รบกวนเปิดตั๋วแจ้งซ่อมเลยครับช่างจะได้เข้าไปดูให้" },
     { keywords: ["เปิดไม่ติด", "ดับ", "ไฟไม่เข้า"], answer: "คอมเปิดไม่ติด 🔌 รบกวนเช็คปลั๊กไฟใต้โต๊ะดูครับ หากไฟเข้าแต่เครื่องเงียบ รบกวนเปิดตั๋วแจ้งซ่อมด่วนเลยครับ!" },
     { keywords: ["จอฟ้า", "blue screen", "ค้าง", "แฮงค์"], answer: "คอมจอฟ้า/ค้าง 💻 รบกวน **ถ่ายรูปหน้าจอ Error (รูปจอฟ้า)** แนบรูปตอนเปิดตั๋วแจ้งซ่อมด้วยนะครับ ทีมไอทีจะได้วิเคราะห์ถูกจุด" },
-    { keywords: ["ปริ้น", "printer", "เครื่องปริ้น", "print", "ไม่ออก"], answer: "ปัญหาเครื่องพิมพ์ (Printer) 🖨️ ลองรีสตาร์ทคอม 1 รอบดูก่อนครับ ถ้ายังพิมพ์ไม่ได้ เปิดตั๋วแจ้งซ่อมแล้วระบุชื่อเครื่องพิมพ์มาได้เลย" },
+    { keywords: ["ปริ้น", "printer", "เครื่องปริ้น", "print", "ไม่ออก"], answer: "ปัญหาเครื่องพิมพ์ (Printer) 🖨️ ลองรีสตาร์ทคอม 1รอบดูก่อนครับ ถ้ายังพิมพ์ไม่ได้ เปิดตั๋วแจ้งซ่อมแล้วระบุชื่อเครื่องพิมพ์มาได้เลย" },
     { keywords: ["สร้างตั๋ว", "เปิดตั๋ว", "แจ้งซ่อมยังไง", "วิธีแจ้งซ่อม"], answer: "การแจ้งปัญหา 📝 ให้กดที่เมนู **Create Ticket** ทางซ้ายมือ เลือกหมวดหมู่, ระบุสถานที่ และเขียนรายละเอียดอาการให้ครบถ้วน แล้วกด Submit ครับ" }
 ];
 
@@ -186,7 +186,6 @@ function loadDashboardData() {
             
             if(safeStatus === 'Resolved' && t.assignedTo === auth.currentUser.email) myResolved++;
             
-            // นับภาพรวม โดยถือว่าสถานะใหม่ๆ ที่ไม่ใช่ New/Resolved คือ In Progress ในหน้า Dashboard 
             if(safeStatus === 'New' || safeStatus === 'Resolved') {
                 counts[safeStatus] = (counts[safeStatus] || 0) + 1;
             } else if (safeStatus !== 'Cancelled') {
@@ -262,7 +261,16 @@ function loadDashboardData() {
             let statusHtmlBadge = `<span class="${badgeBgClass} px-3 py-1.5 rounded-md text-xs uppercase font-black tracking-wider flex w-fit gap-2 items-center"><span class="w-2 h-2 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
             if (t.callerEmail === auth.currentUser.email) {
-                userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-5 font-bold text-sm text-slate-500">${displayId}</td><td class="p-5 font-bold text-base text-slate-800">${t.subject}</td><td class="p-5">${statusHtmlBadge}</td><td class="p-5 text-right text-sm text-slate-500 font-medium whitespace-nowrap">${formattedDate}</td></tr>`;
+                userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')">
+                    <td class="p-5 font-bold text-sm text-slate-500 hidden md:table-cell">${displayId}</td>
+                    <td class="p-4 md:p-5">
+                        <div class="md:hidden text-xs text-slate-400 font-bold mb-1">${displayId}</div>
+                        <div class="font-bold text-base text-slate-800 leading-tight">${t.subject}</div>
+                        <div class="md:hidden text-xs text-slate-500 mt-2"><i class="far fa-clock"></i> ${formattedDate}</div>
+                    </td>
+                    <td class="p-4 md:p-5">${statusHtmlBadge}</td>
+                    <td class="p-4 md:p-5 text-right text-sm text-slate-500 font-medium whitespace-nowrap"><span class="hidden md:inline">${formattedDate}</span></td>
+                </tr>`;
             }
 
             if (recentCount < 5) {
@@ -318,7 +326,7 @@ window.filterTickets = (tId, iId) => { let i = document.getElementById(iId).valu
 
 window.setAdminFilter = (f) => { 
     currentAdminFilter = f; 
-    const act = "px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-slate-800 shadow-sm", inact = "px-6 py-2.5 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700 transition"; 
+    const act = "px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-slate-800 shadow-sm", inact = "px-6 py-2.5 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700 transition shadow-none"; 
     ['All', 'Active', 'Resolved'].forEach(btn => { 
         const b = document.getElementById(`btn-filter-${btn}`); 
         if(b) b.className = btn === f ? act : inact; 
