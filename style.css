@@ -77,22 +77,7 @@ div:where(.swal2-container) button:where(.swal2-styled.swal2-confirm) { backgrou
     #sidebar { position: fixed; left: -100%; top: 0; bottom: 0; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 100; }
     #sidebar.open { left: 0; }
     #sidebar-overlay.open { display: block; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 90; animation: fadeIn 0.3s ease; }
-    header .fa-bars { display: none !important; }
     
-    .bottom-nav-link.active { color: #2563eb !important; }
-    .bottom-nav-link.active i { transform: translateY(-2px) scale(1.1); transition: all 0.3s ease; }
-    
-    #tab-chat .h-\[75vh\], #tab-incidents .h-\[75vh\] { height: calc(100vh - 200px) !important; }
-}
-
-/* --- Mobile App-Like Enhancements --- */
-@media (max-width: 768px) {
-    #sidebar { position: fixed; left: -100%; top: 0; bottom: 0; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 100; }
-    #sidebar.open { left: 0; }
-    #sidebar-overlay.open { display: block; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 90; animation: fadeIn 0.3s ease; }
-    
-    /* ลบบรรทัดที่ซ่อน .fa-bars ออกไปแล้ว */
-
     .bottom-nav-link.active { color: #2563eb !important; }
     .bottom-nav-link.active i { transform: translateY(-2px) scale(1.1); transition: all 0.3s ease; }
     
