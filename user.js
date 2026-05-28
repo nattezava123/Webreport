@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, onSnapshot, orderBy, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDHMRKJovs43b4CWdJOUbUlO5BEekqCmBI",
@@ -23,8 +23,8 @@ let chatUnsubscribe = null;
 let currentLang = localStorage.getItem('appLang') || 'en';
 
 const dict = {
-    en: { page_title: "Factory IT Service Center", app_name: "Factory IT Service Center", app_name_short: "Factory IT", role_user: "User", menu_group_1: "Workspace", menu_dash: "Dashboard", menu_incidents: "My Requests", menu_create: "Create Requests", menu_chat: "Live Chat", chat_title: "IT Support Chat", chat_sub: "Real-time helpdesk room", btn_logout: "Log Out", stat_open: "New Request", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", th_subject: "Subject", th_status: "Status", th_date: "Timeline", btn_submit: "Submit Request", search_placeholder: "Search...", btn_new_ticket: "Create", form_title: "How can we help?", form_cat: "Category", form_pri: "Priority", form_short: "Subject", form_desc: "Description", form_loc_head: "Location", form_bldg: "Bldg", form_floor: "Floor", form_dept: "Dept", form_line: "Line", form_item: "Item", dash_welcome: "Welcome,", dash_sub: "IT support summary.", dash_recent: "Activity", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", empty_tickets: "None", empty_recent: "Clear!", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved" },
-    th: { page_title: "ศูนย์บริการไอทีโรงงาน", app_name: "ศูนย์บริการไอทีโรงงาน", app_name_short: "ศูนย์บริการไอที", role_user: "ผู้แจ้ง", menu_group_1: "พื้นที่ทำงาน", menu_dash: "ภาพรวมระบบ", menu_incidents: "รายการคำขอของฉัน", menu_create: "แจ้งปัญหาใหม่", menu_chat: "คุยกับไอที", chat_title: "ติดต่อสอบถามไอที", chat_sub: "ห้องแชทรวม (Live Chat)", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "ทั้งหมด", th_subject: "หัวข้อ", th_status: "สถานะ", th_date: "ล่าสุด", btn_submit: "ส่งเรื่องแจ้งซ่อม", search_placeholder: "ค้นหา...", btn_new_ticket: "สร้างใหม่", form_title: "มีอะไรให้ช่วยไหม?", form_cat: "หมวดหมู่", form_pri: "ความเร่งด่วน", form_short: "หัวข้อ", form_desc: "รายละเอียด", form_loc_head: "สถานที่", form_bldg: "ตึก", form_floor: "ชั้น", form_dept: "แผนก", form_line: "ไลน์", form_item: "ของที่เสีย", dash_welcome: "ยินดีต้อนรับ,", dash_sub: "สรุปภาพรวมวันนี้", dash_recent: "อัปเดตล่าสุด", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", empty_tickets: "ไม่พบข้อมูล", empty_recent: "จัดการครบแล้ว!", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว" }
+    en: { page_title: "Factory IT Service Center", app_name: "Factory IT Service Center", app_name_short: "Factory IT", role_user: "User", menu_group_1: "Workspace", menu_dash: "Dashboard", menu_incidents: "My Requests", menu_create: "Create Requests", menu_chat: "Live Chat", chat_title: "IT Support Chat", chat_sub: "Real-time helpdesk room", btn_logout: "Log Out", stat_open: "New Request", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", th_subject: "Subject", th_status: "Status", th_date: "Timeline", btn_submit: "Submit Request", search_placeholder: "Search...", btn_new_ticket: "Create", form_title: "How can we help?", form_cat: "Category", form_pri: "Priority", form_short: "Subject", form_desc: "Description", form_loc_head: "Location", form_bldg: "Bldg", form_floor: "Floor", form_dept: "Dept", form_line: "Line", form_item: "Item", dash_welcome: "Welcome,", dash_sub: "IT support summary.", dash_recent: "Activity", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", empty_tickets: "None", empty_recent: "Clear!", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved", status_cancelled: "Cancelled" },
+    th: { page_title: "ศูนย์บริการไอทีโรงงาน", app_name: "ศูนย์บริการไอทีโรงงาน", app_name_short: "ศูนย์บริการไอที", role_user: "ผู้แจ้ง", menu_group_1: "พื้นที่ทำงาน", menu_dash: "ภาพรวมระบบ", menu_incidents: "รายการคำขอของฉัน", menu_create: "แจ้งปัญหาใหม่", menu_chat: "คุยกับไอที", chat_title: "ติดต่อสอบถามไอที", chat_sub: "ห้องแชทรวม (Live Chat)", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "ทั้งหมด", th_subject: "หัวข้อ", th_status: "สถานะ", th_date: "ล่าสุด", btn_submit: "ส่งเรื่องแจ้งซ่อม", search_placeholder: "ค้นหา...", btn_new_ticket: "สร้างใหม่", form_title: "มีอะไรให้ช่วยไหม?", form_cat: "หมวดหมู่", form_pri: "ความเร่งด่วน", form_short: "หัวข้อ", form_desc: "รายละเอียด", form_loc_head: "สถานที่", form_bldg: "ตึก", form_floor: "ชั้น", form_dept: "แผนก", form_line: "ไลน์", form_item: "ของที่เสีย", dash_welcome: "ยินดีต้อนรับ,", dash_sub: "สรุปภาพรวมวันนี้", dash_recent: "อัปเดตล่าสุด", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", empty_tickets: "ไม่พบข้อมูล", empty_recent: "จัดการครบแล้ว!", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว", status_cancelled: "ยกเลิก" }
 };
 
 window.viewFullImage = (url) => { Swal.fire({ imageUrl: url, imageAlt: 'Attached Image', width: 'auto', padding: '1rem', showConfirmButton: false, showCloseButton: true, customClass: { image: 'rounded-xl max-h-[80vh] object-contain' } }); };
@@ -174,27 +174,60 @@ function loadLiveChat() {
     }
 }
 
+// ฟังก์ชันสำหรับผู้ใช้กดยกเลิก
+window.cancelTicket = (id) => {
+    Swal.fire({
+        title: currentLang === 'th' ? 'ยกเลิกการแจ้งซ่อม?' : 'Cancel this request?',
+        text: currentLang === 'th' ? 'หากคุณแก้ปัญหาได้แล้ว หรือต้องการยกเลิกคำขอนี้ กดยืนยันได้เลยครับ' : 'Are you sure you want to cancel this ticket?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: currentLang === 'th' ? 'ยืนยันการยกเลิก' : 'Yes, Cancel it'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            updateDoc(doc(db, "incidents", id), { status: 'Cancelled' }).then(() => {
+                addDoc(collection(db, "incidents", id, "comments"), { 
+                    senderEmail: "system", 
+                    text: currentLang === 'th' ? "ผู้ใช้งานได้ยกเลิกคำขอนี้ด้วยตนเอง" : "Ticket cancelled by user.", 
+                    createdAt: new Date() 
+                });
+                Toast.fire({ icon: 'success', title: currentLang === 'th' ? 'ยกเลิกสำเร็จ' : 'Cancelled Successfully' });
+            });
+        }
+    });
+};
+
 function loadDashboardData() {
     onSnapshot(query(collection(db, "incidents"), orderBy("createdAt", "desc")), (snapshot) => {
-        let userHtml = "", recentHtml = "", counts = { New: 0, "In Progress": 0, Resolved: 0, Total: 0 }, recentCount=0;
+        let userHtml = "", recentHtml = "", counts = { New: 0, "In Progress": 0, Resolved: 0, Cancelled: 0, Total: 0 }, recentCount=0;
         snapshot.forEach((docSnap) => {
             const t = docSnap.data(), id = docSnap.id; window.globalTickets[id] = t;
             if (t.callerEmail !== auth.currentUser.email) return;
             
             const safeStatus = t.status || 'New';
-            counts[safeStatus]++; counts.Total++;
+            counts[safeStatus] = (counts[safeStatus] || 0) + 1; 
+            counts.Total++;
             
-            const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
+            const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700', 'Cancelled': 'bg-slate-200 text-slate-600' };
             let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_');
             let displayStatus = dict[currentLang][statusKey] || safeStatus;
             let badgeBgClass = bgColors[safeStatus] || bgColors['New'];
-            let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
+            let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : (safeStatus === 'Resolved' ? 'bg-emerald-500' : 'bg-slate-500'));
             let statusHtml = `<span class="${badgeBgClass} px-2.5 py-1 rounded-md text-[10px] uppercase font-black tracking-widest flex w-fit gap-1.5 items-center"><span class="w-1.5 h-1.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
             const formattedDate = formatDateTime(t.createdAt?.toDate());
             let displayId = "TKT-" + id.substring(0,4).toUpperCase();
             
-            userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')"><td class="p-4 font-bold text-xs text-slate-500">${displayId}</td><td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td><td class="p-4">${statusHtml}</td><td class="p-4 text-right text-xs text-slate-500 font-medium whitespace-nowrap">${formattedDate}</td></tr>`;
+            let actionBtn = (safeStatus !== 'Resolved' && safeStatus !== 'Cancelled') ? 
+                `<button onclick="event.stopPropagation(); window.cancelTicket('${id}')" class="ml-3 w-8 h-8 rounded-lg bg-white border border-rose-200 text-rose-500 hover:bg-rose-50 hover:text-rose-600 transition shadow-sm flex items-center justify-center shrink-0" title="Cancel Request"><i class="fas fa-times"></i></button>` : '';
+            
+            userHtml += `<tr class="border-b cursor-pointer hover:bg-slate-50 transition" onclick="window.openModal('${id}')">
+                <td class="p-4 font-bold text-xs text-slate-500">${displayId}</td>
+                <td class="p-4 font-bold text-sm text-slate-800">${t.subject}</td>
+                <td class="p-4">${statusHtml}</td>
+                <td class="p-4 text-right text-xs text-slate-500 font-medium whitespace-nowrap"><div class="flex items-center justify-end">${formattedDate} ${actionBtn}</div></td>
+            </tr>`;
             
             if(recentCount<5){ recentHtml+=`<div class="p-4 bg-white border rounded-xl mb-2 text-sm cursor-pointer hover:bg-slate-50 transition flex justify-between items-center" onclick="window.openModal('${id}')"><div><b class="text-slate-800">${t.subject}</b></div>${statusHtml}</div>`; recentCount++;}
         });
@@ -224,8 +257,12 @@ window.openModal = (id) => {
     document.getElementById('modal-id').innerText = "TKT-" + id.substring(0,4).toUpperCase(); document.getElementById('modal-subject').innerText = t.subject || 'No Subject'; document.getElementById('modal-category').innerText = t.category || '-'; document.getElementById('modal-location').innerText = `Bldg: ${t.building || '-'}, Floor: ${t.floor || '-'}, Dept: ${t.department || '-'}`; document.getElementById('modal-broken-item').innerText = t.brokenItem || 'Not specified'; document.getElementById('modal-desc').innerText = t.description || '-'; document.getElementById('modal-caller').innerText = t.callerEmail || '-'; document.getElementById('modal-assignee').innerText = t.assignedTo || 'Unassigned'; 
     document.getElementById('modal-date').innerText = formatDateTime(t.createdAt?.toDate());
 
-    const safeStatus = t.status || 'New'; const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700' };
-    let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); let displayStatus = dict[currentLang][statusKey] || safeStatus; let badgeBgClass = bgColors[safeStatus] || bgColors['New']; let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : 'bg-emerald-500');
+    const safeStatus = t.status || 'New'; 
+    const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700', 'Cancelled': 'bg-slate-200 text-slate-600' };
+    let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); let displayStatus = dict[currentLang][statusKey] || safeStatus; 
+    let badgeBgClass = bgColors[safeStatus] || bgColors['New']; 
+    let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : (safeStatus === 'Resolved' ? 'bg-emerald-500' : 'bg-slate-500'));
+    
     document.getElementById('modal-status-badge').innerHTML = `<span class="${badgeBgClass} px-4 py-1.5 rounded-lg text-xs uppercase font-black tracking-widest flex items-center gap-2"><span class="w-2 h-2 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
     let imgHtml = '';
@@ -276,7 +313,6 @@ document.getElementById('comment-form').onsubmit = async (e) => {
     } catch (e) { Swal.fire({ icon: 'error', text: e.message }); } finally { btn.disabled = false; }
 };
 
-// 🔥 ระบบกรองค้นหา (Search) 
 window.filterTickets = (tableId, inputId) => { 
     let filter = document.getElementById(inputId).value.toUpperCase(); 
     let tr = document.getElementById(tableId).getElementsByTagName("tr"); 
