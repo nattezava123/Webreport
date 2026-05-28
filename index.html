@@ -13,37 +13,37 @@
 <body>
     <section id="auth-view" class="view-section active min-h-screen flex-col md:flex-row items-center justify-center bg-animated-gradient p-4 relative overflow-hidden">
         <div class="absolute top-6 right-6 flex gap-2 z-10">
-            <button onclick="window.toggleLang('en')" id="lang-en-auth" class="px-4 py-1.5 bg-blue-600 text-white rounded-full text-xs font-bold shadow-lg">EN</button>
-            <button onclick="window.toggleLang('th')" id="lang-th-auth" class="px-4 py-1.5 bg-white/10 text-white backdrop-blur rounded-full border border-white/20 text-xs font-bold">TH</button>
+            <button onclick="window.toggleLang('en')" id="lang-en-auth" class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-bold shadow-lg">EN</button>
+            <button onclick="window.toggleLang('th')" id="lang-th-auth" class="px-4 py-2 bg-white/10 text-white backdrop-blur rounded-full border border-white/20 text-sm font-bold">TH</button>
         </div>
-        <div class="glass-panel p-8 md:p-10 rounded-[2rem] w-full max-w-[420px] z-10 relative transition-all duration-500">
+        <div class="glass-panel p-8 md:p-10 rounded-[2rem] w-full max-w-[450px] z-10 relative transition-all duration-500">
             <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl mb-5 shadow-xl"><i class="fas fa-industry text-3xl text-white"></i></div>
-                <h2 class="text-2xl font-extrabold text-slate-800 transition-colors" id="auth-title" data-i18n="app_name">Factory IT Service Center</h2>
-                <p class="text-slate-500 text-sm mt-2 transition-colors" id="auth-subtitle" data-i18n="auth_sub">Enterprise Service Desk</p>
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl mb-5 shadow-xl"><i class="fas fa-industry text-4xl text-white"></i></div>
+                <h2 class="text-3xl font-extrabold text-slate-800 transition-colors" id="auth-title" data-i18n="app_name">Factory IT Service Center</h2>
+                <p class="text-slate-600 text-base mt-2 transition-colors" id="auth-subtitle" data-i18n="auth_sub">Enterprise Service Desk</p>
             </div>
-            <form id="auth-form" class="space-y-4">
+            <form id="auth-form" class="space-y-5">
                 <div id="field-name" style="display: none;" class="animate-fadeIn">
-                    <label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase tracking-widest" data-i18n="name">Full Name</label>
-                    <input type="text" id="auth-name" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="John Doe">
+                    <label class="block text-slate-700 font-bold mb-2 text-xs uppercase tracking-wider" data-i18n="name">Full Name</label>
+                    <input type="text" id="auth-name" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-base outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="John Doe">
                 </div>
                 <div>
-                    <label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase tracking-widest" data-i18n="email">Email</label>
-                    <input type="email" id="auth-email" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="name@company.com" required>
+                    <label class="block text-slate-700 font-bold mb-2 text-xs uppercase tracking-wider" data-i18n="email">Email</label>
+                    <input type="email" id="auth-email" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-base outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="name@company.com" required>
                 </div>
                 <div>
-                    <label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase tracking-widest" data-i18n="password">Password</label>
-                    <input type="password" id="auth-password" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="••••••••" required>
+                    <label class="block text-slate-700 font-bold mb-2 text-xs uppercase tracking-wider" data-i18n="password">Password</label>
+                    <input type="password" id="auth-password" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-base outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="••••••••" required>
                 </div>
                 <div id="field-confirm" style="display: none;" class="animate-fadeIn">
-                    <label class="block text-slate-700 font-bold mb-1.5 text-[10px] uppercase tracking-widest" data-i18n="confirm_password">Confirm Password</label>
-                    <input type="password" id="auth-confirm-password" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="••••••••">
+                    <label class="block text-slate-700 font-bold mb-2 text-xs uppercase tracking-wider" data-i18n="confirm_password">Confirm Password</label>
+                    <input type="password" id="auth-confirm-password" class="w-full bg-white/90 border border-slate-200 rounded-xl px-4 py-3.5 text-base outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition" placeholder="••••••••">
                 </div>
-                <button type="submit" id="auth-submit-btn" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg mt-4 transition transform hover:-translate-y-0.5" data-i18n="btn_signin">Sign In</button>
+                <button type="submit" id="auth-submit-btn" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl text-base shadow-lg mt-6 transition transform hover:-translate-y-0.5" data-i18n="btn_signin">Sign In</button>
             </form>
-            <div class="mt-6 flex items-center relative justify-center"><hr class="w-full border-slate-300"><span class="absolute bg-white px-3 text-[10px] font-bold text-slate-400 uppercase">OR</span></div>
-            <button onclick="window.loginWithGoogle()" type="button" class="w-full mt-6 bg-white border border-slate-200 text-slate-700 font-bold py-3.5 rounded-xl flex items-center justify-center gap-3 transition hover:bg-slate-50"><img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5"><span data-i18n="btn_google">Continue with Google</span></button>
-            <div class="mt-8 text-center text-sm">
+            <div class="mt-6 flex items-center relative justify-center"><hr class="w-full border-slate-300"><span class="absolute bg-white px-3 text-xs font-bold text-slate-400 uppercase">OR</span></div>
+            <button onclick="window.loginWithGoogle()" type="button" class="w-full mt-6 bg-white border border-slate-200 text-slate-700 font-bold py-3.5 rounded-xl text-base flex items-center justify-center gap-3 transition hover:bg-slate-50"><img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5"><span data-i18n="btn_google">Continue with Google</span></button>
+            <div class="mt-8 text-center text-base">
                 <span class="text-slate-500" id="auth-switch-text" data-i18n="no_account">New here?</span> 
                 <button onclick="window.toggleAuthMode()" id="auth-switch-btn" class="text-blue-600 font-bold hover:text-blue-800 transition" data-i18n="btn_register">Create an account</button>
             </div>
