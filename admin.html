@@ -67,7 +67,7 @@
                         <div><p class="text-rose-100 text-sm font-black uppercase mb-2 tracking-wider" data-i18n="admin_my_resolved">My Resolved </p><p class="text-5xl font-black flex items-center gap-4"><i class="fas fa-trophy text-amber-300"></i> <span id="stat-admin-my-resolved">0</span></p></div>
                         <button onclick="window.exportCSV()" class="bg-white/20 hover:bg-white/30 border border-white/30 px-6 py-3 rounded-xl text-sm font-bold transition flex items-center shadow-sm"><i class="fas fa-download mr-3 text-lg"></i> <span class="hidden md:inline">Export CSV</span></button>
                     </div>
-                    <div class="bg-white rounded-[1.5rem] border shadow-sm overflow-hidden flex flex-col h-[65vh]">
+                    <div class="bg-white rounded-[1.5rem] border shadow-sm overflow-hidden flex flex-col h-[75vh]">
                         <div class="p-5 border-b flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-slate-50">
                             <div class="flex gap-2 bg-slate-100 p-1.5 rounded-xl border w-full md:w-auto overflow-x-auto shrink-0">
                                 <button onclick="window.setAdminFilter('All')" id="btn-filter-All" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-white text-slate-800 shadow-sm whitespace-nowrap">All</button>
@@ -150,9 +150,9 @@
         </nav>
     </section>
 
-    <div id="ai-modal" class="fixed inset-0 z-[300] hidden items-end sm:items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 opacity-0">
-        <div class="bg-white w-full sm:w-[500px] h-[100dvh] sm:h-[700px] sm:rounded-[2rem] flex flex-col shadow-2xl relative" id="ai-box">
-            <div class="px-8 py-6 bg-indigo-600 sm:rounded-t-[2rem] text-white flex justify-between items-center shrink-0">
+    <div id="ai-modal" class="fixed inset-0 z-[500] hidden items-end md:items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div class="bg-white w-full h-full md:w-[500px] md:h-[85vh] md:max-h-[700px] md:rounded-[2rem] flex flex-col shadow-2xl relative" id="ai-box">
+            <div class="px-6 py-5 md:px-8 md:py-6 bg-indigo-600 md:rounded-t-[2rem] text-white flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md text-xl"><i class="fas fa-robot"></i></div><div><h3 class="font-black text-xl leading-tight">Serviceman AI</h3><p class="text-xs text-indigo-200 font-bold uppercase tracking-wider">Factory IT Assistant</p></div></div>
                 <button onclick="window.closeAIModal()" class="w-10 h-10 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition text-lg"><i class="fas fa-times"></i></button>
             </div>
@@ -169,14 +169,14 @@
                     </div>
                 </div>
             </div>
-            <div class="p-4 md:p-5 bg-white border-t flex gap-3 shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))] md:pb-5">
-                <input type="text" id="ai-input" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-base outline-none focus:ring-2 focus:ring-indigo-500/20" placeholder="พิมพ์บอกอาการเสียได้เลย..." onkeypress="if(event.key === 'Enter') window.sendAIMessage()">
-                <button onclick="window.sendAIMessage()" class="bg-indigo-600 text-white w-14 rounded-xl flex items-center justify-center hover:bg-indigo-700 transition shadow-md text-lg"><i class="fas fa-paper-plane"></i></button>
+            <div class="p-3 md:p-5 bg-white border-t shrink-0 flex gap-2 md:gap-3 items-center">
+                <input type="text" id="ai-input" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-base outline-none focus:ring-2 focus:ring-indigo-500/20" placeholder="พิมพ์อาการเสียได้เลย..." onkeypress="if(event.key === 'Enter') window.sendAIMessage()">
+                <button onclick="window.sendAIMessage()" class="bg-indigo-600 text-white w-12 h-12 rounded-xl flex items-center justify-center hover:bg-indigo-700 transition shadow-md text-lg shrink-0"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
-    <div id="ticket-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden z-[200] flex items-center justify-center p-0 md:p-6 transition-all duration-300 opacity-0">
+    <div id="ticket-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden z-[500] items-end md:items-center justify-center p-0 md:p-6 transition-all duration-300 opacity-0">
         <div class="bg-white w-full h-[100dvh] md:h-[85vh] md:max-w-6xl md:rounded-[2rem] flex flex-col overflow-hidden shadow-2xl" id="modal-box">
             <div class="px-6 py-5 md:px-8 md:py-6 border-b flex justify-between items-center bg-white shrink-0">
                 <div class="flex items-center gap-4 md:gap-5"><div id="modal-status-badge"></div><h3 class="font-black text-xl md:text-2xl text-slate-800" id="modal-id">ID</h3></div>
@@ -186,25 +186,26 @@
                 </div>
             </div>
             <div class="flex-1 flex flex-col md:flex-row overflow-hidden bg-slate-50">
-                <div class="w-full md:w-[40%] p-6 md:p-10 bg-white overflow-y-auto border-b md:border-b-0 md:border-r max-h-[35vh] md:max-h-none shrink-0">
+                <div class="w-full md:w-[40%] p-6 md:p-10 bg-white overflow-y-auto border-b md:border-b-0 md:border-r max-h-[30vh] md:max-h-none shrink-0">
                     <h4 class="text-2xl md:text-3xl font-black text-slate-800 mb-2 leading-tight" id="modal-subject">Subject</h4>
-                    <div class="space-y-5 mt-6">
-                        <div class="bg-slate-50 p-5 rounded-2xl border mb-5"><p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Category</p><p id="modal-category" class="font-bold text-base text-slate-800">-</p></div>
-                        <div class="bg-rose-50 p-5 md:p-6 rounded-2xl border border-rose-100"><p id="modal-location" class="text-sm text-slate-600 mb-2">Loc</p><p id="modal-broken-item" class="font-black text-lg text-rose-600">Item</p></div>
+                    <p class="text-sm text-slate-500 font-bold uppercase tracking-wider mb-6 md:mb-8"><i class="far fa-clock mr-1"></i> <span id="modal-date"></span></p>
+                    <div class="space-y-5">
+                        <div class="bg-slate-50 p-4 md:p-5 rounded-2xl border"><p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Category</p><p id="modal-category" class="font-bold text-base text-slate-800">-</p></div>
+                        <div class="bg-rose-50 p-4 md:p-6 rounded-2xl border border-rose-100"><p id="modal-location" class="text-sm text-slate-600 mb-2">Loc</p><p id="modal-broken-item" class="font-black text-lg text-rose-600">Item</p></div>
                         <div id="modal-image-container" class="hidden flex-wrap gap-3"></div>
-                        <div class="p-5 md:p-6 bg-slate-50 rounded-2xl border text-base text-slate-700 whitespace-pre-wrap leading-relaxed" id="modal-desc">Desc</div>
+                        <div class="p-4 md:p-6 bg-slate-50 rounded-2xl border text-base text-slate-700 whitespace-pre-wrap leading-relaxed" id="modal-desc">Desc</div>
                     </div>
                 </div>
                 <div class="flex-1 flex flex-col bg-slate-50 overflow-hidden">
                     <div id="chat-messages" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6"></div>
-                    <div class="p-4 md:p-5 bg-white border-t shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))] md:pb-5">
-                        <form id="comment-form" class="flex gap-3">
-                            <label class="w-12 md:w-14 flex items-center justify-center bg-slate-50 text-slate-500 rounded-xl cursor-pointer border hover:bg-slate-100 transition text-xl shrink-0" id="comment-img-label">
+                    <div class="p-3 md:p-5 bg-white border-t shrink-0">
+                        <form id="comment-form" class="flex gap-2 md:gap-3 items-center">
+                            <label class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-500 rounded-xl cursor-pointer border hover:bg-slate-100 transition text-xl shrink-0" id="comment-img-label">
                                 <i class="fas fa-image"></i>
                                 <input type="file" id="comment-image" accept="image/*" multiple class="hidden" onchange="document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500')">
                             </label>
-                            <input type="text" id="comment-text" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 md:px-5 py-4 text-base outline-none focus:ring-2 focus:ring-blue-500/20" placeholder="Type a reply..." autocomplete="off">
-                            <button type="submit" id="btn-comment-submit" class="w-14 md:w-16 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:bg-blue-700 transition text-lg shrink-0"><i class="fas fa-paper-plane"></i></button>
+                            <input type="text" id="comment-text" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-base outline-none focus:ring-2 focus:ring-blue-500/20" placeholder="Type a reply..." autocomplete="off">
+                            <button type="submit" id="btn-comment-submit" class="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:bg-blue-700 transition text-lg shrink-0"><i class="fas fa-paper-plane"></i></button>
                         </form>
                     </div>
                 </div>
