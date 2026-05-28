@@ -23,8 +23,8 @@ let chatUnsubscribe = null;
 let currentLang = localStorage.getItem('appLang') || 'en';
 
 const dict = {
-    en: { page_title: "Factory IT Service Center", app_name: "Factory IT Service Center", app_name_short: "Factory IT", role_user: "User", menu_group_1: "Workspace", menu_dash: "Dashboard", menu_incidents: "My Requests", menu_create: "Create Requests", menu_chat: "Live Chat", chat_title: "IT Support Chat", chat_sub: "Real-time helpdesk room", btn_logout: "Log Out", stat_open: "New Request", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", th_subject: "Subject", th_status: "Status", th_date: "Timeline", btn_submit: "Submit Request", search_placeholder: "Search...", btn_new_ticket: "Create", form_title: "How can we help?", form_cat: "Category", form_pri: "Priority", form_short: "Subject", form_desc: "Description", form_loc_head: "Location", form_bldg: "Bldg", form_floor: "Floor", form_dept: "Dept", form_line: "Line", form_item: "Item", dash_welcome: "Welcome,", dash_sub: "IT support summary.", dash_recent: "Activity", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", empty_tickets: "None", empty_recent: "Clear!", status_new: "New", status_in_progress: "In Progress", status_resolved: "Resolved", status_cancelled: "Cancelled" },
-    th: { page_title: "ศูนย์บริการไอทีโรงงาน", app_name: "ศูนย์บริการไอทีโรงงาน", app_name_short: "ศูนย์บริการไอที", role_user: "ผู้แจ้ง", menu_group_1: "พื้นที่ทำงาน", menu_dash: "ภาพรวมระบบ", menu_incidents: "รายการคำขอของฉัน", menu_create: "แจ้งปัญหาใหม่", menu_chat: "คุยกับไอที", chat_title: "ติดต่อสอบถามไอที", chat_sub: "ห้องแชทรวม (Live Chat)", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "ทั้งหมด", th_subject: "หัวข้อ", th_status: "สถานะ", th_date: "ล่าสุด", btn_submit: "ส่งเรื่องแจ้งซ่อม", search_placeholder: "ค้นหา...", btn_new_ticket: "สร้างใหม่", form_title: "มีอะไรให้ช่วยไหม?", form_cat: "หมวดหมู่", form_pri: "ความเร่งด่วน", form_short: "หัวข้อ", form_desc: "รายละเอียด", form_loc_head: "สถานที่", form_bldg: "ตึก", form_floor: "ชั้น", form_dept: "แผนก", form_line: "ไลน์", form_item: "ของที่เสีย", dash_welcome: "ยินดีต้อนรับ,", dash_sub: "สรุปภาพรวมวันนี้", dash_recent: "อัปเดตล่าสุด", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", empty_tickets: "ไม่พบข้อมูล", empty_recent: "จัดการครบแล้ว!", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_resolved: "ปิดงานแล้ว", status_cancelled: "ยกเลิก" }
+    en: { page_title: "Factory IT Service Center", app_name: "Factory IT Service Center", app_name_short: "Factory IT", role_user: "User", menu_group_1: "Workspace", menu_dash: "Dashboard", menu_incidents: "My Requests", menu_create: "Create Requests", menu_chat: "Live Chat", chat_title: "IT Support Chat", chat_sub: "Real-time helpdesk room", btn_logout: "Log Out", stat_open: "New Request", stat_progress: "In Progress", stat_resolved: "Resolved", stat_total: "Total Volume", th_subject: "Subject", th_status: "Status", th_date: "Timeline", btn_submit: "Submit Request", search_placeholder: "Search...", btn_new_ticket: "Create", form_title: "How can we help?", form_cat: "Category", form_pri: "Priority", form_short: "Subject", form_desc: "Description", form_loc_head: "Location", form_bldg: "Bldg", form_floor: "Floor", form_dept: "Dept", form_line: "Line", form_item: "Item", dash_welcome: "Welcome,", dash_sub: "IT support summary.", dash_recent: "Activity", cat_hw: "❖ Hardware / PC Issue", cat_sw: "❖ Software / Application", cat_nw: "❖ Network / Internet", empty_tickets: "None", empty_recent: "Clear!", status_new: "New", status_in_progress: "In Progress", status_waiting_for_parts: "Waiting for Parts", status_waiting_for_approval: "Waiting for Approval", status_waiting_for_user: "Waiting for User", status_testing: "Testing", status_resolved: "Resolved", status_cancelled: "Cancelled" },
+    th: { page_title: "ศูนย์บริการไอทีโรงงาน", app_name: "ศูนย์บริการไอทีโรงงาน", app_name_short: "ศูนย์บริการไอที", role_user: "ผู้แจ้ง", menu_group_1: "พื้นที่ทำงาน", menu_dash: "ภาพรวมระบบ", menu_incidents: "รายการคำขอของฉัน", menu_create: "แจ้งปัญหาใหม่", menu_chat: "คุยกับไอที", chat_title: "ติดต่อสอบถามไอที", chat_sub: "ห้องแชทรวม (Live Chat)", btn_logout: "ออกจากระบบ", stat_open: "รอดำเนินการ", stat_progress: "กำลังแก้ไข", stat_resolved: "ปิดงานแล้ว", stat_total: "ทั้งหมด", th_subject: "หัวข้อ", th_status: "สถานะ", th_date: "ล่าสุด", btn_submit: "ส่งเรื่องแจ้งซ่อม", search_placeholder: "ค้นหา...", btn_new_ticket: "สร้างใหม่", form_title: "มีอะไรให้ช่วยไหม?", form_cat: "หมวดหมู่", form_pri: "ความเร่งด่วน", form_short: "หัวข้อ", form_desc: "รายละเอียด", form_loc_head: "สถานที่", form_bldg: "ตึก", form_floor: "ชั้น", form_dept: "แผนก", form_line: "ไลน์", form_item: "ของที่เสีย", dash_welcome: "ยินดีต้อนรับ,", dash_sub: "สรุปภาพรวมวันนี้", dash_recent: "อัปเดตล่าสุด", cat_hw: "❖ ฮาร์ดแวร์ / เครื่องคอมพิวเตอร์", cat_sw: "❖ ซอฟต์แวร์ / โปรแกรม", cat_nw: "❖ เครือข่าย / อินเทอร์เน็ต", empty_tickets: "ไม่พบข้อมูล", empty_recent: "จัดการครบแล้ว!", status_new: "เปิดใหม่", status_in_progress: "กำลังทำ", status_waiting_for_parts: "รอสั่งซื้ออะไหล่", status_waiting_for_approval: "รออนุมัติ", status_waiting_for_user: "รอผู้ใช้ตอบกลับ", status_testing: "รอดูอาการ", status_resolved: "ปิดงานแล้ว", status_cancelled: "ยกเลิก" }
 };
 
 window.viewFullImage = (url) => { Swal.fire({ imageUrl: url, imageAlt: 'Attached Image', width: 'auto', padding: '1rem', showConfirmButton: false, showCloseButton: true, customClass: { image: 'rounded-xl max-h-[80vh] object-contain' } }); };
@@ -206,14 +206,38 @@ function loadDashboardData() {
             if (t.callerEmail !== auth.currentUser.email) return;
             
             const safeStatus = t.status || 'New';
-            counts[safeStatus] = (counts[safeStatus] || 0) + 1; 
+            // นับภาพรวม โดยถือว่าสถานะใหม่ๆ ที่ไม่ใช่ New/Resolved คือ In Progress ของฝั่ง User Dashboard Dashboard 
+            if(safeStatus === 'New' || safeStatus === 'Resolved') {
+                counts[safeStatus] = (counts[safeStatus] || 0) + 1;
+            } else if (safeStatus !== 'Cancelled') {
+                counts['In Progress'] = (counts['In Progress'] || 0) + 1; 
+            }
             counts.Total++;
             
-            const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700', 'Cancelled': 'bg-slate-200 text-slate-600' };
-            let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_');
+            const bgColors = { 
+                'New': 'bg-blue-100 text-blue-700', 
+                'In Progress': 'bg-amber-100 text-amber-700', 
+                'Waiting for Parts': 'bg-orange-100 text-orange-700',
+                'Waiting for Approval': 'bg-purple-100 text-purple-700',
+                'Waiting for User': 'bg-pink-100 text-pink-700',
+                'Testing': 'bg-cyan-100 text-cyan-700',
+                'Resolved': 'bg-emerald-100 text-emerald-700', 
+                'Cancelled': 'bg-slate-200 text-slate-600' 
+            };
+            
+            let statusKey = 'status_' + safeStatus.toLowerCase().replace(/ /g, '_');
             let displayStatus = dict[currentLang][statusKey] || safeStatus;
             let badgeBgClass = bgColors[safeStatus] || bgColors['New'];
-            let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : (safeStatus === 'Resolved' ? 'bg-emerald-500' : 'bg-slate-500'));
+            
+            let dotBgClass = 'bg-slate-500';
+            if (safeStatus === 'New') dotBgClass = 'bg-blue-500';
+            else if (safeStatus === 'In Progress') dotBgClass = 'bg-amber-500';
+            else if (safeStatus === 'Waiting for Parts') dotBgClass = 'bg-orange-500';
+            else if (safeStatus === 'Waiting for Approval') dotBgClass = 'bg-purple-500';
+            else if (safeStatus === 'Waiting for User') dotBgClass = 'bg-pink-500';
+            else if (safeStatus === 'Testing') dotBgClass = 'bg-cyan-500';
+            else if (safeStatus === 'Resolved') dotBgClass = 'bg-emerald-500';
+
             let statusHtml = `<span class="${badgeBgClass} px-2.5 py-1 rounded-md text-[10px] uppercase font-black tracking-widest flex w-fit gap-1.5 items-center"><span class="w-1.5 h-1.5 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
             const formattedDate = formatDateTime(t.createdAt?.toDate());
@@ -258,10 +282,28 @@ window.openModal = (id) => {
     document.getElementById('modal-date').innerText = formatDateTime(t.createdAt?.toDate());
 
     const safeStatus = t.status || 'New'; 
-    const bgColors = { 'New': 'bg-blue-100 text-blue-700', 'In Progress': 'bg-amber-100 text-amber-700', 'Resolved': 'bg-emerald-100 text-emerald-700', 'Cancelled': 'bg-slate-200 text-slate-600' };
-    let statusKey = 'status_' + safeStatus.toLowerCase().replace(' ', '_'); let displayStatus = dict[currentLang][statusKey] || safeStatus; 
+    const bgColors = { 
+        'New': 'bg-blue-100 text-blue-700', 
+        'In Progress': 'bg-amber-100 text-amber-700', 
+        'Waiting for Parts': 'bg-orange-100 text-orange-700',
+        'Waiting for Approval': 'bg-purple-100 text-purple-700',
+        'Waiting for User': 'bg-pink-100 text-pink-700',
+        'Testing': 'bg-cyan-100 text-cyan-700',
+        'Resolved': 'bg-emerald-100 text-emerald-700', 
+        'Cancelled': 'bg-slate-200 text-slate-600' 
+    };
+    let statusKey = 'status_' + safeStatus.toLowerCase().replace(/ /g, '_'); 
+    let displayStatus = dict[currentLang][statusKey] || safeStatus; 
     let badgeBgClass = bgColors[safeStatus] || bgColors['New']; 
-    let dotBgClass = safeStatus === 'New' ? 'bg-blue-500' : (safeStatus === 'In Progress' ? 'bg-amber-500' : (safeStatus === 'Resolved' ? 'bg-emerald-500' : 'bg-slate-500'));
+    
+    let dotBgClass = 'bg-slate-500';
+    if (safeStatus === 'New') dotBgClass = 'bg-blue-500';
+    else if (safeStatus === 'In Progress') dotBgClass = 'bg-amber-500';
+    else if (safeStatus === 'Waiting for Parts') dotBgClass = 'bg-orange-500';
+    else if (safeStatus === 'Waiting for Approval') dotBgClass = 'bg-purple-500';
+    else if (safeStatus === 'Waiting for User') dotBgClass = 'bg-pink-500';
+    else if (safeStatus === 'Testing') dotBgClass = 'bg-cyan-500';
+    else if (safeStatus === 'Resolved') dotBgClass = 'bg-emerald-500';
     
     document.getElementById('modal-status-badge').innerHTML = `<span class="${badgeBgClass} px-4 py-1.5 rounded-lg text-xs uppercase font-black tracking-widest flex items-center gap-2"><span class="w-2 h-2 rounded-full ${dotBgClass}"></span><span data-i18n="${statusKey}">${displayStatus}</span></span>`;
 
