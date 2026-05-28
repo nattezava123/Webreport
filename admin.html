@@ -16,193 +16,165 @@
     <section id="app-view" class="view-section active h-screen w-full overflow-hidden bg-slate-50" style="display: flex;">
         <aside id="sidebar" class="w-72 bg-[#020617] flex flex-col flex-shrink-0 shadow-2xl z-20 border-r border-slate-800">
             <div class="h-20 flex items-center px-8 border-b border-slate-800/80 text-white font-extrabold tracking-tight">
-                <i class="fas fa-shield-halved text-rose-500 mr-3 text-xl"></i> <span class="text-sm">IT Admin Center</span>
+                <i class="fas fa-shield-halved text-rose-500 mr-3 text-xl"></i> <span class="text-base">IT Admin Center</span>
             </div>
             <div class="p-6 my-2 mx-4 bg-slate-800/30 rounded-2xl border border-slate-700/50">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-rose-500 to-orange-500 flex items-center justify-center text-white shadow-lg"><i class="fas fa-user-shield"></i></div>
-                    <div class="overflow-hidden"><div id="user-email" class="text-white font-bold truncate text-sm">Admin</div><div id="user-role" class="text-[9px] text-rose-400 font-black uppercase">IT Admin</div></div>
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-rose-500 to-orange-500 flex items-center justify-center text-white shadow-lg text-lg"><i class="fas fa-user-shield"></i></div>
+                    <div class="overflow-hidden"><div id="user-email" class="text-white font-bold truncate text-base">Admin</div><div id="user-role" class="text-xs text-rose-400 font-black uppercase tracking-wider">IT Admin</div></div>
                 </div>
             </div>
             <nav class="flex-1 mt-2 space-y-1.5 overflow-y-auto">
-                <p class="px-8 text-[10px] font-black uppercase text-slate-500 mb-3 mt-4" data-i18n="menu_group_1">Workspace</p>
-                <a href="#" onclick="window.switchTab('dashboard')" class="flex items-center menu-link active"><i class="fas fa-border-all w-8"></i> <span data-i18n="menu_dash">Dashboard</span></a>
-                <a href="#" onclick="window.switchTab('incidents')" class="flex items-center menu-link"><i class="fas fa-layer-group w-8"></i> <span data-i18n="menu_incidents">My Requests</span></a>
-                <a href="#" onclick="window.switchTab('create')" class="flex items-center menu-link"><i class="fas fa-plus-circle w-8"></i> <span data-i18n="menu_create">Create Requests</span></a>
-                <a href="#" onclick="window.switchTab('chat')" class="flex items-center menu-link text-emerald-400"><i class="fas fa-comments w-8"></i> <span data-i18n="menu_chat">Live Chat</span></a>
-                <a href="#" onclick="window.openAIModal()" class="flex items-center menu-link text-indigo-400"><i class="fas fa-robot w-8"></i> <span>Serviceman</span></a>
+                <p class="px-8 text-xs font-black uppercase text-slate-500 mb-3 mt-4 tracking-wider" data-i18n="menu_group_1">Workspace</p>
+                <a href="#" onclick="window.switchTab('dashboard')" class="flex items-center menu-link active"><i class="fas fa-border-all w-8 text-lg"></i> <span data-i18n="menu_dash">Dashboard</span></a>
+                <a href="#" onclick="window.switchTab('incidents')" class="flex items-center menu-link"><i class="fas fa-layer-group w-8 text-lg"></i> <span data-i18n="menu_incidents">My Requests</span></a>
+                <a href="#" onclick="window.switchTab('create')" class="flex items-center menu-link"><i class="fas fa-plus-circle w-8 text-lg"></i> <span data-i18n="menu_create">Create Requests</span></a>
+                <a href="#" onclick="window.switchTab('chat')" class="flex items-center menu-link text-emerald-400"><i class="fas fa-comments w-8 text-lg"></i> <span data-i18n="menu_chat">Live Chat</span></a>
+                <a href="#" onclick="window.openAIModal()" class="flex items-center menu-link text-indigo-400"><i class="fas fa-robot w-8 text-lg"></i> <span>Serviceman</span></a>
                 
-                <p class="px-8 text-[10px] font-black uppercase text-slate-500 mt-8 mb-3" data-i18n="menu_group_2">Admin</p>
-                <a href="#" onclick="window.switchTab('admin')" class="flex items-center menu-link text-rose-400"><i class="fas fa-server w-8"></i> <span data-i18n="menu_admin">Command Center</span></a>
+                <p class="px-8 text-xs font-black uppercase text-slate-500 mt-8 mb-3 tracking-wider" data-i18n="menu_group_2">Admin</p>
+                <a href="#" onclick="window.switchTab('admin')" class="flex items-center menu-link text-rose-400"><i class="fas fa-server w-8 text-lg"></i> <span data-i18n="menu_admin">Command Center</span></a>
             </nav>
-            <div class="p-6"><button id="btn-logout" class="w-full flex items-center justify-center gap-3 text-rose-400 font-bold py-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20"><i class="fas fa-power-off"></i> <span data-i18n="btn_logout">Log Out</span></button></div>
+            <div class="p-6"><button id="btn-logout" class="w-full flex items-center justify-center gap-3 text-rose-400 font-bold py-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-sm hover:bg-rose-500/20 transition"><i class="fas fa-power-off"></i> <span data-i18n="btn_logout">Log Out</span></button></div>
         </aside>
 
         <main class="flex-1 flex flex-col min-w-0 relative">
             <header class="h-20 glass-panel border-b border-slate-200 px-6 flex justify-between items-center z-10 sticky top-0">
                 <div class="flex items-center gap-4"><button onclick="window.toggleMobileMenu()" class="md:hidden w-10 h-10 flex items-center justify-center bg-white rounded-full border"><i class="fas fa-bars"></i></button><h1 id="page-title" class="text-xl md:text-2xl font-extrabold text-slate-800" data-i18n="menu_dash">Dashboard</h1></div>
-                <div class="flex bg-slate-100 p-1 rounded-full border"><button onclick="window.toggleLang('en')" id="lang-en-app" class="px-4 py-1.5 bg-white text-blue-600 rounded-full text-xs font-bold">EN</button><button onclick="window.toggleLang('th')" id="lang-th-app" class="px-4 py-1.5 text-slate-500 rounded-full text-xs font-bold">TH</button></div>
+                <div class="flex bg-slate-100 p-1.5 rounded-full border gap-1"><button onclick="window.toggleLang('en')" id="lang-en-app" class="px-5 py-2 bg-white text-blue-600 rounded-full text-sm font-bold shadow-sm">EN</button><button onclick="window.toggleLang('th')" id="lang-th-app" class="px-5 py-2 text-slate-500 rounded-full text-sm font-bold hover:text-slate-700 transition">TH</button></div>
             </header>
 
             <div class="flex-1 overflow-y-auto p-4 md:p-10 pb-20">
                 <div id="tab-dashboard" class="tab-content block max-w-7xl mx-auto">
-                    <div class="mb-10"><h2 class="text-3xl font-black text-slate-800"><span data-i18n="dash_welcome">Welcome,</span> <span id="dash-user-name" class="text-rose-600">Admin</span>!</h2></div>
+                    <div class="mb-10"><h2 class="text-4xl font-black text-slate-800 tracking-tight"><span data-i18n="dash_welcome">Welcome,</span> <span id="dash-user-name" class="text-rose-600">Admin</span>!</h2></div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-                        <div class="stat-card bg-white p-6 rounded-[1.5rem] border shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_open">New Request</p><h3 class="text-4xl font-black" id="stat-new">0</h3></div>
-                        <div class="stat-card bg-white p-6 rounded-[1.5rem] border shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_progress">In Progress</p><h3 class="text-4xl font-black text-amber-500" id="stat-progress">0</h3></div>
-                        <div class="stat-card bg-white p-6 rounded-[1.5rem] border shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_resolved">Resolved</p><h3 class="text-4xl font-black text-emerald-500" id="stat-resolved">0</h3></div>
-                        <div class="stat-card bg-slate-900 p-6 rounded-[1.5rem]"><p class="text-[10px] font-black text-slate-400 uppercase" data-i18n="stat_total">Total Volume</p><h3 class="text-4xl font-black text-white" id="stat-total">0</h3></div>
+                        <div class="stat-card bg-white p-6 md:p-8 rounded-[1.5rem] border shadow-sm"><p class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="stat_open">New Request</p><h3 class="text-4xl md:text-5xl font-black text-slate-800" id="stat-new">0</h3></div>
+                        <div class="stat-card bg-white p-6 md:p-8 rounded-[1.5rem] border shadow-sm"><p class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="stat_progress">In Progress</p><h3 class="text-4xl md:text-5xl font-black text-amber-500" id="stat-progress">0</h3></div>
+                        <div class="stat-card bg-white p-6 md:p-8 rounded-[1.5rem] border shadow-sm"><p class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="stat_resolved">Resolved</p><h3 class="text-4xl md:text-5xl font-black text-emerald-500" id="stat-resolved">0</h3></div>
+                        <div class="stat-card bg-slate-900 p-6 md:p-8 rounded-[1.5rem] shadow-md"><p class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2" data-i18n="stat_total">Total Volume</p><h3 class="text-4xl md:text-5xl font-black text-white" id="stat-total">0</h3></div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="col-span-1 lg:col-span-2 bg-white rounded-[1.5rem] border p-6"><h3 class="font-extrabold text-lg mb-6" data-i18n="dash_recent">Recent Activity</h3><div id="dash-recent-list" class="space-y-4"></div></div>
-                        <div class="col-span-1 bg-white rounded-[1.5rem] border p-6"><h3 class="font-extrabold text-lg mb-4" data-i18n="dash_status">System Status</h3><div class="space-y-4"><div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-white flex items-center justify-center"><i class="fas fa-network-wired text-slate-500"></i></div><div><p class="text-sm font-bold" data-i18n="sys_net">Network</p></div></div><span class="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-md">Online</span></div></div></div>
-                    </div>
-                </div>
-
-                <div id="tab-incidents" class="tab-content hidden max-w-7xl mx-auto">
-                    <div class="bg-white rounded-[1.5rem] border overflow-hidden flex flex-col h-[70vh]">
-                        <div class="p-5 border-b bg-white flex justify-between items-center gap-4"><input type="text" id="search-ticket" onkeyup="window.filterTickets('ticket-table', 'search-ticket')" placeholder="Search My Requests..." class="w-full md:max-w-sm px-4 py-3 bg-slate-50 rounded-xl text-sm outline-none"><button onclick="window.switchTab('create')" class="bg-blue-600 text-white px-5 py-3 rounded-xl text-sm font-bold shadow-lg">Create</button></div>
-                        <div class="overflow-auto flex-1 p-2"><table class="w-full text-left" id="ticket-table"><tbody id="user-ticket-list"></tbody></table></div>
-                    </div>
-                </div>
-
-                <div id="tab-create" class="tab-content hidden max-w-2xl mx-auto">
-                    <div class="bg-white p-8 rounded-[2rem] border shadow-sm">
-                        <h2 class="text-2xl font-black mb-6" data-i18n="form_title">How can we help?</h2>
-                        <form id="create-ticket-form" class="space-y-6">
-                            
-                            <div>
-                                <label class="block text-[10px] font-black uppercase text-slate-400" data-i18n="form_cat">Category</label>
-                                <select id="tk-category" onchange="window.updateDynamicDropdowns()" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50">
-                                    <option value="Hardware" id="opt-hw">❖ Hardware / PC Issue</option>
-                                    <option value="Software" id="opt-sw">❖ Software / Application</option>
-                                    <option value="Network" id="opt-nw">❖ Network / Internet</option>
-                                </select>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Building</label><select id="tk-building" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="Building A">Building A</option><option value="Building B">Building B</option><option value="Warehouse">Warehouse</option></select></div>
-                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Floor</label><select id="tk-floor" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="1">Floor 1</option><option value="2">Floor 2</option><option value="3">Floor 3</option></select></div>
-                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Dept.</label><select id="tk-dept" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="Production">Production</option><option value="IT">IT</option><option value="HR">HR</option></select></div>
-                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Line</label><select id="tk-line" class="w-full border rounded-lg px-2 py-2 text-xs bg-white" required><option value="" disabled selected>Select...</option><option value="N/A">N/A</option><option value="Line 1">Line 1</option><option value="Line 2">Line 2</option></select></div>
-                            </div>
-                            
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="form_item">Item</label><select id="tk-item" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50" required><option value="" disabled selected>เลือกอุปกรณ์ที่เสีย...</option></select></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1" data-i18n="form_short">Subject</label><select id="tk-subject" class="w-full border rounded-xl px-4 py-3 text-sm bg-slate-50" required><option value="" disabled selected>เลือกหัวข้อปัญหา...</option></select></div>
-
-                            <textarea id="tk-desc" rows="4" placeholder="Description (ระบุรายละเอียดเพิ่มเติม หรืออาการเสียให้ชัดเจน)" class="w-full border rounded-xl px-4 py-3 text-sm resize-none" required></textarea>
-                            
-                            <input type="file" id="tk-image" accept="image/*" multiple onchange="window.previewCreateImage(this)" class="text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition border border-slate-200 rounded-xl px-2 py-2 w-full">
-                            <div id="create-image-preview-container" class="hidden relative mt-2 flex flex-wrap gap-2 p-3 border rounded-xl bg-slate-50 border-slate-200"></div>
-                            
-                            <button type="submit" id="btn-create-submit" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold shadow-lg mt-4">Submit Request</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div id="tab-chat" class="tab-content hidden max-w-4xl mx-auto h-[70vh]">
-                    <div class="bg-white rounded-[2rem] border shadow-sm flex flex-col h-full overflow-hidden">
-                        <div class="px-6 py-4 border-b bg-slate-50 flex justify-between items-center">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><i class="fas fa-headset"></i></div>
-                                <div>
-                                    <h3 class="font-black text-slate-800" data-i18n="chat_title">IT Support Chat</h3>
-                                    <p class="text-[10px] text-slate-400 font-bold uppercase" data-i18n="chat_sub">Real-time helpdesk room</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/50" id="live-chat-box"></div>
-                        <div class="p-4 bg-white border-t">
-                            <form id="live-chat-form" class="flex gap-2">
-                                <input type="text" id="live-chat-input" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 transition" placeholder="ตอบกลับสอบถามไอที..." autocomplete="off">
-                                <button type="submit" id="btn-live-chat" class="w-14 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-md hover:bg-slate-800 transition"><i class="fas fa-paper-plane"></i></button>
-                            </form>
+                        <div class="col-span-1 lg:col-span-2 bg-white rounded-[1.5rem] border p-8 shadow-sm"><h3 class="font-extrabold text-xl mb-6 text-slate-800" data-i18n="dash_recent">Recent Activity</h3><div id="dash-recent-list" class="space-y-4"></div></div>
+                        <div class="col-span-1 bg-white rounded-[1.5rem] border p-8 shadow-sm">
+                            <h3 class="font-extrabold text-xl mb-6 text-slate-800" data-i18n="dash_status">System Status</h3>
+                            <div class="space-y-4"><div class="flex items-center justify-between p-5 bg-slate-50 rounded-xl border"><div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm"><i class="fas fa-network-wired text-slate-500 text-lg"></i></div><div><p class="text-base font-bold text-slate-800" data-i18n="sys_net">Network</p></div></div><span class="text-xs font-bold text-emerald-600 bg-emerald-100 px-3 py-1.5 rounded-md uppercase tracking-wider">Online</span></div></div>
                         </div>
                     </div>
                 </div>
 
                 <div id="tab-admin" class="tab-content hidden max-w-7xl mx-auto">
-                    <div class="bg-gradient-to-r from-rose-500 to-orange-500 p-6 rounded-2xl shadow-lg flex justify-between items-center text-white mb-6">
-                        <div><p class="text-rose-100 text-[10px] font-black uppercase mb-1" data-i18n="admin_my_resolved">My Resolved </p><p class="text-4xl font-black flex items-center gap-3"><i class="fas fa-trophy text-amber-300"></i> <span id="stat-admin-my-resolved">0</span></p></div>
-                        <button onclick="window.exportCSV()" class="bg-white/20 hover:bg-white/30 border border-white/20 px-5 py-2.5 rounded-xl text-xs font-bold transition"><i class="fas fa-download mr-2"></i> Export CSV</button>
+                    <div class="bg-gradient-to-r from-rose-500 to-orange-500 p-8 rounded-[2rem] shadow-lg flex justify-between items-center text-white mb-8">
+                        <div><p class="text-rose-100 text-sm font-black uppercase mb-2 tracking-wider" data-i18n="admin_my_resolved">My Resolved </p><p class="text-5xl font-black flex items-center gap-4"><i class="fas fa-trophy text-amber-300"></i> <span id="stat-admin-my-resolved">0</span></p></div>
+                        <button onclick="window.exportCSV()" class="bg-white/20 hover:bg-white/30 border border-white/30 px-6 py-3 rounded-xl text-sm font-bold transition flex items-center shadow-sm"><i class="fas fa-download mr-3 text-lg"></i> Export CSV</button>
                     </div>
-                    <div class="bg-white rounded-[1.5rem] border overflow-hidden flex flex-col h-[65vh]">
-                        <div class="p-4 border-b flex flex-wrap gap-2 items-center justify-between bg-slate-50">
-                            <div class="flex gap-2 bg-slate-100 p-1 rounded-xl border">
-                                <button onclick="window.setAdminFilter('All')" id="btn-filter-All" class="px-5 py-2 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm">All</button>
-                                <button onclick="window.setAdminFilter('Active')" id="btn-filter-Active" class="px-5 py-2 rounded-lg text-xs font-bold text-slate-500">Active</button>
-                                <button onclick="window.setAdminFilter('Resolved')" id="btn-filter-Resolved" class="px-5 py-2 rounded-lg text-xs font-bold text-slate-500">Resolved</button>
+                    <div class="bg-white rounded-[1.5rem] border shadow-sm overflow-hidden flex flex-col h-[65vh]">
+                        <div class="p-5 border-b flex flex-wrap gap-4 items-center justify-between bg-slate-50">
+                            <div class="flex gap-2 bg-slate-100 p-1.5 rounded-xl border">
+                                <button onclick="window.setAdminFilter('All')" id="btn-filter-All" class="px-6 py-2.5 rounded-lg text-sm font-bold bg-white text-slate-800 shadow-sm">All</button>
+                                <button onclick="window.setAdminFilter('Active')" id="btn-filter-Active" class="px-6 py-2.5 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700">Active</button>
+                                <button onclick="window.setAdminFilter('Resolved')" id="btn-filter-Resolved" class="px-6 py-2.5 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700">Resolved</button>
                             </div>
-                            <input type="text" id="search-admin" onkeyup="window.filterTickets('admin-table', 'search-admin')" placeholder="Search All Requests..." class="px-4 py-2 border rounded-lg text-xs w-full md:w-64 outline-none">
+                            <input type="text" id="search-admin" onkeyup="window.filterTickets('admin-table', 'search-admin')" placeholder="Search All Requests..." class="px-5 py-3 border border-slate-200 rounded-xl text-base w-full md:w-80 outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition shadow-sm">
                         </div>
-                        <div class="overflow-auto flex-1 p-2"><table class="w-full text-left" id="admin-table"><tbody id="admin-ticket-list" class="divide-y divide-slate-100 text-sm"></tbody></table></div>
+                        <div class="overflow-auto flex-1 p-2"><table class="w-full text-left" id="admin-table"><tbody id="admin-ticket-list" class="divide-y divide-slate-100"></tbody></table></div>
+                    </div>
+                </div>
+
+                <div id="tab-create" class="tab-content hidden max-w-3xl mx-auto">
+                    <div class="bg-white p-8 md:p-10 rounded-[2rem] border shadow-sm">
+                        <h2 class="text-3xl font-black mb-8 text-slate-800" data-i18n="form_title">How can we help?</h2>
+                        <form id="create-ticket-form" class="space-y-6">
+                            <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2" data-i18n="form_cat">Category</label><select id="tk-category" onchange="window.updateDynamicDropdowns()" class="w-full border rounded-xl px-5 py-4 text-base bg-slate-50 cursor-pointer outline-none focus:ring-2 focus:ring-blue-500/20"><option value="Hardware" id="opt-hw">❖ Hardware / PC Issue</option><option value="Software" id="opt-sw">❖ Software / Application</option><option value="Network" id="opt-nw">❖ Network / Internet</option></select></div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 bg-slate-50 rounded-xl border border-slate-100">
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Building</label><select id="tk-building" class="w-full border rounded-lg px-3 py-2.5 text-sm bg-white outline-none cursor-pointer" required><option value="" disabled selected>Select...</option><option value="Building A">Building A</option><option value="Building B">Building B</option><option value="Warehouse">Warehouse</option></select></div>
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Floor</label><select id="tk-floor" class="w-full border rounded-lg px-3 py-2.5 text-sm bg-white outline-none cursor-pointer" required><option value="" disabled selected>Select...</option><option value="1">Floor 1</option><option value="2">Floor 2</option><option value="3">Floor 3</option></select></div>
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Dept.</label><select id="tk-dept" class="w-full border rounded-lg px-3 py-2.5 text-sm bg-white outline-none cursor-pointer" required><option value="" disabled selected>Select...</option><option value="Production">Production</option><option value="IT">IT</option><option value="HR">HR</option></select></div>
+                                <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Line</label><select id="tk-line" class="w-full border rounded-lg px-3 py-2.5 text-sm bg-white outline-none cursor-pointer" required><option value="" disabled selected>Select...</option><option value="N/A">N/A</option><option value="Line 1">Line 1</option><option value="Line 2">Line 2</option></select></div>
+                            </div>
+                            <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2" data-i18n="form_item">Broken Part / Item</label><select id="tk-item" class="w-full border rounded-xl px-5 py-4 text-base bg-slate-50 outline-none cursor-pointer" required><option value="" disabled selected>เลือกอุปกรณ์ที่เสีย...</option></select></div>
+                            <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2" data-i18n="form_short">Subject</label><select id="tk-subject" class="w-full border rounded-xl px-5 py-4 text-base bg-slate-50 outline-none cursor-pointer" required><option value="" disabled selected>เลือกหัวข้อปัญหา...</option></select></div>
+                            <textarea id="tk-desc" rows="5" placeholder="Description (ระบุรายละเอียดเพิ่มเติม หรืออาการเสียให้ชัดเจน)" class="w-full border rounded-xl px-5 py-4 text-base resize-none outline-none focus:ring-2 focus:ring-blue-500/20" required></textarea>
+                            <input type="file" id="tk-image" accept="image/*" multiple onchange="window.previewCreateImage(this)" class="text-sm text-slate-500 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition border border-slate-200 rounded-xl px-3 py-3 w-full cursor-pointer">
+                            <div id="create-image-preview-container" class="hidden relative mt-3 flex flex-wrap gap-3 p-4 border rounded-xl bg-slate-50 border-slate-200"></div>
+                            <button type="submit" id="btn-create-submit" class="w-full bg-slate-900 text-white py-5 rounded-xl text-lg font-bold shadow-lg mt-6 hover:bg-slate-800 transition">Submit Request</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="tab-incidents" class="tab-content hidden max-w-7xl mx-auto">
+                    <div class="bg-white rounded-[1.5rem] border shadow-sm overflow-hidden flex flex-col h-[75vh]">
+                        <div class="p-6 border-b bg-slate-50 flex justify-between items-center gap-4"><input type="text" id="search-ticket" onkeyup="window.filterTickets('ticket-table', 'search-ticket')" placeholder="Search My Requests..." class="w-full md:max-w-md px-5 py-3 bg-white rounded-xl text-base outline-none border shadow-sm"><button onclick="window.switchTab('create')" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-base font-bold shadow-lg transition">Create New</button></div>
+                        <div class="overflow-auto flex-1 p-2"><table class="w-full text-left" id="ticket-table"><tbody id="user-ticket-list" class="divide-y divide-slate-100"></tbody></table></div>
+                    </div>
+                </div>
+
+                <div id="tab-chat" class="tab-content hidden max-w-4xl mx-auto h-[75vh]">
+                    <div class="bg-white rounded-[2rem] border shadow-sm flex flex-col h-full overflow-hidden">
+                        <div class="px-8 py-6 border-b bg-slate-50 flex justify-between items-center">
+                            <div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xl"><i class="fas fa-headset"></i></div><div><h3 class="font-black text-xl text-slate-800" data-i18n="chat_title">IT Support Chat</h3><p class="text-xs text-slate-500 font-bold uppercase tracking-wider" data-i18n="chat_sub">Real-time helpdesk room</p></div></div>
+                        </div>
+                        <div class="flex-1 overflow-y-auto p-8 space-y-6 bg-slate-50/50" id="live-chat-box"></div>
+                        <div class="p-5 bg-white border-t">
+                            <form id="live-chat-form" class="flex gap-3">
+                                <input type="text" id="live-chat-input" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-base outline-none focus:ring-2 focus:ring-blue-500/20 transition" placeholder="ตอบกลับสอบถามไอที..." autocomplete="off">
+                                <button type="submit" id="btn-live-chat" class="w-16 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-md hover:bg-slate-800 transition text-lg"><i class="fas fa-paper-plane"></i></button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
     </section>
 
-    <div id="ai-modal" class="fixed inset-0 z-[300] hidden items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0">
-        <div class="bg-white w-full sm:w-[450px] h-[85vh] sm:h-[600px] rounded-[2rem] flex flex-col shadow-2xl relative" id="ai-box">
-            <div class="px-6 py-5 bg-indigo-600 rounded-t-[2rem] text-white flex justify-between items-center">
-                <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md"><i class="fas fa-robot"></i></div><div><h3 class="font-black leading-tight">Serviceman AI</h3><p class="text-[10px] text-indigo-200 font-bold uppercase">Factory IT Assistant</p></div></div>
-                <button onclick="window.closeAIModal()" class="w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition"><i class="fas fa-times"></i></button>
+    <div id="ai-modal" class="fixed inset-0 z-[300] hidden items-end sm:items-center justify-center bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div class="bg-white w-full sm:w-[500px] h-[85vh] sm:h-[700px] rounded-[2rem] flex flex-col shadow-2xl relative" id="ai-box">
+            <div class="px-8 py-6 bg-indigo-600 rounded-t-[2rem] text-white flex justify-between items-center">
+                <div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md text-xl"><i class="fas fa-robot"></i></div><div><h3 class="font-black text-xl leading-tight">Serviceman AI</h3><p class="text-xs text-indigo-200 font-bold uppercase tracking-wider">Factory IT Assistant</p></div></div>
+                <button onclick="window.closeAIModal()" class="w-10 h-10 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition text-lg"><i class="fas fa-times"></i></button>
             </div>
-            <div class="flex-1 overflow-y-auto p-5 space-y-4 bg-slate-50" id="ai-chat-box">
-                <div class="flex items-start gap-4 mb-6 chat-ai-bubble">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shrink-0 shadow-md"><i class="fas fa-robot text-[10px]"></i></div>
-                    <div class="flex flex-col gap-2 max-w-[85%]">
-                        <div class="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-sm shadow-sm text-sm text-slate-700 leading-relaxed">
-                            สวัสดีครับ! ผมคือ <strong>Serviceman</strong> 🤖 ผู้ช่วยไอทีประจำโรงงาน วันนี้ระบบไอทีมีปัญหาตรงไหนให้ผมช่วยตรวจสอบไหมครับ เลือกเมนูด้านล่าง หรือพิมพ์บอกผมได้เลยครับ 👇
-                        </div>
-                        <div class="flex flex-wrap gap-2 mt-1">
-                            <button onclick="window.sendQuickReply('คอมเปิดไม่ติด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 rounded-full text-xs font-bold transition-colors">💻 คอมเปิดไม่ติด</button>
-                            <button onclick="window.sendQuickReply('ปริ้นไม่ออก')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 rounded-full text-xs font-bold transition-colors">🖨️ เครื่องปริ้น</button>
-                            <button onclick="window.sendQuickReply('เน็ตหลุด')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 rounded-full text-xs font-bold transition-colors">📡 อินเทอร์เน็ต</button>
-                            <button onclick="window.sendQuickReply('วิธีแจ้งซ่อม')" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 rounded-full text-xs font-bold transition-colors">📝 วิธีแจ้งซ่อม</button>
-                        </div>
-                    </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-5 bg-slate-50" id="ai-chat-box">
                 </div>
-            </div>
-            <div class="p-4 bg-white border-t flex gap-2">
-                <input type="text" id="ai-input" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500/20" placeholder="พิมพ์บอกอาการเสียได้เลย..." onkeypress="if(event.key === 'Enter') window.sendAIMessage()">
-                <button onclick="window.sendAIMessage()" class="bg-indigo-600 text-white w-12 rounded-xl flex items-center justify-center hover:bg-indigo-700 transition shadow-md"><i class="fas fa-paper-plane text-xs"></i></button>
+            <div class="p-5 bg-white border-t flex gap-3">
+                <input type="text" id="ai-input" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-base outline-none focus:ring-2 focus:ring-indigo-500/20" placeholder="พิมพ์บอกอาการเสียได้เลย..." onkeypress="if(event.key === 'Enter') window.sendAIMessage()">
+                <button onclick="window.sendAIMessage()" class="bg-indigo-600 text-white w-14 rounded-xl flex items-center justify-center hover:bg-indigo-700 transition shadow-md text-lg"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
-    <div id="ticket-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-[200] flex items-center justify-center p-0 md:p-6 transition-all duration-300 opacity-0">
+    <div id="ticket-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden z-[200] flex items-center justify-center p-0 md:p-6 transition-all duration-300 opacity-0">
         <div class="bg-white w-full h-full md:max-w-6xl md:h-[85vh] md:rounded-[2rem] flex flex-col overflow-hidden shadow-2xl" id="modal-box">
-            <div class="px-6 py-4 border-b flex justify-between items-center bg-white">
-                <div class="flex items-center gap-4"><div id="modal-status-badge"></div><h3 class="font-black text-xl" id="modal-id">ID</h3></div>
-                <div class="flex items-center gap-2">
-                    <button id="btn-modal-edit" onclick="window.editTicket(currentTicketId)" class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition"><i class="fas fa-edit"></i></button>
-                    <button onclick="window.closeModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition"><i class="fas fa-times"></i></button>
+            <div class="px-8 py-6 border-b flex justify-between items-center bg-white">
+                <div class="flex items-center gap-5"><div id="modal-status-badge"></div><h3 class="font-black text-2xl text-slate-800" id="modal-id">ID</h3></div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-modal-edit" onclick="window.editTicket(currentTicketId)" class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition text-lg"><i class="fas fa-edit"></i></button>
+                    <button onclick="window.closeModal()" class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition text-xl"><i class="fas fa-times"></i></button>
                 </div>
             </div>
             <div class="flex-1 flex flex-col md:flex-row overflow-hidden bg-slate-50">
-                <div class="w-full md:w-[35%] p-6 md:p-8 bg-white overflow-y-auto border-r">
-                    <h4 class="text-2xl font-black text-slate-800" id="modal-subject">Subject</h4>
-                    <p class="text-xs text-slate-400 font-bold uppercase mb-6"><i class="far fa-clock"></i> <span id="modal-date"></span></p>
-                    <div class="space-y-4">
-                        <div class="bg-slate-50 p-3 rounded-xl border text-sm mb-4"><p class="text-[10px] text-slate-400">Category</p><p id="modal-category" class="font-bold">-</p></div>
-                        <div class="bg-rose-50 p-4 rounded-xl border border-rose-100 text-xs"><p id="modal-location">Loc</p><p id="modal-broken-item" class="font-bold text-rose-600">Item</p></div>
-                        <div id="modal-image-container" class="hidden flex-wrap gap-2"></div>
-                        <div class="p-4 bg-slate-50 rounded-xl border text-sm whitespace-pre-wrap" id="modal-desc">Desc</div>
-                        <div class="pt-4 border-t text-[10px] text-slate-400">REPORTED BY: <span id="modal-caller" class="font-bold text-slate-700"></span></div>
-                        <div class="text-[10px] text-slate-400">ASSIGNED IT: <span id="modal-assignee" class="font-bold text-indigo-700"></span></div>
+                <div class="w-full md:w-[40%] p-6 md:p-10 bg-white overflow-y-auto border-r">
+                    <h4 class="text-3xl font-black text-slate-800 mb-2 leading-tight" id="modal-subject">Subject</h4>
+                    <p class="text-sm text-slate-500 font-bold uppercase tracking-wider mb-8"><i class="far fa-clock mr-1"></i> <span id="modal-date"></span></p>
+                    <div class="space-y-5">
+                        <div class="bg-slate-50 p-5 rounded-2xl border mb-5"><p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Category</p><p id="modal-category" class="font-bold text-base text-slate-800">-</p></div>
+                        <div class="bg-rose-50 p-6 rounded-2xl border border-rose-100"><p id="modal-location" class="text-sm text-slate-600 mb-2">Loc</p><p id="modal-broken-item" class="font-black text-lg text-rose-600">Item</p></div>
+                        <div id="modal-image-container" class="hidden flex-wrap gap-3"></div>
+                        <div class="p-6 bg-slate-50 rounded-2xl border text-base text-slate-700 whitespace-pre-wrap leading-relaxed" id="modal-desc">Desc</div>
+                        <div class="pt-6 border-t mt-4 space-y-2">
+                            <div class="text-xs text-slate-500 font-bold tracking-wider">REPORTED BY: <span id="modal-caller" class="text-slate-800 ml-2"></span></div>
+                            <div class="text-xs text-slate-500 font-bold tracking-wider">ASSIGNED IT: <span id="modal-assignee" class="text-indigo-700 ml-2"></span></div>
+                        </div>
                     </div>
                 </div>
                 <div class="flex-1 flex flex-col bg-slate-50">
-                    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
-                    <div class="p-4 bg-white border-t">
-                        <form id="comment-form" class="flex gap-2">
-                            <label class="w-12 flex items-center justify-center bg-slate-100 text-slate-500 rounded-xl cursor-pointer border" id="comment-img-label">
+                    <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-6"></div>
+                    <div class="p-5 bg-white border-t">
+                        <form id="comment-form" class="flex gap-3">
+                            <label class="w-14 flex items-center justify-center bg-slate-50 text-slate-500 rounded-xl cursor-pointer border hover:bg-slate-100 transition text-xl" id="comment-img-label">
                                 <i class="fas fa-image"></i>
                                 <input type="file" id="comment-image" accept="image/*" multiple class="hidden" onchange="document.getElementById('comment-img-label').classList.replace('text-slate-500', 'text-blue-500')">
                             </label>
-                            <input type="text" id="comment-text" class="flex-1 bg-slate-50 border rounded-xl px-4 py-3 text-sm outline-none" placeholder="Type a reply or paste image..." autocomplete="off">
-                            <button type="submit" id="btn-comment-submit" class="w-12 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg"><i class="fas fa-paper-plane text-xs"></i></button>
+                            <input type="text" id="comment-text" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-base outline-none focus:ring-2 focus:ring-blue-500/20" placeholder="Type a reply or paste image..." autocomplete="off">
+                            <button type="submit" id="btn-comment-submit" class="w-16 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:bg-blue-700 transition text-lg"><i class="fas fa-paper-plane"></i></button>
                         </form>
                     </div>
                 </div>
