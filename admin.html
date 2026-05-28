@@ -61,7 +61,7 @@
 
                 <div id="tab-incidents" class="tab-content hidden max-w-7xl mx-auto">
                     <div class="bg-white rounded-[1.5rem] border overflow-hidden flex flex-col h-[70vh]">
-                        <div class="p-5 border-b bg-white flex justify-between items-center gap-4"><input type="text" id="search-ticket" onkeyup="window.filterTickets('ticket-table', 'search-ticket')" placeholder="Search My Tickets..." class="w-full md:max-w-sm px-4 py-3 bg-slate-50 rounded-xl text-sm outline-none"><button onclick="window.switchTab('create')" class="bg-blue-600 text-white px-5 py-3 rounded-xl text-sm font-bold shadow-lg">Create</button></div>
+                        <div class="p-5 border-b bg-white flex justify-between items-center gap-4"><input type="text" id="search-ticket" onkeyup="window.filterTickets('ticket-table', 'search-ticket')" placeholder="Search My Requests..." class="w-full md:max-w-sm px-4 py-3 bg-slate-50 rounded-xl text-sm outline-none"><button onclick="window.switchTab('create')" class="bg-blue-600 text-white px-5 py-3 rounded-xl text-sm font-bold shadow-lg">Create</button></div>
                         <div class="overflow-auto flex-1 p-2"><table class="w-full text-left" id="ticket-table"><tbody id="user-ticket-list"></tbody></table></div>
                     </div>
                 </div>
@@ -123,7 +123,7 @@
 
                 <div id="tab-admin" class="tab-content hidden max-w-7xl mx-auto">
                     <div class="bg-gradient-to-r from-rose-500 to-orange-500 p-6 rounded-2xl shadow-lg flex justify-between items-center text-white mb-6">
-                        <div><p class="text-rose-100 text-[10px] font-black uppercase mb-1" data-i18n="admin_my_resolved">My Resolved Tickets</p><p class="text-4xl font-black flex items-center gap-3"><i class="fas fa-trophy text-amber-300"></i> <span id="stat-admin-my-resolved">0</span></p></div>
+                        <div><p class="text-rose-100 text-[10px] font-black uppercase mb-1" data-i18n="admin_my_resolved">My Resolved </p><p class="text-4xl font-black flex items-center gap-3"><i class="fas fa-trophy text-amber-300"></i> <span id="stat-admin-my-resolved">0</span></p></div>
                         <button onclick="window.exportCSV()" class="bg-white/20 hover:bg-white/30 border border-white/20 px-5 py-2.5 rounded-xl text-xs font-bold transition"><i class="fas fa-download mr-2"></i> Export CSV</button>
                     </div>
                     <div class="bg-white rounded-[1.5rem] border overflow-hidden flex flex-col h-[65vh]">
@@ -133,7 +133,7 @@
                                 <button onclick="window.setAdminFilter('Active')" id="btn-filter-Active" class="px-5 py-2 rounded-lg text-xs font-bold text-slate-500">Active</button>
                                 <button onclick="window.setAdminFilter('Resolved')" id="btn-filter-Resolved" class="px-5 py-2 rounded-lg text-xs font-bold text-slate-500">Resolved</button>
                             </div>
-                            <input type="text" id="search-admin" onkeyup="window.filterTickets('admin-table', 'search-admin')" placeholder="Search All Tickets..." class="px-4 py-2 border rounded-lg text-xs w-full md:w-64 outline-none">
+                            <input type="text" id="search-admin" onkeyup="window.filterTickets('admin-table', 'search-admin')" placeholder="Search All Requests..." class="px-4 py-2 border rounded-lg text-xs w-full md:w-64 outline-none">
                         </div>
                         <div class="overflow-auto flex-1 p-2"><table class="w-full text-left" id="admin-table"><tbody id="admin-ticket-list" class="divide-y divide-slate-100 text-sm"></tbody></table></div>
                     </div>
