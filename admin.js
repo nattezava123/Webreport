@@ -323,7 +323,7 @@ window.deleteTicket = (id) => { Swal.fire({ title: 'Delete Ticket?', icon: 'warn
 window.editTicket = (id) => {
     const t = window.globalTickets[id];
     Swal.fire({
-        title: 'Edit Ticket Details', width: '600px',
+        title: 'Edit  Details', width: '600px',
         html: `<div class="space-y-5 text-left mt-4">
             <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Subject</label><input id="edit-sub" class="w-full border rounded-xl px-5 py-4 text-base" value="${t.subject || ''}"></div>
             <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Category</label><select id="edit-cat" class="w-full border rounded-xl px-5 py-4 text-base"><option value="Hardware" ${t.category==='Hardware'?'selected':''}>Hardware</option><option value="Software" ${t.category==='Software'?'selected':''}>Software</option><option value="Network" ${t.category==='Network'?'selected':''}>Network</option></select></div>
